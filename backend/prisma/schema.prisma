@@ -1,0 +1,72 @@
+// Prisma Schema for Habit Tracker (HabitPulse)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id          String            @id @default(uuid())
+  name        String
+  email       String            @unique
+  password    String
+  avatar      String?
+  timezone    String            @default("UTC")
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  habits      Habit[]
+  completions HabitCompletion[]
+
+  @@map("users")
+}
+
+model Habit {
+  id           String            @id @default(uuid())
+  userId       String
+  name         String
+  description  String?
+  category     String            @default("Other")
+  color        String            @default("#6366f1")
+  icon         String            @default("Activity")
+  frequency    String            @default("Daily") // Daily, Weekly, Specific Days, Custom
+  targetCount  Int               @default(1)
+  reminderTime String?           // e.g. "08:00"
+  startDate    DateTime          @default(now())
+  endDate      DateTime?
+  isArchived   Boolean           @default(false)
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+
+  user         User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  completions  HabitCompletion[]
+
+  @@index([userId])
+  @@index([userId, isArchived])
+  @@map("habits")
+}
+
+model HabitCompletion {
+  id            String    @id @default(uuid())
+  habitId       String
+  userId        String
+  completedDate String    // Format: YYYY-MM-DD for fast date-based lookups and unique constraints
+  completedAt   DateTime  @default(now())
+  note          String?
+
+  habit         Habit     @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([habitId, completedDate], name: "habit_completed_date_unique")
+  @@index([userId])
+  @@index([habitId])
+  @@index([completedDate])
+  @@index([userId, completedDate])
+  @@index([habitId, completedDate])
+  @@map("habit_completions")
+}
