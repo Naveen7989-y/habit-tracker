@@ -514,7 +514,7 @@ export default function Dashboard() {
 
       {/* Footer */}
       <footer className="border-t border-slate-800/80 py-6 text-center text-xs text-slate-400">
-        HabitPulse SaaS • Built with React, Express, Prisma & PostgreSQL
+        HAbyTAT SaaS • Built with React, Express, Prisma & PostgreSQL
       </footer>
     </div>
   );

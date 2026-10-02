@@ -7,7 +7,7 @@ import { User, Mail, Globe, Image, Check, AlertCircle, Loader2, Moon, Sun, Shiel
 
 export default function Settings() {
   const { user, updateProfile } = useAuth();
-  const { theme, toggleTheme } = useTheme();
+  const { theme, toggleTheme, setTheme } = useTheme();
 
   const [name, setName] = useState(user?.name || '');
   const [timezone, setTimezone] = useState(user?.timezone || 'UTC');
@@ -96,25 +96,49 @@ export default function Settings() {
               </div>
             </div>
 
-            <div className="w-full pt-4 border-t border-slate-800 flex items-center justify-between">
-              <span className="text-xs text-slate-400">Theme</span>
-              <button
-                type="button"
-                onClick={toggleTheme}
-                className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-white flex items-center gap-1.5 transition-colors"
-              >
-                {theme === 'dark' ? (
-                  <>
-                    <Sun className="w-3.5 h-3.5 text-amber-400" />
-                    <span>Light Mode</span>
-                  </>
-                ) : (
-                  <>
-                    <Moon className="w-3.5 h-3.5 text-indigo-400" />
-                    <span>Dark Mode</span>
-                  </>
-                )}
-              </button>
+            <div className="w-full pt-4 border-t border-slate-800 space-y-2 text-left">
+              <span className="text-xs text-slate-400 block font-semibold">Active Theme</span>
+              <div className="grid grid-cols-3 gap-1.5 w-full bg-slate-950/80 p-1 rounded-xl border border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setTheme('vibrant-red')}
+                  className={`px-2 py-1.5 rounded-lg text-[11px] font-semibold flex items-center justify-center gap-1 transition-all ${
+                    theme === 'vibrant-red'
+                      ? 'bg-[#FF0000] text-white shadow'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                  title="Switch to Vibrant Red"
+                >
+                  <span className="w-2 h-2 rounded-full bg-[#BC0202]"></span>
+                  <span>Red</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTheme('dark')}
+                  className={`px-2 py-1.5 rounded-lg text-[11px] font-semibold flex items-center justify-center gap-1 transition-all ${
+                    theme === 'dark'
+                      ? 'bg-indigo-600 text-white shadow'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                  title="Switch to Dark Mode"
+                >
+                  <Moon className="w-3 h-3 text-indigo-300" />
+                  <span>Dark</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTheme('light')}
+                  className={`px-2 py-1.5 rounded-lg text-[11px] font-semibold flex items-center justify-center gap-1 transition-all ${
+                    theme === 'light'
+                      ? 'bg-white text-slate-900 shadow'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                  title="Switch to Light Mode"
+                >
+                  <Sun className="w-3 h-3 text-amber-500" />
+                  <span>Light</span>
+                </button>
+              </div>
             </div>
           </div>
 

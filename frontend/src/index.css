@@ -2,13 +2,493 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ==================================================
+   CENTRALIZED THEME SYSTEM & DESIGN TOKENS
+   Theme: Vibrant Red (Default)
+   Architecture: CSS Custom Properties / Tokens
+   ================================================== */
+
+:root,
+[data-theme="vibrant-red"],
+.theme-vibrant-red {
+  color-scheme: dark;
+
+  /* Theme Core Palette Tokens */
+  --theme-background: #000000;
+  --theme-surface: #830000;
+  --theme-primary: #BC0202;
+  --theme-accent: #FF0000;
+
+  /* Semantic Variables */
+  --background: #000000;
+  --foreground: #ffffff;
+  
+  --card: #0c0202;
+  --card-elevated: #150303;
+  --card-surface: #830000;
+  --card-foreground: #ffffff;
+  
+  --primary: #BC0202;
+  --primary-foreground: #ffffff;
+  
+  --secondary: #830000;
+  --secondary-foreground: #ffffff;
+  
+  --accent: #FF0000;
+  --accent-foreground: #ffffff;
+  
+  --muted: #150303;
+  --muted-foreground: #d1d5db;
+  
+  --border: #830000;
+  --border-muted: rgba(131, 0, 0, 0.45);
+  --border-strong: #BC0202;
+  --border-accent: #FF0000;
+  
+  --input: #000000;
+  --input-border: #830000;
+  --input-focus-border: #FF0000;
+  --input-focus-ring: #BC0202;
+  --input-foreground: #ffffff;
+  --input-placeholder: #9ca3af;
+  
+  --ring: #BC0202;
+  --ring-focus: #FF0000;
+  
+  --btn-primary-bg: #FF0000;
+  --btn-primary-text: #ffffff;
+  --btn-primary-hover: #BC0202;
+  --btn-primary-active: #830000;
+  --btn-primary-focus-ring: #BC0202;
+
+  --btn-secondary-bg: #830000;
+  --btn-secondary-border: #BC0202;
+  --btn-secondary-text: #ffffff;
+  --btn-secondary-hover: #BC0202;
+
+  /* Semantic Status Colors (Accessibility Preserved) */
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #FF0000;
+  --info: #38bdf8;
+
+  /* Habit UI Specific Tokens */
+  --habit-completed: #FF0000;
+  --habit-progress-fill: #BC0202;
+  --habit-progress-track: #830000;
+  --habit-streak-flame: #FF0000;
+  --habit-card-border: #830000;
+  --habit-card-border-hover: #BC0202;
+}
+
+/* Fallback / Coexisting Theme: Dark */
+[data-theme="dark"] {
+  color-scheme: dark;
+  --theme-background: #020617;
+  --theme-surface: #0f172a;
+  --theme-primary: #6366f1;
+  --theme-accent: #818cf8;
+
+  --background: #020617;
+  --foreground: #f8fafc;
+  --card: #0f172a;
+  --card-elevated: #1e293b;
+  --card-surface: #0f172a;
+  --card-foreground: #f8fafc;
+  --primary: #6366f1;
+  --primary-foreground: #ffffff;
+  --secondary: #1e293b;
+  --secondary-foreground: #f8fafc;
+  --accent: #818cf8;
+  --accent-foreground: #ffffff;
+  --muted: #1e293b;
+  --muted-foreground: #94a3b8;
+  --border: #334155;
+  --border-muted: rgba(51, 65, 85, 0.5);
+  --border-strong: #475569;
+  --border-accent: #6366f1;
+  --input: #0b1120;
+  --input-border: #334155;
+  --input-focus-border: #6366f1;
+  --input-focus-ring: #6366f1;
+  --input-foreground: #ffffff;
+  --input-placeholder: #64748b;
+  --ring: #6366f1;
+  --ring-focus: #818cf8;
+  --btn-primary-bg: #4f46e5;
+  --btn-primary-text: #ffffff;
+  --btn-primary-hover: #6366f1;
+  --btn-primary-active: #4338ca;
+  --btn-primary-focus-ring: #6366f1;
+  --btn-secondary-bg: #1e293b;
+  --btn-secondary-border: #334155;
+  --btn-secondary-text: #f8fafc;
+  --btn-secondary-hover: #334155;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --info: #38bdf8;
+  --habit-completed: #10b981;
+  --habit-progress-fill: #6366f1;
+  --habit-progress-track: #1e293b;
+  --habit-streak-flame: #f59e0b;
+  --habit-card-border: #334155;
+  --habit-card-border-hover: #6366f1;
+}
+
+/* Fallback / Coexisting Theme: Light */
+[data-theme="light"] {
+  color-scheme: light;
+  --theme-background: #f8fafc;
+  --theme-surface: #ffffff;
+  --theme-primary: #4f46e5;
+  --theme-accent: #6366f1;
+
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-elevated: #f1f5f9;
+  --card-surface: #ffffff;
+  --card-foreground: #0f172a;
+  --primary: #4f46e5;
+  --primary-foreground: #ffffff;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #0f172a;
+  --accent: #6366f1;
+  --accent-foreground: #ffffff;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --border: #e2e8f0;
+  --border-muted: rgba(226, 232, 240, 0.8);
+  --border-strong: #cbd5e1;
+  --border-accent: #4f46e5;
+  --input: #ffffff;
+  --input-border: #cbd5e1;
+  --input-focus-border: #4f46e5;
+  --input-focus-ring: #4f46e5;
+  --input-foreground: #0f172a;
+  --input-placeholder: #94a3b8;
+  --ring: #4f46e5;
+  --ring-focus: #6366f1;
+  --btn-primary-bg: #4f46e5;
+  --btn-primary-text: #ffffff;
+  --btn-primary-hover: #4338ca;
+  --btn-primary-active: #3730a3;
+  --btn-primary-focus-ring: #4f46e5;
+  --btn-secondary-bg: #f1f5f9;
+  --btn-secondary-border: #cbd5e1;
+  --btn-secondary-text: #0f172a;
+  --btn-secondary-hover: #e2e8f0;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --info: #0284c7;
+  --habit-completed: #10b981;
+  --habit-progress-fill: #4f46e5;
+  --habit-progress-track: #e2e8f0;
+  --habit-streak-flame: #f59e0b;
+  --habit-card-border: #e2e8f0;
+  --habit-card-border-hover: #4f46e5;
+}
+
 @layer base {
   body {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--background);
+    color: var(--foreground);
+    min-height: 100vh;
   }
 }
 
-/* Custom smooth scrollbar */
+/* ==================================================
+   VIBRANT RED THEME RULE MAPPINGS
+   Enforces consistent, centralized application
+   across all components without component logic edits.
+   ================================================== */
+
+[data-theme="vibrant-red"] {
+  /* Selection Highlight */
+  ::selection {
+    background-color: var(--theme-primary);
+    color: #ffffff;
+  }
+
+  /* Main Canvas & Page Surfaces */
+  .bg-slate-950 {
+    background-color: var(--theme-background) !important;
+  }
+
+  /* Navigation / Header */
+  header {
+    background-color: rgba(0, 0, 0, 0.88) !important;
+    border-bottom: 1px solid var(--theme-surface) !important;
+    backdrop-filter: blur(12px) !important;
+  }
+
+  header a.text-slate-300:hover,
+  header button.text-slate-400:hover,
+  nav a.text-slate-400:hover {
+    color: #ffffff !important;
+    background-color: rgba(188, 2, 2, 0.22) !important;
+  }
+
+  /* Active Navigation Indicator */
+  nav a.bg-indigo-600,
+  nav a.shadow-indigo-600\/30 {
+    background-color: var(--theme-accent) !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 16px rgba(255, 0, 0, 0.4) !important;
+  }
+
+  /* Primary CTA Buttons */
+  button.bg-indigo-600,
+  a.bg-indigo-600,
+  .bg-indigo-600,
+  .bg-gradient-to-r.from-indigo-600.to-violet-600,
+  a.from-indigo-600.to-violet-600 {
+    background: var(--btn-primary-bg) !important;
+    background-image: none !important;
+    color: var(--btn-primary-text) !important;
+    box-shadow: 0 4px 16px rgba(255, 0, 0, 0.35) !important;
+    border: 1px solid transparent !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+
+  button.bg-indigo-600:hover,
+  a.bg-indigo-600:hover,
+  .bg-indigo-600:hover,
+  .bg-gradient-to-r.from-indigo-600.to-violet-600:hover,
+  a.from-indigo-600.to-violet-600:hover {
+    background: var(--btn-primary-hover) !important;
+    background-color: var(--btn-primary-hover) !important;
+    box-shadow: 0 6px 22px rgba(188, 2, 2, 0.5) !important;
+    transform: translateY(-1px);
+  }
+
+  button.bg-indigo-600:active,
+  a.bg-indigo-600:active,
+  .bg-indigo-600:active {
+    background: var(--btn-primary-active) !important;
+    background-color: var(--btn-primary-active) !important;
+    transform: translateY(0);
+  }
+
+  button.bg-indigo-600:focus-visible,
+  a.bg-indigo-600:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    outline: 2px solid var(--theme-primary) !important;
+    outline-offset: 2px !important;
+  }
+
+  /* Secondary Buttons */
+  button.bg-slate-800,
+  a.bg-slate-800,
+  a.bg-slate-800\/80,
+  button.bg-slate-800\/80 {
+    background-color: var(--btn-secondary-bg) !important;
+    border: 1px solid var(--btn-secondary-border) !important;
+    color: var(--btn-secondary-text) !important;
+    transition: all 0.2s ease !important;
+  }
+
+  button.bg-slate-800:hover,
+  a.bg-slate-800:hover,
+  a.bg-slate-800\/80:hover {
+    background-color: var(--btn-secondary-hover) !important;
+    border-color: var(--theme-accent) !important;
+  }
+
+  /* Cards - Dark Surfaces with Red Hierarchy */
+  .bg-slate-900,
+  .bg-slate-900\/60,
+  .bg-slate-900\/70,
+  .bg-slate-900\/80,
+  .bg-slate-900\/90 {
+    background-color: var(--card) !important;
+    border: 1px solid var(--theme-surface) !important;
+  }
+
+  /* Subtle Card Hover Highlighting */
+  .bg-slate-900\/60:hover,
+  .bg-slate-900\/70:hover,
+  .bg-slate-900\/80:hover,
+  .bg-slate-900:hover {
+    border-color: var(--theme-primary) !important;
+    box-shadow: 0 4px 20px rgba(131, 0, 0, 0.22) !important;
+  }
+
+  /* Alternative Dark Cards */
+  .bg-slate-950\/60,
+  .bg-slate-950\/70,
+  .bg-slate-950\/80 {
+    background-color: #000000 !important;
+    border: 1px solid var(--theme-surface) !important;
+  }
+
+  /* Borders across layout */
+  .border-slate-800,
+  .border-slate-800\/60,
+  .border-slate-800\/80,
+  .border-slate-700,
+  .border-slate-700\/80 {
+    border-color: var(--theme-surface) !important;
+  }
+
+  /* Milestone / Hero Card in Dashboard */
+  .from-indigo-950\/60 {
+    background: linear-gradient(135deg, rgba(131, 0, 0, 0.42) 0%, #0c0202 55%, #000000 100%) !important;
+    border: 1px solid var(--theme-primary) !important;
+    box-shadow: 0 8px 32px rgba(131, 0, 0, 0.25) !important;
+  }
+
+  .text-indigo-300 {
+    color: #ff9999 !important;
+  }
+
+  /* Metrics & Numbers */
+  .from-indigo-400.to-emerald-400 {
+    background: linear-gradient(90deg, #FF0000 0%, #ff6b6b 100%) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+  }
+
+  .text-indigo-400,
+  .text-violet-400 {
+    color: var(--theme-accent) !important;
+  }
+
+  /* Links & Accents */
+  a.text-indigo-400:hover,
+  a.text-indigo-300:hover,
+  a.text-violet-400:hover {
+    color: var(--theme-primary) !important;
+  }
+
+  /* Streak flame and KPI accent colors */
+  .text-amber-400 {
+    color: var(--theme-accent) !important;
+  }
+
+  .bg-amber-500\/10,
+  .bg-indigo-500\/10,
+  .bg-violet-500\/10 {
+    background-color: rgba(131, 0, 0, 0.25) !important;
+    border-color: var(--theme-surface) !important;
+  }
+
+  /* Progress Bar Track & Fill */
+  .w-full.bg-slate-950\/70.border.border-slate-800 {
+    background-color: var(--habit-progress-track) !important;
+    border-color: var(--theme-surface) !important;
+  }
+
+  .bg-gradient-to-r.from-indigo-500.via-violet-500.to-emerald-400 {
+    background: linear-gradient(90deg, var(--theme-primary) 0%, var(--theme-accent) 100%) !important;
+    box-shadow: 0 0 12px rgba(255, 0, 0, 0.5) !important;
+  }
+
+  /* Forms & Inputs */
+  input,
+  textarea,
+  select {
+    background-color: var(--input) !important;
+    border: 1px solid var(--input-border) !important;
+    color: var(--input-foreground) !important;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--input-placeholder) !important;
+  }
+
+  input:focus,
+  textarea:focus,
+  select:focus,
+  .focus\:ring-indigo-500:focus,
+  .focus\:border-indigo-500:focus {
+    border-color: var(--input-focus-border) !important;
+    box-shadow: 0 0 0 2px rgba(188, 2, 2, 0.5) !important;
+    outline: none !important;
+  }
+
+  /* Modals / Dialogs */
+  .fixed.inset-0.bg-slate-950\/80 {
+    background-color: rgba(0, 0, 0, 0.88) !important;
+  }
+
+  .fixed.inset-0 .bg-slate-900 {
+    background-color: #000000 !important;
+    border: 1px solid var(--theme-surface) !important;
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.95), 0 0 30px rgba(131, 0, 0, 0.3) !important;
+  }
+
+  .fixed.inset-0 .border-b.border-slate-800 {
+    border-bottom-color: var(--theme-primary) !important;
+  }
+
+  /* Close Buttons on Modals */
+  .fixed.inset-0 button.text-slate-400:hover {
+    color: var(--theme-accent) !important;
+    background-color: rgba(131, 0, 0, 0.35) !important;
+  }
+
+  /* Habit Tracking Completed vs Incomplete */
+  /* Completed habit 1-click toggle */
+  button.bg-emerald-500 {
+    background-color: var(--theme-accent) !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 14px rgba(255, 0, 0, 0.45) !important;
+  }
+
+  .bg-emerald-500\/20.text-emerald-300 {
+    background-color: rgba(255, 0, 0, 0.18) !important;
+    color: #ffffff !important;
+    border-color: var(--theme-primary) !important;
+  }
+
+  .bg-emerald-500\/20.text-emerald-300:hover {
+    background-color: rgba(255, 0, 0, 0.28) !important;
+  }
+
+  /* Decorative Orbs in Auth Pages */
+  .bg-indigo-600\/20,
+  .bg-violet-600\/20 {
+    background-color: rgba(131, 0, 0, 0.3) !important;
+  }
+
+  /* Text Contrast Enforcement */
+  .text-slate-400 {
+    color: #d1d5db;
+  }
+
+  .text-slate-500 {
+    color: #9ca3af;
+  }
+
+  /* Preserve Key Semantic Badges & Feedback */
+  .text-emerald-400,
+  .text-emerald-600 {
+    color: #10b981 !important;
+  }
+
+  .bg-emerald-500\/10 {
+    background-color: rgba(16, 185, 129, 0.12) !important;
+    border-color: rgba(16, 185, 129, 0.25) !important;
+  }
+
+  /* Error states */
+  .bg-red-500\/10 {
+    background-color: rgba(255, 0, 0, 0.12) !important;
+    border-color: var(--theme-primary) !important;
+    color: #ff8080 !important;
+  }
+}
+
+/* ==================================================
+   SMOOTH SCROLLBAR (THEMED)
+   ================================================== */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -19,10 +499,10 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.4);
+  background: var(--border, rgba(148, 163, 184, 0.4));
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(100, 116, 139, 0.7);
+  background: var(--primary, rgba(100, 116, 139, 0.7));
 }

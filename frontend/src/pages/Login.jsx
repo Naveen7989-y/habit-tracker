@@ -52,12 +52,11 @@ export default function Login() {
         {/* Header Logo */}
         <div className="text-center">
           <Link to="/" className="inline-flex items-center gap-2.5">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-500/25">
-              <Flame className="w-7 h-7 text-white" />
-            </div>
-            <span className="font-extrabold text-2xl tracking-tight bg-gradient-to-r from-white via-slate-100 to-indigo-300 bg-clip-text text-transparent">
-              HabitPulse
-            </span>
+            <img
+              src="/logo.png"
+              alt="HAbyTAT"
+              className="h-12 w-auto object-contain dark:bg-white/90 dark:px-3 dark:py-1.5 dark:rounded-xl transition-all shadow-lg"
+            />
           </Link>
           <h2 className="mt-6 text-2xl sm:text-3xl font-bold tracking-tight text-white">
             Welcome back
