@@ -671,14 +671,14 @@ export default function CalendarView() {
                     );
                   } else if (day.status === 'missed') {
                     cardBg = theme === 'soft-sunrise'
-                      ? 'bg-[#FFFCE1] border-[#FFDDB0]/70 text-[#a8a29e]'
+                      ? 'bg-[#FFFCE1] border-[#FFDDB0]/70 text-[#57534e]'
                       : theme === 'golden-olive'
                         ? 'bg-[#1B0C0C] border-[#313E17] text-slate-500'
                         : theme === 'vibrant-red'
                           ? 'bg-[#000000] border-[#830000]/50 text-slate-500'
                           : 'bg-slate-950/70 border-slate-800/90 text-slate-500';
                     statusBadge = (
-                      <span className={`text-[10px] ${theme === 'soft-sunrise' ? 'text-[#a8a29e]' : 'text-slate-500'}`}>
+                      <span className={`text-[10px] font-medium ${theme === 'soft-sunrise' ? 'text-[#57534e]' : 'text-slate-500'}`}>
                         0/{day.totalHabits}
                       </span>
                     );
@@ -698,7 +698,7 @@ export default function CalendarView() {
                     <button
                       key={day.date}
                       onClick={() => openDayInspector(day.date)}
-                      className={`min-h-[75px] sm:min-h-[90px] p-2.5 rounded-2xl border transition-all text-left flex flex-col justify-between group cursor-pointer ${cardBg} ${isFuture ? 'opacity-40 hover:opacity-80' : ''
+                      className={`min-h-[75px] sm:min-h-[90px] p-2.5 rounded-2xl border transition-all text-left flex flex-col justify-between group cursor-pointer ${cardBg} ${isFuture ? 'opacity-60 hover:opacity-90' : ''
                         }`}
                     >
                       <div className="flex items-center justify-between w-full">
@@ -706,7 +706,7 @@ export default function CalendarView() {
                           className={`text-sm sm:text-base font-extrabold ${isToday
                               ? (theme === 'soft-sunrise' ? 'text-[#1c1917] bg-[#FFBE91] px-1.5 py-0.5 rounded-lg font-black' : theme === 'golden-olive' ? 'text-[#FFDE42] bg-[#4C5C2D]/50 px-1.5 py-0.5 rounded-lg' : theme === 'vibrant-red' ? 'text-[#FF0000] bg-red-500/20 px-1.5 py-0.5 rounded-lg' : 'text-indigo-400 bg-indigo-500/20 px-1.5 py-0.5 rounded-lg')
                               : isFuture
-                                ? (theme === 'soft-sunrise' ? 'text-stone-400' : 'text-slate-500')
+                                ? (theme === 'soft-sunrise' ? 'text-[#78716c]' : 'text-slate-500')
                                 : (theme === 'soft-sunrise' ? 'text-[#1c1917]' : 'text-slate-200')
                             }`}
                         >

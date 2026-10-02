@@ -589,7 +589,7 @@ export default function Habits() {
                   className={`relative bg-slate-900/80 border rounded-3xl p-5 transition-all duration-300 hover:shadow-xl hover:shadow-slate-950/50 flex flex-col justify-between ${habit.isArchived
                       ? 'border-slate-800/60 opacity-60'
                       : habit.isCompletedToday
-                        ? 'border-emerald-500/40 bg-gradient-to-b from-emerald-500/5 to-slate-900/80'
+                        ? 'border-emerald-500/40 bg-emerald-500/5 habit-card-completed'
                         : 'border-slate-800 hover:border-slate-700'
                     }`}
                 >

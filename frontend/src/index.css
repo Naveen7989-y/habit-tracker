@@ -357,6 +357,294 @@
   --habit-card-border-hover: #4f46e5;
 }
 
+/* ==================================================
+   LIGHT MODE THEME RULE MAPPINGS
+   Clean White / Slate Light Mode
+   ================================================== */
+[data-theme="light"] {
+  /* Selection Highlight */
+  ::selection {
+    background-color: #e0e7ff;
+    color: #1e1b4b;
+  }
+
+  /* Main Canvas & Base Background (#f8fafc) */
+  .bg-slate-950 {
+    background-color: #f8fafc !important;
+    color: #0f172a !important;
+  }
+
+  color: #0f172a;
+
+  /* Navigation / Header */
+  header {
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04) !important;
+    backdrop-filter: blur(12px) !important;
+  }
+
+  header a,
+  header button,
+  nav a {
+    color: #334155 !important;
+  }
+
+  header a.text-slate-300:hover,
+  header button.text-slate-400:hover,
+  nav a.text-slate-400:hover,
+  nav a.text-slate-300:hover {
+    color: #0f172a !important;
+    background-color: #f1f5f9 !important;
+  }
+
+  /* Active Navigation Indicator */
+  nav a.bg-indigo-600,
+  nav a.shadow-indigo-600\/30 {
+    background-color: #4f46e5 !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 12px rgba(79, 70, 229, 0.3) !important;
+    font-weight: 700 !important;
+  }
+
+  /* Primary CTA Buttons */
+  button.bg-indigo-600,
+  a.bg-indigo-600,
+  .bg-indigo-600,
+  .bg-gradient-to-r.from-indigo-600.to-violet-600,
+  a.from-indigo-600.to-violet-600 {
+    background: #4f46e5 !important;
+    background-image: none !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    box-shadow: 0 4px 14px rgba(79, 70, 229, 0.25) !important;
+  }
+
+  button.bg-indigo-600 *,
+  a.bg-indigo-600 *,
+  .bg-indigo-600 *,
+  .bg-gradient-to-r.from-indigo-600.to-violet-600 * {
+    color: #ffffff !important;
+  }
+
+  button.bg-indigo-600:hover,
+  a.bg-indigo-600:hover,
+  .bg-indigo-600:hover,
+  .bg-gradient-to-r.from-indigo-600.to-violet-600:hover,
+  a.from-indigo-600.to-violet-600:hover {
+    background: #4338ca !important;
+    color: #ffffff !important;
+  }
+
+  /* Secondary Buttons */
+  button.bg-slate-800,
+  a.bg-slate-800,
+  a.bg-slate-800\/80,
+  button.bg-slate-800\/80,
+  button.bg-slate-900,
+  a.bg-slate-900 {
+    background-color: #f1f5f9 !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #1e293b !important;
+    font-weight: 600 !important;
+  }
+
+  button.bg-slate-800:hover,
+  a.bg-slate-800:hover {
+    background-color: #e2e8f0 !important;
+    color: #0f172a !important;
+  }
+
+  /* Cards */
+  .bg-slate-900,
+  .bg-slate-900\/60,
+  .bg-slate-900\/70,
+  .bg-slate-900\/80,
+  .bg-slate-900\/90 {
+    background-color: #FFFFFF !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05) !important;
+    color: #0f172a !important;
+  }
+
+  /* Secondary Surfaces */
+  .bg-slate-950\/60,
+  .bg-slate-950\/70,
+  .bg-slate-950\/80,
+  .bg-slate-950\/40,
+  .bg-slate-950\/50,
+  .bg-slate-950\/30,
+  div.bg-slate-800,
+  div.bg-slate-800\/60,
+  div.bg-slate-800\/70,
+  div.bg-slate-800\/80 {
+    background-color: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+    color: #0f172a !important;
+  }
+
+  /* Borders */
+  .border-slate-800,
+  .border-slate-800\/60,
+  .border-slate-800\/80,
+  .border-slate-800\/90,
+  .border-slate-700,
+  .border-slate-700\/80,
+  .border-slate-900\/60 {
+    border-color: #e2e8f0 !important;
+  }
+
+  /* Milestone / Hero Card in Dashboard */
+  .from-indigo-950\/60 {
+    background: linear-gradient(135deg, #eef2ff 0%, #ffffff 100%) !important;
+    border: 1px solid #c7d2fe !important;
+    box-shadow: 0 8px 30px rgba(79, 70, 229, 0.08) !important;
+  }
+
+  .text-indigo-300 {
+    color: #4338ca !important;
+    font-weight: 700 !important;
+  }
+
+  /* Headings & Text */
+  h1, h2, h3, h4, h5, h6,
+  .text-white,
+  .text-slate-100,
+  .text-slate-200,
+  th,
+  strong,
+  b {
+    color: #0f172a !important;
+  }
+
+  .text-slate-300,
+  .text-gray-300 {
+    color: #334155 !important;
+  }
+
+  .text-slate-400,
+  .text-gray-400,
+  .text-stone-400 {
+    color: #475569 !important;
+  }
+
+  .text-slate-500,
+  .text-gray-500,
+  .text-stone-500 {
+    color: #64748b !important;
+  }
+
+  label {
+    color: #0f172a !important;
+    font-weight: 600 !important;
+  }
+
+  /* Hover Text and Background Protection */
+  .hover\:text-white:hover,
+  .hover\:text-slate-100:hover,
+  .hover\:text-slate-200:hover,
+  .hover\:text-slate-300:hover,
+  a:hover,
+  button:hover {
+    color: #0f172a !important;
+  }
+
+  .hover\:bg-slate-800:hover,
+  .hover\:bg-slate-800\/60:hover,
+  .hover\:bg-slate-700:hover,
+  .hover\:bg-slate-900:hover {
+    background-color: #f1f5f9 !important;
+    color: #0f172a !important;
+  }
+
+  /* Range Selector Buttons in Analytics */
+  button.bg-violet-600,
+  .bg-violet-600 {
+    background-color: #4f46e5 !important;
+    color: #ffffff !important;
+  }
+
+  /* Danger Buttons */
+  button.bg-red-600,
+  button.bg-red-600 *,
+  .bg-red-600,
+  .bg-red-600 * {
+    background-color: #dc2626 !important;
+    color: #ffffff !important;
+  }
+
+  /* Completed Habit */
+  .habit-card-completed,
+  .from-emerald-500\/5.to-slate-900\/80,
+  .bg-gradient-to-b.from-emerald-500\/5 {
+    background-image: none !important;
+    background-color: #ffffff !important;
+    border-color: #10b981 !important;
+  }
+
+  /* Badges & Tags */
+  .bg-amber-500\/10 {
+    background-color: #fef3c7 !important;
+    border-color: #fde68a !important;
+    color: #92400e !important;
+  }
+
+  .bg-indigo-500\/10,
+  .bg-violet-500\/10 {
+    background-color: #e0e7ff !important;
+    border-color: #c7d2fe !important;
+    color: #3730a3 !important;
+  }
+
+  .bg-emerald-500\/10 {
+    background-color: #d1fae5 !important;
+    border-color: #a7f3d0 !important;
+    color: #065f46 !important;
+  }
+
+  /* Habit Checkmark Button */
+  button.bg-emerald-500 {
+    background-color: #10b981 !important;
+    color: #ffffff !important;
+  }
+
+  button.bg-emerald-500 * {
+    color: #ffffff !important;
+  }
+
+  /* Inputs */
+  input,
+  textarea,
+  select,
+  select option,
+  input.bg-slate-950,
+  input.bg-slate-950\/70,
+  select.bg-slate-950,
+  select.bg-slate-950\/70 {
+    background-color: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #0f172a !important;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: #94a3b8 !important;
+  }
+
+  /* Modals */
+  .fixed.inset-0.bg-slate-950\/80 {
+    background-color: rgba(15, 23, 42, 0.45) !important;
+    backdrop-filter: blur(6px) !important;
+  }
+
+  .fixed.inset-0 .bg-slate-900 {
+    background-color: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.12) !important;
+    color: #0f172a !important;
+  }
+}
+
 @layer base {
   body {
     font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -795,11 +1083,14 @@
   }
 
   /* Habit Tracking Completed vs Incomplete */
-  button.bg-emerald-500,
-  button.bg-emerald-500 * {
+  button.bg-emerald-500 {
     background-color: #FFBE91 !important;
     color: #1c1917 !important;
     box-shadow: 0 2px 10px rgba(255, 190, 145, 0.4) !important;
+  }
+
+  button.bg-emerald-500 * {
+    color: #1c1917 !important;
   }
 
   button.bg-emerald-500:hover {
@@ -836,6 +1127,59 @@
     background-color: #FFDDB0 !important;
   }
 
+  /* Container Divs with slate-800 */
+  div.bg-slate-800,
+  div.bg-slate-800\/60,
+  div.bg-slate-800\/70,
+  div.bg-slate-800\/80,
+  div.bg-slate-800\/90 {
+    background-color: #FFFDF5 !important;
+    border-color: #FFDDB0 !important;
+    color: #1c1917 !important;
+  }
+
+  /* Completed Habit Card in Habits.jsx */
+  .habit-card-completed,
+  .from-emerald-500\/5.to-slate-900\/80,
+  .bg-gradient-to-b.from-emerald-500\/5 {
+    background: #FFFFFF !important;
+    background-image: none !important;
+    border-color: #FFBE91 !important;
+    box-shadow: 0 4px 16px rgba(255, 190, 145, 0.2) !important;
+  }
+
+  /* Analytics Range Filter Button (Last 30/60/90 Days) */
+  button.bg-violet-600,
+  .bg-violet-600 {
+    background-color: #FFBE91 !important;
+    color: #1c1917 !important;
+  }
+
+  /* Danger / Delete Action Buttons (Keep crisp white text on red) */
+  button.bg-red-600,
+  button.bg-red-600 *,
+  .bg-red-600,
+  .bg-red-600 * {
+    background-color: #dc2626 !important;
+    color: #ffffff !important;
+  }
+
+  button.bg-red-600:hover,
+  .bg-red-600:hover {
+    background-color: #b91c1c !important;
+    color: #ffffff !important;
+  }
+
+  /* Error / Retry Badges */
+  button.bg-red-600\/30,
+  button.bg-red-600\/50,
+  .bg-red-600\/30,
+  .bg-red-600\/50 {
+    background-color: #fee2e2 !important;
+    color: #b91c1c !important;
+    border-color: #fca5a5 !important;
+  }
+
   button.bg-indigo-600 *,
   a.bg-indigo-600 * {
     color: #1c1917 !important;
@@ -864,6 +1208,29 @@
   .bg-indigo-600\/20,
   .bg-violet-600\/20 {
     background-color: rgba(255, 221, 176, 0.45) !important;
+  }
+
+  /* Filter Badges & Opacity Classes */
+  .text-\[\#a8a29e\] {
+    color: #57534e !important;
+  }
+
+  .text-indigo-300\/80,
+  .text-indigo-300\/70,
+  .text-indigo-300\/60 {
+    color: #0369a1 !important;
+  }
+
+  .bg-indigo-500\/20 {
+    background-color: #CFEBFF !important;
+    border-color: #CFEBFF !important;
+    color: #1e293b !important;
+  }
+
+  .border-indigo-500\/40,
+  .border-indigo-500\/30,
+  .border-indigo-500\/20 {
+    border-color: #FFBE91 !important;
   }
 
   /* Status Colors */
@@ -1140,6 +1507,31 @@
 
   .bg-emerald-500\/20.text-emerald-300:hover {
     background-color: rgba(76, 92, 45, 0.6) !important;
+  }
+
+  /* Completed Habit Card */
+  .habit-card-completed,
+  .from-emerald-500\/5.to-slate-900\/80,
+  .bg-gradient-to-b.from-emerald-500\/5 {
+    background-image: none !important;
+    background-color: #313E17 !important;
+    border-color: #FFDE42 !important;
+  }
+
+  /* Analytics Range Filter Button */
+  button.bg-violet-600,
+  .bg-violet-600 {
+    background-color: #FFDE42 !important;
+    color: #1B0C0C !important;
+  }
+
+  /* Danger Buttons */
+  button.bg-red-600,
+  button.bg-red-600 *,
+  .bg-red-600,
+  .bg-red-600 * {
+    background-color: #dc2626 !important;
+    color: #ffffff !important;
   }
 
   /* Decorative Orbs in Auth Pages */
@@ -1420,6 +1812,31 @@
 
   .bg-emerald-500\/20.text-emerald-300:hover {
     background-color: rgba(255, 0, 0, 0.28) !important;
+  }
+
+  /* Completed Habit Card */
+  .habit-card-completed,
+  .from-emerald-500\/5.to-slate-900\/80,
+  .bg-gradient-to-b.from-emerald-500\/5 {
+    background-image: none !important;
+    background-color: #0c0202 !important;
+    border-color: #BC0202 !important;
+  }
+
+  /* Analytics Range Filter Button */
+  button.bg-violet-600,
+  .bg-violet-600 {
+    background-color: #FF0000 !important;
+    color: #ffffff !important;
+  }
+
+  /* Danger Buttons */
+  button.bg-red-600,
+  button.bg-red-600 *,
+  .bg-red-600,
+  .bg-red-600 * {
+    background-color: #dc2626 !important;
+    color: #ffffff !important;
   }
 
   /* Decorative Orbs in Auth Pages */

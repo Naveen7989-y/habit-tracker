@@ -46,9 +46,9 @@ function CustomTooltip({ active, payload, label, unit = '' }) {
       <div className="bg-slate-900/95 border border-slate-700/80 p-3 rounded-xl shadow-2xl backdrop-blur-md text-xs space-y-1">
         <p className="font-bold text-white border-b border-slate-800 pb-1">{label}</p>
         {payload.map((entry, index) => (
-          <p key={index} className="flex items-center gap-2" style={{ color: entry.color || entry.fill }}>
-            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color || entry.fill }} />
-            <span className="text-slate-300">{entry.name}:</span>
+          <p key={index} className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: entry.color || entry.fill }} />
+            <span className="text-slate-300 font-medium">{entry.name}:</span>
             <span className="font-extrabold text-white">
               {entry.value} {unit}
             </span>
