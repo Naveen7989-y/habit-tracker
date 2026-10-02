@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import { ThemeProvider } from './context/ThemeContext';
+import { ThemeProvider, useTheme } from './context/ThemeContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -10,10 +10,11 @@ import Dashboard from './pages/Dashboard';
 import CalendarView from './pages/CalendarView';
 import Analytics from './pages/Analytics';
 import Settings from './pages/Settings';
-import { Flame, LogOut, Sparkles, User, ShieldCheck, Database, Server, CheckCircle2, ArrowRight } from 'lucide-react';
+import { Flame, LogOut, Sparkles, User, ShieldCheck, Database, Server, CheckCircle2, ArrowRight, Sun, Moon } from 'lucide-react';
 
 function LandingPage() {
   const { user, isAuthenticated, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between selection:bg-indigo-500 selection:text-white">
@@ -68,6 +69,20 @@ function LandingPage() {
                 </Link>
               </div>
             )}
+
+            {/* Theme Toggle Button */}
+            <button
+              onClick={toggleTheme}
+              type="button"
+              className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors"
+              title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} mode`}
+            >
+              {theme === 'dark' ? (
+                <Sun className="w-4 h-4 text-amber-400" />
+              ) : (
+                <Moon className="w-4 h-4 text-slate-600" />
+              )}
+            </button>
           </div>
         </div>
       </header>
