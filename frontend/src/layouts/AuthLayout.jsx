@@ -14,10 +14,10 @@ export default function AuthLayout({ children, title, subtitle }) {
           onClick={toggleTheme}
           type="button"
           className="p-2.5 rounded-2xl bg-white/80 border border-slate-200 text-slate-600 hover:text-indigo-600 shadow-sm transition-all"
-          title={`Switch theme (Current: ${theme === 'warm-horizon' ? 'Warm Horizon' : (theme === 'fresh-sky' ? 'Fresh Sky' : 'Soft Sunrise')})`}
+          title={`Switch theme (Current: ${theme === 'midnight-sea' ? 'Midnight Sea' : (theme === 'warm-horizon' ? 'Warm Horizon' : (theme === 'fresh-sky' ? 'Fresh Sky' : 'Soft Sunrise'))})`}
         >
           <Sun className={`w-4 h-4 ${
-            theme === 'warm-horizon' ? 'text-[#F2765E]' : (theme === 'fresh-sky' ? 'text-sky-400' : 'text-amber-500')
+            theme === 'midnight-sea' ? 'text-[#068FFF]' : (theme === 'warm-horizon' ? 'text-[#F2765E]' : (theme === 'fresh-sky' ? 'text-sky-400' : 'text-amber-500'))
           }`} />
         </button>
       </div>

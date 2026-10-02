@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-const availableThemes = ['fresh-sky', 'soft-sunrise', 'warm-horizon'];
+const availableThemes = ['fresh-sky', 'soft-sunrise', 'warm-horizon', 'midnight-sea'];
 
 const ThemeContext = createContext({
   theme: 'fresh-sky',
@@ -24,8 +24,11 @@ export function ThemeProvider({ children }) {
     root.setAttribute('data-theme', theme);
 
     // Sync theme class list for utility compatibility
-    root.classList.remove('theme-fresh-sky', 'theme-soft-sunrise', 'theme-warm-horizon');
+    root.classList.remove('theme-fresh-sky', 'theme-soft-sunrise', 'theme-warm-horizon', 'theme-midnight-sea', 'dark');
     root.classList.add(`theme-${theme}`);
+    if (theme === 'midnight-sea') {
+      root.classList.add('dark');
+    }
 
     localStorage.setItem('habytat_theme', theme);
   }, [theme]);

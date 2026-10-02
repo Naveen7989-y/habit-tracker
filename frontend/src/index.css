@@ -7,6 +7,7 @@
    Theme 1: Fresh Sky (Default)
    Theme 2: Soft Sunrise
    Theme 5: Warm Horizon
+   Theme 6: Midnight Sea
    ================================================== */
 
 /* --------------------------------------------------
@@ -252,6 +253,90 @@
   --habit-growth: #FAF5EE;
   --habit-card-border: #E4D6C7;
   --habit-card-border-hover: #F2765E;
+}
+
+/* --------------------------------------------------
+   THEME: MIDNIGHT SEA
+   Black: #000000 | Indigo: #4E4FEB | Ocean Blue: #068FFF | Soft Grey: #EEEEEE
+   -------------------------------------------------- */
+[data-theme="midnight-sea"],
+.theme-midnight-sea {
+  color-scheme: dark;
+
+  /* Theme Core Palette Tokens */
+  --theme-background: #000000;
+  --theme-indigo: #4E4FEB;
+  --theme-blue: #068FFF;
+  --theme-grey: #EEEEEE;
+  --theme-primary: #068FFF;
+  --theme-secondary: #4E4FEB;
+
+  /* Semantic Variables */
+  --background: #000000;
+  --foreground: #EEEEEE;
+
+  --card: #111111;
+  --card-elevated: #161616;
+  --card-surface: #111111;
+  --card-foreground: #EEEEEE;
+  --card-info: #161616;
+  --card-achievement: #161616;
+
+  --primary: #068FFF;
+  --primary-foreground: #FFFFFF;
+
+  --secondary: #4E4FEB;
+  --secondary-foreground: #FFFFFF;
+
+  --accent: #068FFF;
+  --accent-foreground: #FFFFFF;
+
+  --muted: #1A1A1A;
+  --muted-foreground: #BDBDBD;
+
+  --border: #2A2A2A;
+  --border-muted: #1A1A1A;
+  --border-strong: #4E4FEB;
+  --border-accent: #068FFF;
+
+  --input: #111111;
+  --input-border: #2A2A2A;
+  --input-focus-border: #068FFF;
+  --input-focus-ring: #068FFF;
+  --input-foreground: #EEEEEE;
+  --input-placeholder: #888888;
+
+  --ring: #068FFF;
+  --ring-focus: #068FFF;
+
+  --btn-primary-bg: #068FFF;
+  --btn-primary-text: #FFFFFF;
+  --btn-primary-hover: #0578d6;
+  --btn-primary-active: #4E4FEB;
+  --btn-primary-focus-ring: #068FFF;
+
+  --btn-secondary-bg: #4E4FEB;
+  --btn-secondary-border: #4E4FEB;
+  --btn-secondary-text: #FFFFFF;
+  --btn-secondary-hover: #5d5ef0;
+  --btn-secondary-active: #3e3fc9;
+
+  /* Semantic Status Colors (Accessibility Preserved) */
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --info: #068FFF;
+
+  /* Habit UI Specific Tokens */
+  --habit-completed: #068FFF;
+  --habit-progress-fill: #068FFF;
+  --habit-progress-track: #222222;
+  --habit-progress-secondary: #4E4FEB;
+  --habit-streak-flame: #068FFF;
+  --habit-achievement: #4E4FEB;
+  --habit-growth: #161616;
+  --habit-card-border: #2A2A2A;
+  --habit-card-border-hover: #068FFF;
 }
 
 @layer base {
@@ -1807,6 +1892,501 @@
   }
 
   /* HAByTAT Logo on Warm Horizon */
+  img[alt="HAbyTAT"] {
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+}
+
+/* ==================================================
+   MIDNIGHT SEA THEME RULE MAPPINGS
+   Black (#000000) -> Dark Cards (#111111) -> Elevated Surfaces (#161616) -> Indigo Identity (#4E4FEB) -> Bright Ocean Blue Action & Progress (#068FFF) -> Soft Grey Text (#EEEEEE)
+   ================================================== */
+
+[data-theme="midnight-sea"],
+.theme-midnight-sea {
+  /* Selection Highlight */
+  ::selection {
+    background-color: rgba(6, 143, 255, 0.35);
+    color: #EEEEEE;
+  }
+
+  /* Main Canvas & Base Background (#000000) */
+  .bg-slate-950 {
+    background-color: #000000 !important;
+    color: #EEEEEE !important;
+  }
+
+  /* Base Body Text */
+  color: #EEEEEE;
+
+  /* Navigation / Header */
+  header {
+    background-color: rgba(0, 0, 0, 0.95) !important;
+    border-bottom: 1px solid #2A2A2A !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.7) !important;
+    backdrop-filter: blur(12px) !important;
+  }
+
+  header a,
+  header button,
+  nav a {
+    color: #EEEEEE !important;
+  }
+
+  header a.text-slate-300:hover,
+  header button.text-slate-400:hover,
+  nav a.text-slate-400:hover,
+  nav a.text-slate-300:hover {
+    color: #FFFFFF !important;
+    background-color: #161616 !important;
+  }
+
+  /* Active Navigation Indicator */
+  nav a.bg-indigo-600,
+  nav a.shadow-indigo-600\/30 {
+    background-color: rgba(6, 143, 255, 0.15) !important;
+    color: #068FFF !important;
+    border: 1px solid #068FFF !important;
+    box-shadow: 0 0 12px rgba(6, 143, 255, 0.25) !important;
+    font-weight: 700 !important;
+  }
+
+  nav a.bg-indigo-600 *,
+  nav a.shadow-indigo-600\/30 * {
+    color: #068FFF !important;
+  }
+
+  /* Primary CTA Buttons (Add Habit, Create Habit, Save, Complete, Start Tracking) */
+  button.bg-indigo-600,
+  a.bg-indigo-600,
+  .bg-indigo-600,
+  .bg-gradient-to-r.from-indigo-600.to-violet-600,
+  a.from-indigo-600.to-violet-600 {
+    background: #068FFF !important;
+    background-image: none !important;
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+    box-shadow: 0 4px 14px rgba(6, 143, 255, 0.3) !important;
+    border: 1px solid transparent !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+
+  button.bg-indigo-600:hover,
+  a.bg-indigo-600:hover,
+  .bg-indigo-600:hover,
+  .bg-gradient-to-r.from-indigo-600.to-violet-600:hover,
+  a.from-indigo-600.to-violet-600:hover {
+    background: #0578d6 !important;
+    background-color: #0578d6 !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 6px 20px rgba(6, 143, 255, 0.45) !important;
+    transform: translateY(-1px);
+  }
+
+  button.bg-indigo-600:active,
+  a.bg-indigo-600:active,
+  .bg-indigo-600:active {
+    background: #4E4FEB !important;
+    background-color: #4E4FEB !important;
+    color: #FFFFFF !important;
+    transform: translateY(0);
+  }
+
+  button.bg-indigo-600 *,
+  a.bg-indigo-600 *,
+  .bg-indigo-600 *,
+  .bg-gradient-to-r.from-indigo-600.to-violet-600 * {
+    color: #FFFFFF !important;
+  }
+
+  button.bg-indigo-600:focus-visible,
+  a.bg-indigo-600:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    outline: 2px solid #068FFF !important;
+    outline-offset: 2px !important;
+  }
+
+  /* Secondary Buttons (Indigo) */
+  button.bg-slate-800,
+  a.bg-slate-800,
+  a.bg-slate-800\/80,
+  button.bg-slate-800\/80 {
+    background-color: #4E4FEB !important;
+    border: 1px solid #4E4FEB !important;
+    color: #FFFFFF !important;
+    font-weight: 600 !important;
+    transition: all 0.2s ease !important;
+  }
+
+  button.bg-slate-800:hover,
+  a.bg-slate-800:hover,
+  a.bg-slate-800\/80:hover {
+    background-color: #5d5ef0 !important;
+    color: #FFFFFF !important;
+    border-color: #5d5ef0 !important;
+  }
+
+  button.bg-slate-800 *,
+  a.bg-slate-800 * {
+    color: #FFFFFF !important;
+  }
+
+  /* Tertiary / Alternative Buttons */
+  button.bg-slate-900,
+  a.bg-slate-900 {
+    background-color: transparent !important;
+    border: 1px solid #2A2A2A !important;
+    color: #EEEEEE !important;
+    font-weight: 600 !important;
+  }
+
+  button.bg-slate-900:hover,
+  a.bg-slate-900:hover {
+    background-color: rgba(78, 79, 235, 0.2) !important;
+    color: #EEEEEE !important;
+    border-color: #4E4FEB !important;
+  }
+
+  /* Primary Cards (Deep Charcoal/Black #111111 with Subtle Border #2A2A2A) */
+  .bg-slate-900,
+  .bg-slate-900\/60,
+  .bg-slate-900\/70,
+  .bg-slate-900\/80,
+  .bg-slate-900\/90 {
+    background-color: #111111 !important;
+    border: 1px solid #2A2A2A !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6) !important;
+    color: #EEEEEE !important;
+  }
+
+  /* Card Hover */
+  .bg-slate-900\/60:hover,
+  .bg-slate-900\/70:hover,
+  .bg-slate-900\/80:hover,
+  .bg-slate-900:hover {
+    border-color: #068FFF !important;
+    box-shadow: 0 4px 20px rgba(6, 143, 255, 0.18) !important;
+  }
+
+  /* Alternative / Secondary Elevated Surfaces (#161616) */
+  .bg-slate-950\/60,
+  .bg-slate-950\/70,
+  .bg-slate-950\/80,
+  .bg-slate-950\/40,
+  .bg-slate-950\/50,
+  .bg-slate-950\/30,
+  div.bg-slate-800,
+  div.bg-slate-800\/60,
+  div.bg-slate-800\/70,
+  div.bg-slate-800\/80 {
+    background-color: #161616 !important;
+    border: 1px solid #2A2A2A !important;
+    color: #EEEEEE !important;
+  }
+
+  /* Borders across layout */
+  .border-slate-800,
+  .border-slate-800\/60,
+  .border-slate-800\/80,
+  .border-slate-800\/90,
+  .border-slate-700,
+  .border-slate-700\/80,
+  .border-slate-900\/60 {
+    border-color: #2A2A2A !important;
+  }
+
+  /* Milestone / Hero Card in Dashboard */
+  .from-indigo-950\/60 {
+    background: linear-gradient(135deg, #111111 0%, #161616 100%) !important;
+    border: 1px solid #4E4FEB !important;
+    box-shadow: 0 8px 30px rgba(78, 79, 235, 0.15) !important;
+  }
+
+  .text-indigo-300 {
+    color: #068FFF !important;
+    font-weight: 700 !important;
+  }
+
+  /* Metrics & Numbers */
+  .from-indigo-400.to-emerald-400 {
+    background: linear-gradient(90deg, #068FFF 0%, #4E4FEB 100%) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+  }
+
+  .text-indigo-400,
+  .text-violet-400 {
+    color: #068FFF !important;
+  }
+
+  .text-amber-400 {
+    color: #068FFF !important;
+  }
+
+  /* Links & Accents */
+  a.text-indigo-400:hover,
+  a.text-indigo-300:hover,
+  a.text-violet-400:hover,
+  a.text-slate-400:hover {
+    color: #4E4FEB !important;
+  }
+
+  /* Badges & Tags */
+  .bg-amber-500\/10 {
+    background-color: rgba(78, 79, 235, 0.15) !important;
+    border-color: rgba(78, 79, 235, 0.4) !important;
+    color: #4E4FEB !important;
+  }
+
+  .bg-indigo-500\/10,
+  .bg-violet-500\/10 {
+    background-color: rgba(6, 143, 255, 0.15) !important;
+    border-color: rgba(6, 143, 255, 0.4) !important;
+    color: #068FFF !important;
+  }
+
+  .bg-emerald-500\/10 {
+    background-color: rgba(16, 185, 129, 0.15) !important;
+    border-color: rgba(16, 185, 129, 0.3) !important;
+    color: #10b981 !important;
+  }
+
+  .bg-red-500\/10 {
+    background-color: rgba(239, 68, 68, 0.15) !important;
+    border-color: rgba(239, 68, 68, 0.3) !important;
+    color: #ef4444 !important;
+  }
+
+  /* Progress Bar Track & Fill */
+  .w-full.bg-slate-950\/70.border.border-slate-800 {
+    background-color: #222222 !important;
+    border-color: #2A2A2A !important;
+  }
+
+  .bg-gradient-to-r.from-indigo-500.via-violet-500.to-emerald-400 {
+    background: linear-gradient(90deg, #068FFF 0%, #4E4FEB 100%) !important;
+    box-shadow: 0 0 10px rgba(6, 143, 255, 0.35) !important;
+  }
+
+  /* Headings & Text */
+  h1, h2, h3, h4, h5, h6 {
+    color: #FFFFFF !important;
+  }
+
+  .text-white,
+  .text-slate-100,
+  .text-slate-200,
+  th,
+  strong,
+  b {
+    color: #EEEEEE !important;
+  }
+
+  .text-slate-300,
+  .text-gray-300 {
+    color: #EEEEEE !important;
+  }
+
+  .text-slate-400,
+  .text-gray-400,
+  .text-stone-400 {
+    color: #BDBDBD !important;
+  }
+
+  .text-slate-500,
+  .text-gray-500,
+  .text-stone-500 {
+    color: #888888 !important;
+  }
+
+  label {
+    color: #EEEEEE !important;
+    font-weight: 600 !important;
+  }
+
+  /* Forms & Inputs */
+  input,
+  textarea,
+  select,
+  input.bg-slate-950,
+  input.bg-slate-950\/70,
+  select.bg-slate-950,
+  select.bg-slate-950\/70 {
+    background-color: #111111 !important;
+    border: 1px solid #2A2A2A !important;
+    color: #EEEEEE !important;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: #888888 !important;
+  }
+
+  input:focus,
+  textarea:focus,
+  select:focus,
+  .focus\:ring-indigo-500:focus,
+  .focus\:border-indigo-500:focus {
+    border-color: #068FFF !important;
+    box-shadow: 0 0 0 2px rgba(6, 143, 255, 0.3) !important;
+    outline: none !important;
+  }
+
+  /* Modals / Dialogs */
+  .fixed.inset-0.bg-slate-950\/80 {
+    background-color: rgba(0, 0, 0, 0.8) !important;
+    backdrop-filter: blur(8px) !important;
+  }
+
+  .fixed.inset-0 .bg-slate-900 {
+    background-color: #111111 !important;
+    border: 1px solid #2A2A2A !important;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8) !important;
+    color: #EEEEEE !important;
+  }
+
+  .fixed.inset-0 .border-b.border-slate-800 {
+    border-bottom-color: #2A2A2A !important;
+  }
+
+  .fixed.inset-0 button.text-slate-400:hover {
+    color: #EEEEEE !important;
+    background-color: #161616 !important;
+  }
+
+  /* Habit Tracking Completed vs Incomplete */
+  button.bg-emerald-500 {
+    background-color: #068FFF !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 2px 10px rgba(6, 143, 255, 0.35) !important;
+  }
+
+  button.bg-emerald-500 * {
+    color: #FFFFFF !important;
+  }
+
+  .bg-emerald-500\/20.text-emerald-300 {
+    background-color: rgba(6, 143, 255, 0.15) !important;
+    color: #068FFF !important;
+    border-color: #068FFF !important;
+  }
+
+  .bg-emerald-500\/20.text-emerald-300:hover {
+    background-color: rgba(6, 143, 255, 0.25) !important;
+  }
+
+  /* Completed Habit Card */
+  .habit-card-completed,
+  .from-emerald-500\/5.to-slate-900\/80,
+  .bg-gradient-to-b.from-emerald-500\/5 {
+    background-image: none !important;
+    background-color: #111111 !important;
+    border-color: #068FFF !important;
+  }
+
+  .habit-card-completed .habit-title {
+    color: #068FFF !important;
+  }
+
+  /* Analytics Range Filter Button */
+  button.bg-violet-600,
+  .bg-violet-600 {
+    background-color: #068FFF !important;
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+  }
+
+  /* Danger Buttons */
+  button.bg-red-600,
+  button.bg-red-600 *,
+  .bg-red-600,
+  .bg-red-600 * {
+    background-color: #ef4444 !important;
+    color: #FFFFFF !important;
+  }
+
+  /* Calendar / Heatmap specifics */
+  .bg-emerald-500 {
+    background-color: #068FFF !important;
+  }
+
+  .bg-emerald-600 {
+    background-color: #0578d6 !important;
+  }
+
+  .bg-emerald-400 {
+    background-color: #4E4FEB !important;
+  }
+
+  .border-emerald-500 {
+    border-color: #068FFF !important;
+  }
+
+  /* Dropdown Select Options */
+  select option {
+    background-color: #111111 !important;
+    color: #EEEEEE !important;
+  }
+
+  /* Disabled Inputs & Selects */
+  input:disabled,
+  select:disabled {
+    background-color: #1A1A1A !important;
+    color: #666666 !important;
+    border-color: #2A2A2A !important;
+  }
+
+  /* User profile dropdown and floating popups */
+  .bg-slate-900.border.border-slate-800 {
+    background-color: #111111 !important;
+    border: 1px solid #2A2A2A !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7) !important;
+  }
+
+  .bg-slate-900 button,
+  .bg-slate-900 a {
+    color: #EEEEEE !important;
+  }
+
+  .bg-slate-900 button:hover,
+  .bg-slate-900 a:hover {
+    background-color: #161616 !important;
+    color: #FFFFFF !important;
+  }
+
+  /* Decorative Orbs in Auth Pages */
+  .bg-indigo-600\/20,
+  .bg-violet-600\/20 {
+    background-color: rgba(6, 143, 255, 0.12) !important;
+  }
+
+  /* Filter Badges & Opacity Classes */
+  .text-\[\#a8a29e\] {
+    color: #BDBDBD !important;
+  }
+
+  .text-indigo-300\/80,
+  .text-indigo-300\/70,
+  .text-indigo-300\/60 {
+    color: #068FFF !important;
+  }
+
+  .bg-indigo-500\/20 {
+    background-color: rgba(78, 79, 235, 0.2) !important;
+    border-color: #4E4FEB !important;
+    color: #068FFF !important;
+  }
+
+  .border-indigo-500\/40,
+  .border-indigo-500\/30,
+  .border-indigo-500\/20 {
+    border-color: #2A2A2A !important;
+  }
+
+  /* HAByTAT Logo on Midnight Sea */
   img[alt="HAbyTAT"] {
     background: transparent !important;
     box-shadow: none !important;

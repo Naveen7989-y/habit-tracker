@@ -125,10 +125,10 @@ export default function Analytics() {
             <button
               onClick={toggleTheme}
               className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
-              title={`Switch theme (Current: ${theme === 'warm-horizon' ? 'Warm Horizon' : (theme === 'fresh-sky' ? 'Fresh Sky' : 'Soft Sunrise')})`}
+              title={`Switch theme (Current: ${theme === 'midnight-sea' ? 'Midnight Sea' : (theme === 'warm-horizon' ? 'Warm Horizon' : (theme === 'fresh-sky' ? 'Fresh Sky' : 'Soft Sunrise'))})`}
             >
               <Sun className={`w-4 h-4 ${
-                theme === 'warm-horizon' ? 'text-[#F2765E]' : (theme === 'fresh-sky' ? 'text-sky-400' : 'text-amber-500')
+                theme === 'midnight-sea' ? 'text-[#068FFF]' : (theme === 'warm-horizon' ? 'text-[#F2765E]' : (theme === 'fresh-sky' ? 'text-sky-400' : 'text-amber-500'))
               }`} />
             </button>
             <Link
@@ -276,14 +276,14 @@ export default function Analytics() {
                 <div className="h-64 w-full">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={analyticsData.weekly.days} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke={theme === 'warm-horizon' ? '#E4D6C7' : (theme === 'fresh-sky' ? 'rgba(196, 247, 202, 0.5)' : 'rgba(255, 221, 176, 0.7)')} vertical={false} />
-                      <XAxis dataKey="day" stroke={theme === 'warm-horizon' ? '#413333' : (theme === 'fresh-sky' ? '#475569' : '#78716c')} fontSize={11} tickLine={false} />
-                      <YAxis stroke={theme === 'warm-horizon' ? '#413333' : (theme === 'fresh-sky' ? '#475569' : '#78716c')} fontSize={11} tickLine={false} domain={[0, Math.max(5, analyticsData.weekly.totalHabits)]} />
+                      <CartesianGrid strokeDasharray="3 3" stroke={theme === 'midnight-sea' ? '#222222' : (theme === 'warm-horizon' ? '#E4D6C7' : (theme === 'fresh-sky' ? 'rgba(196, 247, 202, 0.5)' : 'rgba(255, 221, 176, 0.7)'))} vertical={false} />
+                      <XAxis dataKey="day" stroke={theme === 'midnight-sea' ? '#EEEEEE' : (theme === 'warm-horizon' ? '#413333' : (theme === 'fresh-sky' ? '#475569' : '#78716c'))} fontSize={11} tickLine={false} />
+                      <YAxis stroke={theme === 'midnight-sea' ? '#EEEEEE' : (theme === 'warm-horizon' ? '#413333' : (theme === 'fresh-sky' ? '#475569' : '#78716c'))} fontSize={11} tickLine={false} domain={[0, Math.max(5, analyticsData.weekly.totalHabits)]} />
                       <Tooltip content={<CustomTooltip unit="habits" />} />
                       <Bar
                         dataKey="completed"
                         name="Completed Habits"
-                        fill={theme === 'warm-horizon' ? '#F2765E' : (theme === 'fresh-sky' ? '#30AFFF' : '#FFBE91')}
+                        fill={theme === 'midnight-sea' ? '#068FFF' : (theme === 'warm-horizon' ? '#F2765E' : (theme === 'fresh-sky' ? '#30AFFF' : '#FFBE91'))}
                         radius={[6, 6, 0, 0]}
                       />
                     </BarChart>
@@ -365,25 +365,25 @@ export default function Analytics() {
                       <linearGradient id="colorRate" x1="0" y1="0" x2="0" y2="1">
                         <stop
                           offset="5%"
-                          stopColor={theme === 'warm-horizon' ? '#F2765E' : (theme === 'fresh-sky' ? '#30AFFF' : '#FFBE91')}
+                          stopColor={theme === 'midnight-sea' ? '#068FFF' : (theme === 'warm-horizon' ? '#F2765E' : (theme === 'fresh-sky' ? '#30AFFF' : '#FFBE91'))}
                           stopOpacity={0.75}
                         />
                         <stop
                           offset="95%"
-                          stopColor={theme === 'warm-horizon' ? '#315B8C' : (theme === 'fresh-sky' ? '#92EEFF' : '#CFEBFF')}
+                          stopColor={theme === 'midnight-sea' ? '#4E4FEB' : (theme === 'warm-horizon' ? '#315B8C' : (theme === 'fresh-sky' ? '#92EEFF' : '#CFEBFF'))}
                           stopOpacity={theme === 'fresh-sky' ? 0.15 : 0.2}
                         />
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke={theme === 'warm-horizon' ? '#E4D6C7' : (theme === 'fresh-sky' ? 'rgba(196, 247, 202, 0.5)' : 'rgba(255, 221, 176, 0.7)')} vertical={false} />
-                    <XAxis dataKey="label" stroke={theme === 'warm-horizon' ? '#413333' : (theme === 'fresh-sky' ? '#475569' : '#78716c')} fontSize={11} tickLine={false} interval="preserveStartEnd" />
-                    <YAxis stroke={theme === 'warm-horizon' ? '#413333' : (theme === 'fresh-sky' ? '#475569' : '#78716c')} fontSize={11} tickLine={false} domain={[0, 100]} unit="%" />
+                    <CartesianGrid strokeDasharray="3 3" stroke={theme === 'midnight-sea' ? '#222222' : (theme === 'warm-horizon' ? '#E4D6C7' : (theme === 'fresh-sky' ? 'rgba(196, 247, 202, 0.5)' : 'rgba(255, 221, 176, 0.7)'))} vertical={false} />
+                    <XAxis dataKey="label" stroke={theme === 'midnight-sea' ? '#EEEEEE' : (theme === 'warm-horizon' ? '#413333' : (theme === 'fresh-sky' ? '#475569' : '#78716c'))} fontSize={11} tickLine={false} interval="preserveStartEnd" />
+                    <YAxis stroke={theme === 'midnight-sea' ? '#EEEEEE' : (theme === 'warm-horizon' ? '#413333' : (theme === 'fresh-sky' ? '#475569' : '#78716c'))} fontSize={11} tickLine={false} domain={[0, 100]} unit="%" />
                     <Tooltip content={<CustomTooltip unit="%" />} />
                     <Area
                       type="monotone"
                       dataKey="rate"
                       name="Completion Rate"
-                      stroke={theme === 'warm-horizon' ? '#F2765E' : (theme === 'fresh-sky' ? '#30AFFF' : '#FFBE91')}
+                      stroke={theme === 'midnight-sea' ? '#068FFF' : (theme === 'warm-horizon' ? '#F2765E' : (theme === 'fresh-sky' ? '#30AFFF' : '#FFBE91'))}
                       strokeWidth={3}
                       fillOpacity={1}
                       fill="url(#colorRate)"
@@ -413,11 +413,11 @@ export default function Analytics() {
                 <div className="h-60 w-full mt-4">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={analyticsData.dayOfWeek.days} layout="vertical" margin={{ top: 0, right: 20, left: 10, bottom: 0 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke={theme === 'warm-horizon' ? '#E4D6C7' : (theme === 'fresh-sky' ? 'rgba(196, 247, 202, 0.5)' : 'rgba(255, 221, 176, 0.7)')} horizontal={false} />
-                      <XAxis type="number" stroke={theme === 'warm-horizon' ? '#413333' : (theme === 'fresh-sky' ? '#475569' : '#78716c')} fontSize={11} tickLine={false} />
-                      <YAxis type="category" dataKey="short" stroke={theme === 'warm-horizon' ? '#413333' : (theme === 'fresh-sky' ? '#475569' : '#78716c')} fontSize={11} tickLine={false} />
+                      <CartesianGrid strokeDasharray="3 3" stroke={theme === 'midnight-sea' ? '#222222' : (theme === 'warm-horizon' ? '#E4D6C7' : (theme === 'fresh-sky' ? 'rgba(196, 247, 202, 0.5)' : 'rgba(255, 221, 176, 0.7)'))} horizontal={false} />
+                      <XAxis type="number" stroke={theme === 'midnight-sea' ? '#EEEEEE' : (theme === 'warm-horizon' ? '#413333' : (theme === 'fresh-sky' ? '#475569' : '#78716c'))} fontSize={11} tickLine={false} />
+                      <YAxis type="category" dataKey="short" stroke={theme === 'midnight-sea' ? '#EEEEEE' : (theme === 'warm-horizon' ? '#413333' : (theme === 'fresh-sky' ? '#475569' : '#78716c'))} fontSize={11} tickLine={false} />
                       <Tooltip content={<CustomTooltip unit="habits" />} />
-                      <Bar dataKey="completions" name="Logged Completions" fill={theme === 'warm-horizon' ? '#315B8C' : (theme === 'fresh-sky' ? '#92EEFF' : '#CFEBFF')} radius={[0, 4, 4, 0]} />
+                      <Bar dataKey="completions" name="Logged Completions" fill={theme === 'midnight-sea' ? '#4E4FEB' : (theme === 'warm-horizon' ? '#315B8C' : (theme === 'fresh-sky' ? '#92EEFF' : '#CFEBFF'))} radius={[0, 4, 4, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>

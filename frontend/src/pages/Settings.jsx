@@ -98,7 +98,7 @@ export default function Settings() {
 
             <div className="w-full pt-4 border-t border-slate-800 space-y-2 text-left">
               <span className="text-xs text-slate-400 block font-semibold">Active Theme</span>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 w-full bg-slate-950/80 p-1.5 rounded-xl border border-slate-800">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full bg-slate-950/80 p-1.5 rounded-xl border border-slate-800">
                 <button
                   type="button"
                   onClick={() => setTheme('fresh-sky')}
@@ -137,6 +137,19 @@ export default function Settings() {
                 >
                   <span className="w-2.5 h-2.5 rounded-full bg-[#F2765E] border border-[#F5EBDD]"></span>
                   <span>Warm Horizon</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTheme('midnight-sea')}
+                  className={`px-3 py-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-2 transition-all ${
+                    theme === 'midnight-sea'
+                      ? 'bg-[#068FFF] text-white font-bold shadow-md shadow-blue-500/20 border border-[#4E4FEB]'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                  title="Switch to Midnight Sea"
+                >
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#068FFF] border border-[#4E4FEB]"></span>
+                  <span>Midnight Sea</span>
                 </button>
               </div>
             </div>
