@@ -101,8 +101,21 @@ export default function Settings() {
               <div className="grid grid-cols-2 gap-2 w-full bg-slate-950/80 p-1.5 rounded-xl border border-slate-800">
                 <button
                   type="button"
-                  onClick={() => setTheme('soft-sunrise')}
+                  onClick={() => setTheme('fresh-sky')}
                   className={`col-span-2 px-2.5 py-2 rounded-lg text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-all ${
+                    theme === 'fresh-sky'
+                      ? 'bg-[#30AFFF] text-white font-bold shadow-md shadow-sky-500/20 border border-[#92EEFF]'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                  title="Switch to Fresh Sky"
+                >
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#30AFFF] border border-[#92EEFF]"></span>
+                  <span>Fresh Sky (Default)</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTheme('soft-sunrise')}
+                  className={`col-span-2 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-all ${
                     theme === 'soft-sunrise'
                       ? 'bg-[#FFBE91] text-[#1c1917] font-bold shadow-md shadow-orange-500/20 border border-[#FFDDB0]'
                       : 'text-slate-400 hover:text-white'
@@ -110,7 +123,7 @@ export default function Settings() {
                   title="Switch to Soft Sunrise"
                 >
                   <span className="w-2.5 h-2.5 rounded-full bg-[#FFBE91] border border-[#FFDDB0]"></span>
-                  <span>Soft Sunrise (Default)</span>
+                  <span>Soft Sunrise</span>
                 </button>
                 <button
                   type="button"

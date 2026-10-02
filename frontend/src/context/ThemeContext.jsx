@@ -1,20 +1,20 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const ThemeContext = createContext({
-  theme: 'soft-sunrise',
+  theme: 'fresh-sky',
   toggleTheme: () => {},
   setTheme: () => {},
-  availableThemes: ['soft-sunrise', 'golden-olive', 'vibrant-red', 'dark', 'light'],
+  availableThemes: ['fresh-sky', 'soft-sunrise', 'golden-olive', 'vibrant-red', 'dark', 'light'],
 });
 
 export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState(() => {
     const saved = localStorage.getItem('habytat_theme');
-    if (saved && ['soft-sunrise', 'golden-olive', 'vibrant-red', 'dark', 'light'].includes(saved)) {
+    if (saved && ['fresh-sky', 'soft-sunrise', 'golden-olive', 'vibrant-red', 'dark', 'light'].includes(saved)) {
       return saved;
     }
-    // Default active theme is Soft Sunrise
-    return 'soft-sunrise';
+    // Default active theme is Fresh Sky
+    return 'fresh-sky';
   });
 
   useEffect(() => {
@@ -22,9 +22,11 @@ export function ThemeProvider({ children }) {
     root.setAttribute('data-theme', theme);
 
     // Sync theme class list for utility compatibility
-    root.classList.remove('theme-soft-sunrise', 'theme-golden-olive', 'theme-vibrant-red', 'dark', 'light');
+    root.classList.remove('theme-fresh-sky', 'theme-soft-sunrise', 'theme-golden-olive', 'theme-vibrant-red', 'dark', 'light');
 
-    if (theme === 'soft-sunrise') {
+    if (theme === 'fresh-sky') {
+      root.classList.add('theme-fresh-sky', 'light');
+    } else if (theme === 'soft-sunrise') {
       root.classList.add('theme-soft-sunrise', 'light');
     } else if (theme === 'golden-olive') {
       root.classList.add('theme-golden-olive', 'dark');
@@ -41,16 +43,17 @@ export function ThemeProvider({ children }) {
 
   const toggleTheme = () => {
     setTheme((prev) => {
+      if (prev === 'fresh-sky') return 'soft-sunrise';
       if (prev === 'soft-sunrise') return 'golden-olive';
       if (prev === 'golden-olive') return 'vibrant-red';
       if (prev === 'vibrant-red') return 'dark';
       if (prev === 'dark') return 'light';
-      return 'soft-sunrise';
+      return 'fresh-sky';
     });
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme, setTheme, availableThemes: ['soft-sunrise', 'golden-olive', 'vibrant-red', 'dark', 'light'] }}>
+    <ThemeContext.Provider value={{ theme, toggleTheme, setTheme, availableThemes: ['fresh-sky', 'soft-sunrise', 'golden-olive', 'vibrant-red', 'dark', 'light'] }}>
       {children}
     </ThemeContext.Provider>
   );
