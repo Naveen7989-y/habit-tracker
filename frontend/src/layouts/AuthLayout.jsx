@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Sun, Moon } from 'lucide-react';
+import { Sun } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 
 export default function AuthLayout({ children, title, subtitle }) {
@@ -13,14 +13,12 @@ export default function AuthLayout({ children, title, subtitle }) {
         <button
           onClick={toggleTheme}
           type="button"
-          className="p-2.5 rounded-2xl bg-white/80 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-white shadow-sm transition-all"
-          title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} mode`}
+          className="p-2.5 rounded-2xl bg-white/80 border border-slate-200 text-slate-600 hover:text-indigo-600 shadow-sm transition-all"
+          title={`Switch theme (Current: ${theme === 'warm-horizon' ? 'Warm Horizon' : (theme === 'fresh-sky' ? 'Fresh Sky' : 'Soft Sunrise')})`}
         >
-          {theme === 'dark' ? (
-            <Sun className="w-4 h-4 text-amber-400" />
-          ) : (
-            <Moon className="w-4 h-4 text-slate-700" />
-          )}
+          <Sun className={`w-4 h-4 ${
+            theme === 'warm-horizon' ? 'text-[#F2765E]' : (theme === 'fresh-sky' ? 'text-sky-400' : 'text-amber-500')
+          }`} />
         </button>
       </div>
 

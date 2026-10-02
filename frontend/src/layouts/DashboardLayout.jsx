@@ -12,7 +12,6 @@ import {
   LogOut,
   User,
   Sun,
-  Moon,
   Menu,
   X,
   ChevronDown,
@@ -84,13 +83,11 @@ export default function DashboardLayout({ children }) {
             <button
               onClick={toggleTheme}
               className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/70 transition-colors"
-              title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} mode`}
+              title={`Switch theme (Current: ${theme === 'warm-horizon' ? 'Warm Horizon' : (theme === 'fresh-sky' ? 'Fresh Sky' : 'Soft Sunrise')})`}
             >
-              {theme === 'dark' ? (
-                <Sun className="w-4 h-4 text-amber-400" />
-              ) : (
-                <Moon className="w-4 h-4 text-indigo-400" />
-              )}
+              <Sun className={`w-4 h-4 ${
+                theme === 'warm-horizon' ? 'text-[#F2765E]' : (theme === 'fresh-sky' ? 'text-sky-400' : 'text-amber-500')
+              }`} />
             </button>
 
             {/* User Dropdown */}

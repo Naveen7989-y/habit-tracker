@@ -250,6 +250,20 @@ export default function CalendarView() {
 
   // Color classes for GitHub-style heatmap cells
   const getHeatmapColorClass = (level) => {
+    if (theme === 'warm-horizon') {
+      switch (level) {
+        case 1:
+          return 'bg-[#FAF5EE] border-[#E4D6C7] text-[#655A55] hover:border-[#F2765E]';
+        case 2:
+          return 'bg-[#EEE2D3] border-[#E4D6C7] text-[#413333] hover:border-[#F2765E]';
+        case 3:
+          return 'bg-[#F2765E] border-[#DE5E46] text-white font-semibold hover:brightness-105';
+        case 4:
+          return 'bg-[#315B8C] border-[#24466F] text-white font-bold shadow-sm shadow-blue-900/20 hover:brightness-105';
+        default:
+          return 'bg-[#FFFFFF] border-[#E4D6C7] text-[#8C7E78] hover:border-[#F2765E]';
+      }
+    }
     if (theme === 'fresh-sky') {
       switch (level) {
         case 1:
@@ -264,59 +278,18 @@ export default function CalendarView() {
           return 'bg-white border-[#C4F7CA] text-slate-400 hover:border-[#92EEFF]';
       }
     }
-    if (theme === 'soft-sunrise') {
-      switch (level) {
-        case 1:
-          return 'bg-[#FFFCE1] border-[#FFDDB0] text-[#78716c] hover:border-[#FFBE91]';
-        case 2:
-          return 'bg-[#FFDDB0] border-[#FFBE91] text-[#1c1917] hover:border-[#FFBE91]';
-        case 3:
-          return 'bg-[#FFBE91] border-[#FFDDB0] text-[#1c1917] font-semibold hover:brightness-105';
-        case 4:
-          return 'bg-[#CFEBFF] border-[#b0dcff] text-[#1e293b] font-bold shadow-sm hover:brightness-105';
-        default:
-          return 'bg-[#FFFFFF] border-[#FFDDB0] text-slate-400 hover:border-[#FFBE91]';
-      }
-    }
-    if (theme === 'golden-olive') {
-      switch (level) {
-        case 1:
-          return 'bg-[#253012] border-[#313E17] text-[#c9d9a0] hover:border-[#4C5C2D]';
-        case 2:
-          return 'bg-[#313E17] border-[#4C5C2D] text-[#dce8b8] hover:border-[#FFDE42]';
-        case 3:
-          return 'bg-[#4C5C2D] border-[#FFDE42]/70 text-[#FFDE42] hover:brightness-110';
-        case 4:
-          return 'bg-[#FFDE42] border-[#fff089] text-[#1B0C0C] font-bold shadow-sm shadow-yellow-500/30 hover:bg-[#ffe359]';
-        default:
-          return 'bg-[#1B0C0C] border-[#313E17] text-slate-500 hover:border-[#4C5C2D]';
-      }
-    }
-    if (theme === 'vibrant-red') {
-      switch (level) {
-        case 1:
-          return 'bg-[#3d0000] border-[#830000] text-red-300 hover:border-[#BC0202]';
-        case 2:
-          return 'bg-[#830000] border-[#BC0202] text-red-200 hover:border-[#FF0000]';
-        case 3:
-          return 'bg-[#BC0202] border-[#FF0000] text-white hover:brightness-110';
-        case 4:
-          return 'bg-[#FF0000] border-[#ff4d4d] text-white shadow-sm shadow-red-500/40 hover:bg-[#ff1a1a]';
-        default:
-          return 'bg-[#000000] border-[#830000]/60 text-slate-500 hover:border-[#830000]';
-      }
-    }
+    // Soft Sunrise (fallback)
     switch (level) {
       case 1:
-        return 'bg-emerald-950/80 border-emerald-800/40 text-emerald-300 hover:border-emerald-600';
+        return 'bg-[#FFFCE1] border-[#FFDDB0] text-[#78716c] hover:border-[#FFBE91]';
       case 2:
-        return 'bg-emerald-800/80 border-emerald-600/50 text-emerald-200 hover:border-emerald-500';
+        return 'bg-[#FFDDB0] border-[#FFBE91] text-[#1c1917] hover:border-[#FFBE91]';
       case 3:
-        return 'bg-emerald-600 border-emerald-500 text-white hover:border-emerald-400';
+        return 'bg-[#FFBE91] border-[#FFDDB0] text-[#1c1917] font-semibold hover:brightness-105';
       case 4:
-        return 'bg-emerald-400 border-emerald-300 text-slate-950 shadow-sm shadow-emerald-400/40 hover:bg-emerald-300';
+        return 'bg-[#CFEBFF] border-[#b0dcff] text-[#1e293b] font-bold shadow-sm hover:brightness-105';
       default:
-        return 'bg-slate-900 border-slate-800/80 text-slate-600 hover:border-slate-700';
+        return 'bg-[#FFFFFF] border-[#FFDDB0] text-slate-400 hover:border-[#FFBE91]';
     }
   };
 
@@ -361,9 +334,11 @@ export default function CalendarView() {
             <button
               onClick={toggleTheme}
               className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
-              title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} mode`}
+              title={`Switch theme (Current: ${theme === 'warm-horizon' ? 'Warm Horizon' : (theme === 'fresh-sky' ? 'Fresh Sky' : 'Soft Sunrise')})`}
             >
-              {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-indigo-400" />}
+              <Sun className={`w-4 h-4 ${
+                theme === 'warm-horizon' ? 'text-[#F2765E]' : (theme === 'fresh-sky' ? 'text-sky-400' : 'text-amber-500')
+              }`} />
             </button>
             <Link
               to="/settings"
@@ -507,7 +482,7 @@ export default function CalendarView() {
                             onClick={() => openDayInspector(day.date)}
                             className={`w-4 h-4 sm:w-4.5 sm:h-4.5 rounded-[4px] border transition-all relative group cursor-pointer ${getHeatmapColorClass(
                               day.level
-                            )} ${isCurrentDay ? (theme === 'fresh-sky' ? 'ring-1.5 ring-[#30AFFF] ring-offset-1 ring-offset-white' : theme === 'soft-sunrise' ? 'ring-1.5 ring-[#FFBE91] ring-offset-1 ring-offset-[#FFFCE1]' : theme === 'golden-olive' ? 'ring-1.5 ring-[#FFDE42] ring-offset-1 ring-offset-[#1B0C0C]' : theme === 'vibrant-red' ? 'ring-1.5 ring-[#FF0000] ring-offset-1 ring-offset-black' : 'ring-1.5 ring-emerald-400 ring-offset-1 ring-offset-slate-950') : ''}`}
+                            )} ${isCurrentDay ? (theme === 'fresh-sky' ? 'ring-1.5 ring-[#30AFFF] ring-offset-1 ring-offset-white' : 'ring-1.5 ring-[#FFBE91] ring-offset-1 ring-offset-[#FFFCE1]') : ''}`}
                             title={`${day.date}: ${day.count} habit(s) completed (${day.percentage}%)`}
                           >
                             {/* Hover tooltip for quick preview */}
@@ -530,34 +505,19 @@ export default function CalendarView() {
                 <div className="flex items-center gap-1.5">
                   <span className="text-[11px] text-slate-400">Less</span>
                   <div className={`w-3 h-3 rounded-[3px] border ${
-                    theme === 'fresh-sky' ? 'bg-white border-[#C4F7CA]' :
-                    theme === 'soft-sunrise' ? 'bg-[#FFFFFF] border-[#FFDDB0]' :
-                    theme === 'golden-olive' ? 'bg-[#1B0C0C] border-[#313E17]' :
-                    theme === 'vibrant-red' ? 'bg-[#000000] border-[#830000]/60' : 'bg-slate-900 border-slate-800'
+                    theme === 'warm-horizon' ? 'bg-[#FFFFFF] border-[#E4D6C7]' : (theme === 'fresh-sky' ? 'bg-white border-[#C4F7CA]' : 'bg-[#FFFFFF] border-[#FFDDB0]')
                   }`} />
                   <div className={`w-3 h-3 rounded-[3px] border ${
-                    theme === 'fresh-sky' ? 'bg-[#D8FFC5] border-[#bbf2a2]' :
-                    theme === 'soft-sunrise' ? 'bg-[#FFFCE1] border-[#FFDDB0]' :
-                    theme === 'golden-olive' ? 'bg-[#253012] border-[#313E17]' :
-                    theme === 'vibrant-red' ? 'bg-[#3d0000] border-[#830000]' : 'bg-emerald-950/80 border-emerald-800/40'
+                    theme === 'warm-horizon' ? 'bg-[#FAF5EE] border-[#E4D6C7]' : (theme === 'fresh-sky' ? 'bg-[#D8FFC5] border-[#bbf2a2]' : 'bg-[#FFFCE1] border-[#FFDDB0]')
                   }`} />
                   <div className={`w-3 h-3 rounded-[3px] border ${
-                    theme === 'fresh-sky' ? 'bg-[#C4F7CA] border-[#9feeb0]' :
-                    theme === 'soft-sunrise' ? 'bg-[#FFDDB0] border-[#FFBE91]' :
-                    theme === 'golden-olive' ? 'bg-[#313E17] border-[#4C5C2D]' :
-                    theme === 'vibrant-red' ? 'bg-[#830000] border-[#BC0202]' : 'bg-emerald-800/80 border-emerald-600/50'
+                    theme === 'warm-horizon' ? 'bg-[#EEE2D3] border-[#E4D6C7]' : (theme === 'fresh-sky' ? 'bg-[#C4F7CA] border-[#9feeb0]' : 'bg-[#FFDDB0] border-[#FFBE91]')
                   }`} />
                   <div className={`w-3 h-3 rounded-[3px] border ${
-                    theme === 'fresh-sky' ? 'bg-[#92EEFF] border-[#65dcf2]' :
-                    theme === 'soft-sunrise' ? 'bg-[#FFBE91] border-[#FFDDB0]' :
-                    theme === 'golden-olive' ? 'bg-[#4C5C2D] border-[#FFDE42]/70' :
-                    theme === 'vibrant-red' ? 'bg-[#BC0202] border-[#FF0000]' : 'bg-emerald-600 border-emerald-500'
+                    theme === 'warm-horizon' ? 'bg-[#F2765E] border-[#DE5E46]' : (theme === 'fresh-sky' ? 'bg-[#92EEFF] border-[#65dcf2]' : 'bg-[#FFBE91] border-[#FFDDB0]')
                   }`} />
                   <div className={`w-3 h-3 rounded-[3px] border ${
-                    theme === 'fresh-sky' ? 'bg-[#30AFFF] border-[#1890df]' :
-                    theme === 'soft-sunrise' ? 'bg-[#CFEBFF] border-[#b0dcff]' :
-                    theme === 'golden-olive' ? 'bg-[#FFDE42] border-[#fff089]' :
-                    theme === 'vibrant-red' ? 'bg-[#FF0000] border-[#ff4d4d]' : 'bg-emerald-400 border-emerald-300'
+                    theme === 'warm-horizon' ? 'bg-[#315B8C] border-[#24466F]' : (theme === 'fresh-sky' ? 'bg-[#30AFFF] border-[#1890df]' : 'bg-[#CFEBFF] border-[#b0dcff]')
                   }`} />
                   <span className="text-[11px] text-slate-400">More</span>
                 </div>
@@ -652,75 +612,55 @@ export default function CalendarView() {
                   const isToday = day.isToday;
                   const isFuture = day.isFuture;
 
-                  let cardBg = theme === 'fresh-sky'
-                    ? 'bg-white border-[#C4F7CA] hover:border-[#92EEFF] text-[#0f172a]'
-                    : theme === 'soft-sunrise'
-                      ? 'bg-[#FFFFFF] border-[#FFDDB0] hover:border-[#FFBE91] text-[#1c1917]'
-                      : theme === 'golden-olive'
-                        ? 'bg-[#1B0C0C] border-[#4C5C2D]/60 hover:border-[#FFDE42]'
-                        : theme === 'vibrant-red'
-                          ? 'bg-[#000000] border-[#830000]/80 hover:border-[#BC0202]'
-                          : 'bg-slate-950/60 border-slate-800/80 hover:border-slate-700';
+                  let cardBg = theme === 'warm-horizon'
+                    ? 'bg-[#FFFFFF] border-[#E4D6C7] hover:border-[#F2765E] text-[#413333]'
+                    : theme === 'fresh-sky'
+                      ? 'bg-white border-[#C4F7CA] hover:border-[#92EEFF] text-[#0f172a]'
+                      : 'bg-[#FFFFFF] border-[#FFDDB0] hover:border-[#FFBE91] text-[#1c1917]';
                   let statusBadge = null;
 
                   if (day.status === 'full') {
-                    cardBg = theme === 'fresh-sky'
-                      ? 'bg-[#C4F7CA] border-[#9feeb0] hover:border-[#30AFFF] shadow-sm shadow-emerald-500/10 text-[#0f172a]'
-                      : theme === 'soft-sunrise'
-                        ? 'bg-[#FFDDB0] border-[#FFBE91] hover:border-[#FFBE91] shadow-sm shadow-orange-500/10 text-[#1c1917]'
-                        : theme === 'golden-olive'
-                          ? 'bg-[#313E17] border-[#FFDE42] hover:border-[#ffe873] shadow-sm shadow-yellow-500/10'
-                          : theme === 'vibrant-red'
-                            ? 'bg-[#830000]/25 border-[#BC0202] hover:border-[#FF0000] shadow-sm shadow-red-500/10'
-                            : 'bg-emerald-950/30 border-emerald-500/40 hover:border-emerald-400 shadow-sm shadow-emerald-500/5';
+                    cardBg = theme === 'warm-horizon'
+                      ? 'bg-[#FDECE8] border-[#F2765E] hover:border-[#DE5E46] shadow-sm shadow-orange-500/10 text-[#413333]'
+                      : theme === 'fresh-sky'
+                        ? 'bg-[#C4F7CA] border-[#9feeb0] hover:border-[#30AFFF] shadow-sm shadow-emerald-500/10 text-[#0f172a]'
+                        : 'bg-[#FFDDB0] border-[#FFBE91] hover:border-[#FFBE91] shadow-sm shadow-orange-500/10 text-[#1c1917]';
                     statusBadge = (
-                      <span className={`text-[10px] font-bold flex items-center gap-0.5 ${theme === 'fresh-sky' ? 'text-[#0f172a]' : theme === 'soft-sunrise' ? 'text-[#1c1917]' : theme === 'golden-olive' ? 'text-[#FFDE42]' : theme === 'vibrant-red' ? 'text-[#FF0000]' : 'text-emerald-400'}`}>
-                        <CheckCircle2 className={`w-3 h-3 ${theme === 'fresh-sky' ? 'text-[#059669]' : theme === 'soft-sunrise' ? 'text-[#d97746]' : ''}`} />
+                      <span className={`text-[10px] font-bold flex items-center gap-0.5 ${theme === 'warm-horizon' ? 'text-[#413333]' : (theme === 'fresh-sky' ? 'text-[#0f172a]' : 'text-[#1c1917]')}`}>
+                        <CheckCircle2 className={`w-3 h-3 ${theme === 'warm-horizon' ? 'text-[#F2765E]' : (theme === 'fresh-sky' ? 'text-[#059669]' : 'text-[#d97746]')}`} />
                         <span>{day.completedCount}/{day.totalHabits}</span>
                       </span>
                     );
                   } else if (day.status === 'partial') {
-                    cardBg = theme === 'fresh-sky'
-                      ? 'bg-[#92EEFF]/30 border-[#92EEFF] hover:border-[#30AFFF] text-[#0f172a]'
-                      : theme === 'soft-sunrise'
-                        ? 'bg-[#FFFDF5] border-[#FFDDB0] hover:border-[#FFBE91] text-[#1c1917]'
-                        : theme === 'golden-olive'
-                          ? 'bg-[#313E17]/60 border-[#4C5C2D] hover:border-[#FFDE42]'
-                          : theme === 'vibrant-red'
-                            ? 'bg-[#830000]/15 border-[#830000] hover:border-[#BC0202]'
-                            : 'bg-indigo-950/30 border-indigo-500/40 hover:border-indigo-400';
+                    cardBg = theme === 'warm-horizon'
+                      ? 'bg-[#EBF2FA] border-[#315B8C]/40 hover:border-[#315B8C] text-[#315B8C]'
+                      : theme === 'fresh-sky'
+                        ? 'bg-[#92EEFF]/30 border-[#92EEFF] hover:border-[#30AFFF] text-[#0f172a]'
+                        : 'bg-[#FFFDF5] border-[#FFDDB0] hover:border-[#FFBE91] text-[#1c1917]';
                     statusBadge = (
-                      <span className={`text-[10px] font-semibold ${theme === 'fresh-sky' ? 'text-[#0284c7]' : theme === 'soft-sunrise' ? 'text-[#d97746]' : theme === 'golden-olive' ? 'text-[#FFDE42]/80' : theme === 'vibrant-red' ? 'text-[#ff8080]' : 'text-indigo-300'}`}>
+                      <span className={`text-[10px] font-semibold ${theme === 'warm-horizon' ? 'text-[#315B8C]' : (theme === 'fresh-sky' ? 'text-[#0284c7]' : 'text-[#d97746]')}`}>
                         {day.completedCount}/{day.totalHabits}
                       </span>
                     );
                   } else if (day.status === 'missed') {
-                    cardBg = theme === 'fresh-sky'
-                      ? 'bg-[#FAFDFF] border-[#C4F7CA]/60 text-slate-400'
-                      : theme === 'soft-sunrise'
-                        ? 'bg-[#FFFCE1] border-[#FFDDB0]/70 text-[#57534e]'
-                        : theme === 'golden-olive'
-                          ? 'bg-[#1B0C0C] border-[#313E17] text-slate-500'
-                          : theme === 'vibrant-red'
-                            ? 'bg-[#000000] border-[#830000]/50 text-slate-500'
-                            : 'bg-slate-950/70 border-slate-800/90 text-slate-500';
+                    cardBg = theme === 'warm-horizon'
+                      ? 'bg-[#FAF5EE] border-[#E4D6C7]/60 text-[#8C7E78]'
+                      : theme === 'fresh-sky'
+                        ? 'bg-[#FAFDFF] border-[#C4F7CA]/60 text-slate-400'
+                        : 'bg-[#FFFCE1] border-[#FFDDB0]/70 text-[#57534e]';
                     statusBadge = (
-                      <span className={`text-[10px] font-medium ${theme === 'fresh-sky' ? 'text-slate-400' : theme === 'soft-sunrise' ? 'text-[#57534e]' : 'text-slate-500'}`}>
+                      <span className={`text-[10px] font-medium ${theme === 'warm-horizon' ? 'text-[#8C7E78]' : (theme === 'fresh-sky' ? 'text-slate-400' : 'text-[#57534e]')}`}>
                         0/{day.totalHabits}
                       </span>
                     );
                   }
 
                   if (isToday) {
-                    cardBg += theme === 'fresh-sky'
-                      ? ' ring-2 ring-[#30AFFF] ring-offset-2 ring-offset-white'
-                      : theme === 'soft-sunrise'
-                        ? ' ring-2 ring-[#FFBE91] ring-offset-2 ring-offset-[#FFFCE1]'
-                        : theme === 'golden-olive'
-                          ? ' ring-2 ring-[#FFDE42] ring-offset-2 ring-offset-[#1B0C0C]'
-                          : theme === 'vibrant-red'
-                            ? ' ring-2 ring-[#FF0000] ring-offset-2 ring-offset-black'
-                            : ' ring-2 ring-indigo-500 ring-offset-2 ring-offset-slate-950';
+                    cardBg += theme === 'warm-horizon'
+                      ? ' ring-2 ring-[#F2765E] ring-offset-2 ring-offset-[#F5EBDD]'
+                      : theme === 'fresh-sky'
+                        ? ' ring-2 ring-[#30AFFF] ring-offset-2 ring-offset-white'
+                        : ' ring-2 ring-[#FFBE91] ring-offset-2 ring-offset-[#FFFCE1]';
                   }
 
                   return (
@@ -733,17 +673,17 @@ export default function CalendarView() {
                       <div className="flex items-center justify-between w-full">
                         <span
                           className={`text-sm sm:text-base font-extrabold ${isToday
-                              ? (theme === 'fresh-sky' ? 'text-white bg-[#30AFFF] px-1.5 py-0.5 rounded-lg font-black' : theme === 'soft-sunrise' ? 'text-[#1c1917] bg-[#FFBE91] px-1.5 py-0.5 rounded-lg font-black' : theme === 'golden-olive' ? 'text-[#FFDE42] bg-[#4C5C2D]/50 px-1.5 py-0.5 rounded-lg' : theme === 'vibrant-red' ? 'text-[#FF0000] bg-red-500/20 px-1.5 py-0.5 rounded-lg' : 'text-indigo-400 bg-indigo-500/20 px-1.5 py-0.5 rounded-lg')
+                              ? (theme === 'warm-horizon' ? 'text-white bg-[#F2765E] px-1.5 py-0.5 rounded-lg font-black' : (theme === 'fresh-sky' ? 'text-white bg-[#30AFFF] px-1.5 py-0.5 rounded-lg font-black' : 'text-[#1c1917] bg-[#FFBE91] px-1.5 py-0.5 rounded-lg font-black'))
                               : isFuture
-                                ? (theme === 'fresh-sky' ? 'text-slate-400' : theme === 'soft-sunrise' ? 'text-[#78716c]' : 'text-slate-500')
-                                : (theme === 'fresh-sky' ? 'text-[#0f172a]' : theme === 'soft-sunrise' ? 'text-[#1c1917]' : 'text-slate-200')
+                                ? (theme === 'warm-horizon' ? 'text-[#8C7E78]' : (theme === 'fresh-sky' ? 'text-slate-400' : 'text-[#78716c]'))
+                                : (theme === 'warm-horizon' ? 'text-[#413333]' : (theme === 'fresh-sky' ? 'text-[#0f172a]' : 'text-[#1c1917]'))
                             }`}
                         >
                           {day.day}
                         </span>
 
                         {isToday && (
-                          <span className={`hidden sm:inline-block text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded-full ${theme === 'fresh-sky' ? 'bg-[#30AFFF] text-white font-bold' : theme === 'soft-sunrise' ? 'bg-[#FFBE91] text-[#1c1917] font-bold' : theme === 'golden-olive' ? 'bg-[#FFDE42] text-[#1B0C0C] font-bold' : theme === 'vibrant-red' ? 'bg-[#FF0000] text-white' : 'bg-indigo-500 text-white'}`}>
+                          <span className={`hidden sm:inline-block text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded-full ${theme === 'warm-horizon' ? 'bg-[#F2765E] text-white font-bold' : (theme === 'fresh-sky' ? 'bg-[#30AFFF] text-white font-bold' : 'bg-[#FFBE91] text-[#1c1917] font-bold')}`}>
                             Today
                           </span>
                         )}
