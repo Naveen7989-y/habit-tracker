@@ -550,46 +550,146 @@
   h1, h2, h3, h4, h5, h6,
   .text-white,
   .text-slate-100,
-  .text-slate-200 {
+  .text-slate-200,
+  th,
+  strong,
+  b {
     color: #1c1917 !important;
   }
 
-  .text-slate-300 {
+  .text-slate-300,
+  .text-gray-300,
+  .text-stone-300 {
+    color: #292524 !important;
+  }
+
+  .text-slate-400,
+  .text-gray-400,
+  .text-stone-400 {
     color: #44403c !important;
   }
 
-  .text-slate-400 {
-    color: #78716c !important;
+  .text-slate-500,
+  .text-gray-500,
+  .text-stone-500 {
+    color: #57534e !important;
   }
 
-  .text-slate-500 {
-    color: #a8a29e !important;
+  .text-slate-600,
+  .text-gray-600 {
+    color: #292524 !important;
   }
 
-  /* Metrics & Numbers */
+  label {
+    color: #1c1917 !important;
+    font-weight: 600 !important;
+  }
+
+  /* Universal Hover Text Protection (No disappearing white text on ivory/cream/white) */
+  .hover\:text-white:hover,
+  .hover\:text-slate-100:hover,
+  .hover\:text-slate-200:hover,
+  .hover\:text-slate-300:hover,
+  a:hover,
+  button:hover {
+    color: #1c1917 !important;
+  }
+
+  /* Group hovers */
+  .group:hover .group-hover\:text-white {
+    color: #1c1917 !important;
+  }
+
+  .group:hover .group-hover\:text-indigo-300,
+  .group:hover .group-hover\:text-violet-300,
+  .group:hover .group-hover\:text-blue-300,
+  .group:hover .group-hover\:text-emerald-300,
+  .group:hover .group-hover\:text-indigo-400,
+  .group:hover .group-hover\:text-violet-400,
+  .group:hover .group-hover\:text-blue-400 {
+    color: #0284c7 !important;
+  }
+
+  /* Universal Hover Background Protection (Warm cream hover, no dark background swallowing text) */
+  .hover\:bg-slate-800:hover,
+  .hover\:bg-slate-800\/60:hover,
+  .hover\:bg-slate-800\/70:hover,
+  .hover\:bg-slate-800\/80:hover,
+  .hover\:bg-slate-700:hover,
+  .hover\:bg-slate-900:hover,
+  .hover\:bg-slate-900\/90:hover,
+  .hover\:bg-slate-950:hover,
+  .hover\:bg-slate-950\/60:hover {
+    background-color: #FFDDB0 !important;
+    color: #1c1917 !important;
+  }
+
+  .hover\:bg-slate-800:hover *,
+  .hover\:bg-slate-800\/60:hover *,
+  .hover\:bg-slate-700:hover *,
+  .hover\:bg-slate-900:hover * {
+    color: #1c1917 !important;
+  }
+
+  /* Metrics, Highlights & Statuses */
   .from-indigo-400.to-emerald-400 {
     background: linear-gradient(90deg, #d97746 0%, #ea580c 100%) !important;
     -webkit-background-clip: text !important;
     -webkit-text-fill-color: transparent !important;
   }
 
-  .text-indigo-400 {
+  .text-indigo-200,
+  .text-indigo-300,
+  .text-indigo-300\/80,
+  .text-blue-200,
+  .text-blue-300 {
+    color: #0369a1 !important;
+    font-weight: 600 !important;
+  }
+
+  .text-indigo-400,
+  .text-blue-400 {
     color: #0284c7 !important;
+  }
+
+  .text-violet-200,
+  .text-violet-300 {
+    color: #6d28d9 !important;
+    font-weight: 600 !important;
   }
 
   .text-violet-400 {
     color: #7c3aed !important;
   }
 
-  .text-amber-400 {
-    color: #ea580c !important;
+  .text-emerald-200,
+  .text-emerald-300 {
+    color: #047857 !important;
+    font-weight: 600 !important;
   }
 
-  .text-emerald-400 {
+  .text-emerald-400,
+  .text-emerald-600 {
     color: #059669 !important;
   }
 
-  /* Links & Accents (Darker accessible blue derived from #CFEBFF family) */
+  .text-amber-300,
+  .text-amber-400 {
+    color: #b45309 !important;
+  }
+
+  .text-red-200,
+  .text-red-300,
+  .text-red-400 {
+    color: #dc2626 !important;
+  }
+
+  .text-pink-300,
+  .text-pink-400 {
+    color: #be185d !important;
+  }
+
+  /* Links & Accents (Accessible blue from sky family) */
   a.text-indigo-400,
   a.text-indigo-300 {
     color: #0284c7 !important;
@@ -636,7 +736,12 @@
   /* Forms & Inputs */
   input,
   textarea,
-  select {
+  select,
+  select option,
+  input.bg-slate-950,
+  input.bg-slate-950\/70,
+  select.bg-slate-950,
+  select.bg-slate-950\/70 {
     background-color: #FFFFFF !important;
     border: 1px solid #FFDDB0 !important;
     color: #1c1917 !important;
@@ -644,7 +749,16 @@
 
   input::placeholder,
   textarea::placeholder {
-    color: #a8a29e !important;
+    color: #78716c !important;
+  }
+
+  input:disabled,
+  select:disabled,
+  input.cursor-not-allowed {
+    background-color: #FFF8E7 !important;
+    color: #57534e !important;
+    border-color: #FFDDB0 !important;
+    cursor: not-allowed !important;
   }
 
   input:focus,
@@ -681,7 +795,8 @@
   }
 
   /* Habit Tracking Completed vs Incomplete */
-  button.bg-emerald-500 {
+  button.bg-emerald-500,
+  button.bg-emerald-500 * {
     background-color: #FFBE91 !important;
     color: #1c1917 !important;
     box-shadow: 0 2px 10px rgba(255, 190, 145, 0.4) !important;
@@ -694,8 +809,9 @@
   .bg-emerald-500\/20.text-emerald-300,
   .bg-emerald-950\/20 {
     background-color: rgba(255, 221, 176, 0.35) !important;
-    color: #1c1917 !important;
+    color: #047857 !important;
     border-color: #FFBE91 !important;
+    font-weight: 600 !important;
   }
 
   .bg-emerald-500\/20.text-emerald-300:hover {
@@ -711,7 +827,7 @@
   button.bg-slate-800 {
     background-color: #FFFDF5 !important;
     border: 1px solid #FFDDB0 !important;
-    color: #78716c !important;
+    color: #44403c !important;
   }
 
   button.bg-slate-800:hover {
@@ -720,22 +836,41 @@
     background-color: #FFDDB0 !important;
   }
 
+  button.bg-indigo-600 *,
+  a.bg-indigo-600 * {
+    color: #1c1917 !important;
+  }
+
+  /* Dropdown Menus */
+  .bg-slate-900.border.border-slate-700\/80,
+  .bg-slate-900.border.border-slate-800 {
+    background-color: #FFFFFF !important;
+    border: 1px solid #FFDDB0 !important;
+    box-shadow: 0 10px 25px rgba(255, 190, 145, 0.3) !important;
+  }
+
+  .bg-slate-900 button,
+  .bg-slate-900 a {
+    color: #1c1917 !important;
+  }
+
+  .bg-slate-900 button:hover,
+  .bg-slate-900 a:hover {
+    background-color: #FFDDB0 !important;
+    color: #1c1917 !important;
+  }
+
   /* Decorative Orbs in Auth Pages */
   .bg-indigo-600\/20,
   .bg-violet-600\/20 {
     background-color: rgba(255, 221, 176, 0.45) !important;
   }
 
-  /* Preserve Semantic Status Colors */
-  .text-emerald-400,
-  .text-emerald-600 {
-    color: #059669 !important;
-  }
-
+  /* Status Colors */
   .bg-emerald-500\/10 {
     background-color: rgba(16, 185, 129, 0.12) !important;
     border-color: rgba(16, 185, 129, 0.25) !important;
-    color: #059669 !important;
+    color: #047857 !important;
   }
 
   /* Error states */
