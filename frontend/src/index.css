@@ -4,13 +4,95 @@
 
 /* ==================================================
    CENTRALIZED THEME SYSTEM & DESIGN TOKENS
-   Theme: Vibrant Red (Default)
-   Architecture: CSS Custom Properties / Tokens
+   Theme 1: Golden Olive (Default)
+   Theme 2: Vibrant Red
+   Theme 3: Dark Mode
+   Theme 4: Light Mode
    ================================================== */
 
+/* --------------------------------------------------
+   THEME: GOLDEN OLIVE (DEFAULT)
+   Base: #1B0C0C | Surface: #313E17 | Olive: #4C5C2D | Accent: #FFDE42
+   -------------------------------------------------- */
 :root,
-[data-theme="vibrant-red"],
-.theme-vibrant-red {
+[data-theme="golden-olive"],
+.theme-golden-olive {
+  color-scheme: dark;
+
+  /* Theme Core Palette Tokens */
+  --theme-background: #1B0C0C;
+  --theme-surface: #313E17;
+  --theme-secondary: #4C5C2D;
+  --theme-primary: #FFDE42;
+  --theme-accent: #FFDE42;
+
+  /* Semantic Variables */
+  --background: #1B0C0C;
+  --foreground: #ffffff;
+  
+  --card: #313E17;
+  --card-elevated: #4C5C2D;
+  --card-surface: #313E17;
+  --card-foreground: #ffffff;
+  
+  --primary: #FFDE42;
+  --primary-foreground: #1B0C0C;
+  
+  --secondary: #313E17;
+  --secondary-foreground: #FFDE42;
+  
+  --accent: #FFDE42;
+  --accent-foreground: #1B0C0C;
+  
+  --muted: #241414;
+  --muted-foreground: #d5cebe;
+  
+  --border: #4C5C2D;
+  --border-muted: rgba(76, 92, 45, 0.45);
+  --border-strong: #FFDE42;
+  --border-accent: #FFDE42;
+  
+  --input: #313E17;
+  --input-border: #4C5C2D;
+  --input-focus-border: #FFDE42;
+  --input-focus-ring: #FFDE42;
+  --input-foreground: #ffffff;
+  --input-placeholder: #a8a29e;
+  
+  --ring: #FFDE42;
+  --ring-focus: #FFDE42;
+  
+  --btn-primary-bg: #FFDE42;
+  --btn-primary-text: #1B0C0C;
+  --btn-primary-hover: #e6c83b;
+  --btn-primary-active: #4C5C2D;
+  --btn-primary-focus-ring: #FFDE42;
+
+  --btn-secondary-bg: #313E17;
+  --btn-secondary-border: #4C5C2D;
+  --btn-secondary-text: #FFDE42;
+  --btn-secondary-hover: #4C5C2D;
+
+  /* Semantic Status Colors (Accessibility Preserved) */
+  --success: #10b981;
+  --warning: #FFDE42;
+  --error: #ef4444;
+  --info: #38bdf8;
+
+  /* Habit UI Specific Tokens */
+  --habit-completed: #FFDE42;
+  --habit-progress-fill: #FFDE42;
+  --habit-progress-track: #4C5C2D;
+  --habit-streak-flame: #FFDE42;
+  --habit-card-border: #4C5C2D;
+  --habit-card-border-hover: #FFDE42;
+}
+
+/* --------------------------------------------------
+   THEME: VIBRANT RED
+   Base: #000000 | Surface: #830000 | Primary: #BC0202 | Accent: #FF0000
+   -------------------------------------------------- */
+[data-theme="vibrant-red"] {
   color-scheme: dark;
 
   /* Theme Core Palette Tokens */
@@ -81,7 +163,9 @@
   --habit-card-border-hover: #BC0202;
 }
 
-/* Fallback / Coexisting Theme: Dark */
+/* --------------------------------------------------
+   THEME: DARK MODE (DEFAULT SLATE/INDIGO)
+   -------------------------------------------------- */
 [data-theme="dark"] {
   color-scheme: dark;
   --theme-background: #020617;
@@ -136,7 +220,9 @@
   --habit-card-border-hover: #6366f1;
 }
 
-/* Fallback / Coexisting Theme: Light */
+/* --------------------------------------------------
+   THEME: LIGHT MODE
+   -------------------------------------------------- */
 [data-theme="light"] {
   color-scheme: light;
   --theme-background: #f8fafc;
@@ -201,9 +287,297 @@
 }
 
 /* ==================================================
-   VIBRANT RED THEME RULE MAPPINGS
-   Enforces consistent, centralized application
-   across all components without component logic edits.
+   GOLDEN OLIVE THEME RULE MAPPINGS
+   Base: #1B0C0C | Surface: #313E17 | Structure: #4C5C2D | Accent: #FFDE42
+   ================================================== */
+
+:root,
+[data-theme="golden-olive"],
+.theme-golden-olive {
+  /* Selection Highlight */
+  ::selection {
+    background-color: #4C5C2D;
+    color: #FFDE42;
+  }
+
+  /* Main Canvas & Base Background (#1B0C0C) */
+  .bg-slate-950 {
+    background-color: #1B0C0C !important;
+  }
+
+  /* Navigation / Header */
+  header {
+    background-color: rgba(27, 12, 12, 0.92) !important;
+    border-bottom: 1px solid #4C5C2D !important;
+    backdrop-filter: blur(12px) !important;
+  }
+
+  header a.text-slate-300:hover,
+  header button.text-slate-400:hover,
+  nav a.text-slate-400:hover {
+    color: #ffffff !important;
+    background-color: rgba(76, 92, 45, 0.45) !important;
+  }
+
+  /* Active Navigation Indicator */
+  nav a.bg-indigo-600,
+  nav a.shadow-indigo-600\/30 {
+    background-color: #FFDE42 !important;
+    color: #1B0C0C !important;
+    box-shadow: 0 0 14px rgba(255, 222, 66, 0.35) !important;
+    font-weight: 700 !important;
+  }
+
+  /* Primary CTA Buttons */
+  button.bg-indigo-600,
+  a.bg-indigo-600,
+  .bg-indigo-600,
+  .bg-gradient-to-r.from-indigo-600.to-violet-600,
+  a.from-indigo-600.to-violet-600 {
+    background: #FFDE42 !important;
+    background-image: none !important;
+    color: #1B0C0C !important;
+    font-weight: 700 !important;
+    box-shadow: 0 4px 16px rgba(255, 222, 66, 0.28) !important;
+    border: 1px solid transparent !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+
+  button.bg-indigo-600:hover,
+  a.bg-indigo-600:hover,
+  .bg-indigo-600:hover,
+  .bg-gradient-to-r.from-indigo-600.to-violet-600:hover,
+  a.from-indigo-600.to-violet-600:hover {
+    background: #e6c83b !important;
+    background-color: #e6c83b !important;
+    color: #1B0C0C !important;
+    box-shadow: 0 6px 20px rgba(255, 222, 66, 0.4) !important;
+    transform: translateY(-1px);
+  }
+
+  button.bg-indigo-600:active,
+  a.bg-indigo-600:active,
+  .bg-indigo-600:active {
+    background: #4C5C2D !important;
+    background-color: #4C5C2D !important;
+    color: #ffffff !important;
+    transform: translateY(0);
+  }
+
+  button.bg-indigo-600:focus-visible,
+  a.bg-indigo-600:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    outline: 2px solid #FFDE42 !important;
+    outline-offset: 2px !important;
+  }
+
+  /* Secondary Buttons */
+  button.bg-slate-800,
+  a.bg-slate-800,
+  a.bg-slate-800\/80,
+  button.bg-slate-800\/80 {
+    background-color: #313E17 !important;
+    border: 1px solid #4C5C2D !important;
+    color: #FFDE42 !important;
+    font-weight: 600 !important;
+    transition: all 0.2s ease !important;
+  }
+
+  button.bg-slate-800:hover,
+  a.bg-slate-800:hover,
+  a.bg-slate-800\/80:hover {
+    background-color: #4C5C2D !important;
+    color: #ffffff !important;
+    border-color: #FFDE42 !important;
+  }
+
+  /* Cards - Deep Olive Surfaces (#313E17) over Foundation (#1B0C0C) */
+  .bg-slate-900,
+  .bg-slate-900\/60,
+  .bg-slate-900\/70,
+  .bg-slate-900\/80,
+  .bg-slate-900\/90 {
+    background-color: #313E17 !important;
+    border: 1px solid #4C5C2D !important;
+  }
+
+  /* Subtle Card Hover Golden Highlight */
+  .bg-slate-900\/60:hover,
+  .bg-slate-900\/70:hover,
+  .bg-slate-900\/80:hover,
+  .bg-slate-900:hover {
+    border-color: #FFDE42 !important;
+    box-shadow: 0 4px 20px rgba(76, 92, 45, 0.35) !important;
+  }
+
+  /* Alternative Dark Surfaces */
+  .bg-slate-950\/60,
+  .bg-slate-950\/70,
+  .bg-slate-950\/80 {
+    background-color: #1B0C0C !important;
+    border: 1px solid #4C5C2D !important;
+  }
+
+  /* Borders across layout */
+  .border-slate-800,
+  .border-slate-800\/60,
+  .border-slate-800\/80,
+  .border-slate-700,
+  .border-slate-700\/80 {
+    border-color: #4C5C2D !important;
+  }
+
+  /* Milestone / Hero Card in Dashboard */
+  .from-indigo-950\/60 {
+    background: linear-gradient(135deg, rgba(76, 92, 45, 0.55) 0%, #313E17 55%, #1B0C0C 100%) !important;
+    border: 1px solid #4C5C2D !important;
+    box-shadow: 0 8px 32px rgba(49, 62, 23, 0.35) !important;
+  }
+
+  .text-indigo-300 {
+    color: #FFDE42 !important;
+  }
+
+  /* Metrics & Numbers */
+  .from-indigo-400.to-emerald-400 {
+    background: linear-gradient(90deg, #FFDE42 0%, #fff29a 100%) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+  }
+
+  .text-indigo-400,
+  .text-violet-400,
+  .text-amber-400 {
+    color: #FFDE42 !important;
+  }
+
+  /* Links & Accents */
+  a.text-indigo-400:hover,
+  a.text-indigo-300:hover,
+  a.text-violet-400:hover {
+    color: #4C5C2D !important;
+  }
+
+  /* Badges */
+  .bg-amber-500\/10,
+  .bg-indigo-500\/10,
+  .bg-violet-500\/10 {
+    background-color: rgba(76, 92, 45, 0.35) !important;
+    border-color: #4C5C2D !important;
+    color: #FFDE42 !important;
+  }
+
+  /* Progress Bar Track & Fill */
+  .w-full.bg-slate-950\/70.border.border-slate-800 {
+    background-color: #4C5C2D !important;
+    border-color: #4C5C2D !important;
+  }
+
+  .bg-gradient-to-r.from-indigo-500.via-violet-500.to-emerald-400 {
+    background: linear-gradient(90deg, #4C5C2D 0%, #FFDE42 100%) !important;
+    box-shadow: 0 0 12px rgba(255, 222, 66, 0.45) !important;
+  }
+
+  /* Forms & Inputs */
+  input,
+  textarea,
+  select {
+    background-color: #313E17 !important;
+    border: 1px solid #4C5C2D !important;
+    color: #ffffff !important;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: #a8a29e !important;
+  }
+
+  input:focus,
+  textarea:focus,
+  select:focus,
+  .focus\:ring-indigo-500:focus,
+  .focus\:border-indigo-500:focus {
+    border-color: #FFDE42 !important;
+    box-shadow: 0 0 0 2px rgba(255, 222, 66, 0.4) !important;
+    outline: none !important;
+  }
+
+  /* Modals / Dialogs */
+  .fixed.inset-0.bg-slate-950\/80 {
+    background-color: rgba(27, 12, 12, 0.9) !important;
+  }
+
+  .fixed.inset-0 .bg-slate-900 {
+    background-color: #1B0C0C !important;
+    border: 1px solid #4C5C2D !important;
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.9), 0 0 30px rgba(76, 92, 45, 0.3) !important;
+  }
+
+  .fixed.inset-0 .border-b.border-slate-800 {
+    border-bottom-color: #4C5C2D !important;
+  }
+
+  /* Close Buttons on Modals */
+  .fixed.inset-0 button.text-slate-400:hover {
+    color: #FFDE42 !important;
+    background-color: rgba(76, 92, 45, 0.4) !important;
+  }
+
+  /* Habit Tracking Completed vs Incomplete */
+  button.bg-emerald-500 {
+    background-color: #FFDE42 !important;
+    color: #1B0C0C !important;
+    box-shadow: 0 0 14px rgba(255, 222, 66, 0.4) !important;
+  }
+
+  .bg-emerald-500\/20.text-emerald-300 {
+    background-color: rgba(76, 92, 45, 0.4) !important;
+    color: #FFDE42 !important;
+    border-color: #4C5C2D !important;
+  }
+
+  .bg-emerald-500\/20.text-emerald-300:hover {
+    background-color: rgba(76, 92, 45, 0.6) !important;
+  }
+
+  /* Decorative Orbs in Auth Pages */
+  .bg-indigo-600\/20,
+  .bg-violet-600\/20 {
+    background-color: rgba(76, 92, 45, 0.35) !important;
+  }
+
+  /* Text Contrast Enforcement */
+  .text-slate-400 {
+    color: #d5cebe;
+  }
+
+  .text-slate-500 {
+    color: #a8a29e;
+  }
+
+  /* Preserve Key Semantic Badges & Feedback */
+  .text-emerald-400,
+  .text-emerald-600 {
+    color: #10b981 !important;
+  }
+
+  .bg-emerald-500\/10 {
+    background-color: rgba(16, 185, 129, 0.12) !important;
+    border-color: rgba(16, 185, 129, 0.25) !important;
+  }
+
+  /* Error states */
+  .bg-red-500\/10 {
+    background-color: rgba(239, 68, 68, 0.12) !important;
+    border-color: rgba(239, 68, 68, 0.3) !important;
+    color: #fca5a5 !important;
+  }
+}
+
+/* ==================================================
+   VIBRANT RED THEME RULE MAPPINGS (COEXISTING)
    ================================================== */
 
 [data-theme="vibrant-red"] {
@@ -355,7 +729,8 @@
   }
 
   .text-indigo-400,
-  .text-violet-400 {
+  .text-violet-400,
+  .text-amber-400 {
     color: var(--theme-accent) !important;
   }
 
@@ -366,11 +741,7 @@
     color: var(--theme-primary) !important;
   }
 
-  /* Streak flame and KPI accent colors */
-  .text-amber-400 {
-    color: var(--theme-accent) !important;
-  }
-
+  /* Badges */
   .bg-amber-500\/10,
   .bg-indigo-500\/10,
   .bg-violet-500\/10 {
@@ -435,7 +806,6 @@
   }
 
   /* Habit Tracking Completed vs Incomplete */
-  /* Completed habit 1-click toggle */
   button.bg-emerald-500 {
     background-color: var(--theme-accent) !important;
     color: #ffffff !important;

@@ -98,45 +98,58 @@ export default function Settings() {
 
             <div className="w-full pt-4 border-t border-slate-800 space-y-2 text-left">
               <span className="text-xs text-slate-400 block font-semibold">Active Theme</span>
-              <div className="grid grid-cols-3 gap-1.5 w-full bg-slate-950/80 p-1 rounded-xl border border-slate-800">
+              <div className="grid grid-cols-2 gap-2 w-full bg-slate-950/80 p-1.5 rounded-xl border border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setTheme('golden-olive')}
+                  className={`px-2.5 py-1.5 rounded-lg text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-all ${
+                    theme === 'golden-olive'
+                      ? 'bg-[#FFDE42] text-[#1B0C0C] font-bold shadow-md shadow-yellow-500/20'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                  title="Switch to Golden Olive"
+                >
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#4C5C2D] border border-[#FFDE42]"></span>
+                  <span>Golden Olive</span>
+                </button>
                 <button
                   type="button"
                   onClick={() => setTheme('vibrant-red')}
-                  className={`px-2 py-1.5 rounded-lg text-[11px] font-semibold flex items-center justify-center gap-1 transition-all ${
+                  className={`px-2.5 py-1.5 rounded-lg text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-all ${
                     theme === 'vibrant-red'
-                      ? 'bg-[#FF0000] text-white shadow'
+                      ? 'bg-[#FF0000] text-white shadow-md shadow-red-500/20'
                       : 'text-slate-400 hover:text-white'
                   }`}
                   title="Switch to Vibrant Red"
                 >
-                  <span className="w-2 h-2 rounded-full bg-[#BC0202]"></span>
-                  <span>Red</span>
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#830000] border border-[#BC0202]"></span>
+                  <span>Vibrant Red</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setTheme('dark')}
-                  className={`px-2 py-1.5 rounded-lg text-[11px] font-semibold flex items-center justify-center gap-1 transition-all ${
+                  className={`px-2.5 py-1.5 rounded-lg text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-all ${
                     theme === 'dark'
                       ? 'bg-indigo-600 text-white shadow'
                       : 'text-slate-400 hover:text-white'
                   }`}
                   title="Switch to Dark Mode"
                 >
-                  <Moon className="w-3 h-3 text-indigo-300" />
-                  <span>Dark</span>
+                  <Moon className="w-3.5 h-3.5 text-indigo-300" />
+                  <span>Dark Mode</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setTheme('light')}
-                  className={`px-2 py-1.5 rounded-lg text-[11px] font-semibold flex items-center justify-center gap-1 transition-all ${
+                  className={`px-2.5 py-1.5 rounded-lg text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-all ${
                     theme === 'light'
                       ? 'bg-white text-slate-900 shadow'
                       : 'text-slate-400 hover:text-white'
                   }`}
                   title="Switch to Light Mode"
                 >
-                  <Sun className="w-3 h-3 text-amber-500" />
-                  <span>Light</span>
+                  <Sun className="w-3.5 h-3.5 text-amber-500" />
+                  <span>Light Mode</span>
                 </button>
               </div>
             </div>

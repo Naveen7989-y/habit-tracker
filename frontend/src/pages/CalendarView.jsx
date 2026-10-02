@@ -250,6 +250,20 @@ export default function CalendarView() {
 
   // Color classes for GitHub-style heatmap cells
   const getHeatmapColorClass = (level) => {
+    if (theme === 'golden-olive') {
+      switch (level) {
+        case 1:
+          return 'bg-[#253012] border-[#313E17] text-[#c9d9a0] hover:border-[#4C5C2D]';
+        case 2:
+          return 'bg-[#313E17] border-[#4C5C2D] text-[#dce8b8] hover:border-[#FFDE42]';
+        case 3:
+          return 'bg-[#4C5C2D] border-[#FFDE42]/70 text-[#FFDE42] hover:brightness-110';
+        case 4:
+          return 'bg-[#FFDE42] border-[#fff089] text-[#1B0C0C] font-bold shadow-sm shadow-yellow-500/30 hover:bg-[#ffe359]';
+        default:
+          return 'bg-[#1B0C0C] border-[#313E17] text-slate-500 hover:border-[#4C5C2D]';
+      }
+    }
     if (theme === 'vibrant-red') {
       switch (level) {
         case 1:
@@ -465,7 +479,7 @@ export default function CalendarView() {
                             onClick={() => openDayInspector(day.date)}
                             className={`w-4 h-4 sm:w-4.5 sm:h-4.5 rounded-[4px] border transition-all relative group cursor-pointer ${getHeatmapColorClass(
                               day.level
-                            )} ${isCurrentDay ? (theme === 'vibrant-red' ? 'ring-1.5 ring-[#FF0000] ring-offset-1 ring-offset-black' : 'ring-1.5 ring-emerald-400 ring-offset-1 ring-offset-slate-950') : ''}`}
+                            )} ${isCurrentDay ? (theme === 'golden-olive' ? 'ring-1.5 ring-[#FFDE42] ring-offset-1 ring-offset-[#1B0C0C]' : theme === 'vibrant-red' ? 'ring-1.5 ring-[#FF0000] ring-offset-1 ring-offset-black' : 'ring-1.5 ring-emerald-400 ring-offset-1 ring-offset-slate-950') : ''}`}
                             title={`${day.date}: ${day.count} habit(s) completed (${day.percentage}%)`}
                           >
                             {/* Hover tooltip for quick preview */}
@@ -487,11 +501,26 @@ export default function CalendarView() {
                 </span>
                 <div className="flex items-center gap-1.5">
                   <span className="text-[11px] text-slate-400">Less</span>
-                  <div className={`w-3 h-3 rounded-[3px] border ${theme === 'vibrant-red' ? 'bg-[#000000] border-[#830000]/60' : 'bg-slate-900 border-slate-800'}`} />
-                  <div className={`w-3 h-3 rounded-[3px] border ${theme === 'vibrant-red' ? 'bg-[#3d0000] border-[#830000]' : 'bg-emerald-950/80 border-emerald-800/40'}`} />
-                  <div className={`w-3 h-3 rounded-[3px] border ${theme === 'vibrant-red' ? 'bg-[#830000] border-[#BC0202]' : 'bg-emerald-800/80 border-emerald-600/50'}`} />
-                  <div className={`w-3 h-3 rounded-[3px] border ${theme === 'vibrant-red' ? 'bg-[#BC0202] border-[#FF0000]' : 'bg-emerald-600 border-emerald-500'}`} />
-                  <div className={`w-3 h-3 rounded-[3px] border ${theme === 'vibrant-red' ? 'bg-[#FF0000] border-[#ff4d4d]' : 'bg-emerald-400 border-emerald-300'}`} />
+                  <div className={`w-3 h-3 rounded-[3px] border ${
+                    theme === 'golden-olive' ? 'bg-[#1B0C0C] border-[#313E17]' :
+                    theme === 'vibrant-red' ? 'bg-[#000000] border-[#830000]/60' : 'bg-slate-900 border-slate-800'
+                  }`} />
+                  <div className={`w-3 h-3 rounded-[3px] border ${
+                    theme === 'golden-olive' ? 'bg-[#253012] border-[#313E17]' :
+                    theme === 'vibrant-red' ? 'bg-[#3d0000] border-[#830000]' : 'bg-emerald-950/80 border-emerald-800/40'
+                  }`} />
+                  <div className={`w-3 h-3 rounded-[3px] border ${
+                    theme === 'golden-olive' ? 'bg-[#313E17] border-[#4C5C2D]' :
+                    theme === 'vibrant-red' ? 'bg-[#830000] border-[#BC0202]' : 'bg-emerald-800/80 border-emerald-600/50'
+                  }`} />
+                  <div className={`w-3 h-3 rounded-[3px] border ${
+                    theme === 'golden-olive' ? 'bg-[#4C5C2D] border-[#FFDE42]/70' :
+                    theme === 'vibrant-red' ? 'bg-[#BC0202] border-[#FF0000]' : 'bg-emerald-600 border-emerald-500'
+                  }`} />
+                  <div className={`w-3 h-3 rounded-[3px] border ${
+                    theme === 'golden-olive' ? 'bg-[#FFDE42] border-[#fff089]' :
+                    theme === 'vibrant-red' ? 'bg-[#FF0000] border-[#ff4d4d]' : 'bg-emerald-400 border-emerald-300'
+                  }`} />
                   <span className="text-[11px] text-slate-400">More</span>
                 </div>
               </div>
@@ -585,34 +614,42 @@ export default function CalendarView() {
                   const isToday = day.isToday;
                   const isFuture = day.isFuture;
 
-                  let cardBg = theme === 'vibrant-red'
-                    ? 'bg-[#000000] border-[#830000]/80 hover:border-[#BC0202]'
-                    : 'bg-slate-950/60 border-slate-800/80 hover:border-slate-700';
+                  let cardBg = theme === 'golden-olive'
+                    ? 'bg-[#1B0C0C] border-[#4C5C2D]/60 hover:border-[#FFDE42]'
+                    : theme === 'vibrant-red'
+                      ? 'bg-[#000000] border-[#830000]/80 hover:border-[#BC0202]'
+                      : 'bg-slate-950/60 border-slate-800/80 hover:border-slate-700';
                   let statusBadge = null;
 
                   if (day.status === 'full') {
-                    cardBg = theme === 'vibrant-red'
-                      ? 'bg-[#830000]/25 border-[#BC0202] hover:border-[#FF0000] shadow-sm shadow-red-500/10'
-                      : 'bg-emerald-950/30 border-emerald-500/40 hover:border-emerald-400 shadow-sm shadow-emerald-500/5';
+                    cardBg = theme === 'golden-olive'
+                      ? 'bg-[#313E17] border-[#FFDE42] hover:border-[#ffe873] shadow-sm shadow-yellow-500/10'
+                      : theme === 'vibrant-red'
+                        ? 'bg-[#830000]/25 border-[#BC0202] hover:border-[#FF0000] shadow-sm shadow-red-500/10'
+                        : 'bg-emerald-950/30 border-emerald-500/40 hover:border-emerald-400 shadow-sm shadow-emerald-500/5';
                     statusBadge = (
-                      <span className={`text-[10px] font-bold flex items-center gap-0.5 ${theme === 'vibrant-red' ? 'text-[#FF0000]' : 'text-emerald-400'}`}>
+                      <span className={`text-[10px] font-bold flex items-center gap-0.5 ${theme === 'golden-olive' ? 'text-[#FFDE42]' : theme === 'vibrant-red' ? 'text-[#FF0000]' : 'text-emerald-400'}`}>
                         <CheckCircle2 className="w-3 h-3" />
                         <span>{day.completedCount}/{day.totalHabits}</span>
                       </span>
                     );
                   } else if (day.status === 'partial') {
-                    cardBg = theme === 'vibrant-red'
-                      ? 'bg-[#830000]/15 border-[#830000] hover:border-[#BC0202]'
-                      : 'bg-indigo-950/30 border-indigo-500/40 hover:border-indigo-400';
+                    cardBg = theme === 'golden-olive'
+                      ? 'bg-[#313E17]/60 border-[#4C5C2D] hover:border-[#FFDE42]'
+                      : theme === 'vibrant-red'
+                        ? 'bg-[#830000]/15 border-[#830000] hover:border-[#BC0202]'
+                        : 'bg-indigo-950/30 border-indigo-500/40 hover:border-indigo-400';
                     statusBadge = (
-                      <span className={`text-[10px] font-semibold ${theme === 'vibrant-red' ? 'text-[#ff8080]' : 'text-indigo-300'}`}>
+                      <span className={`text-[10px] font-semibold ${theme === 'golden-olive' ? 'text-[#FFDE42]/80' : theme === 'vibrant-red' ? 'text-[#ff8080]' : 'text-indigo-300'}`}>
                         {day.completedCount}/{day.totalHabits}
                       </span>
                     );
                   } else if (day.status === 'missed') {
-                    cardBg = theme === 'vibrant-red'
-                      ? 'bg-[#000000] border-[#830000]/50 text-slate-500'
-                      : 'bg-slate-950/70 border-slate-800/90 text-slate-500';
+                    cardBg = theme === 'golden-olive'
+                      ? 'bg-[#1B0C0C] border-[#313E17] text-slate-500'
+                      : theme === 'vibrant-red'
+                        ? 'bg-[#000000] border-[#830000]/50 text-slate-500'
+                        : 'bg-slate-950/70 border-slate-800/90 text-slate-500';
                     statusBadge = (
                       <span className="text-[10px] text-slate-500">
                         0/{day.totalHabits}
@@ -621,9 +658,11 @@ export default function CalendarView() {
                   }
 
                   if (isToday) {
-                    cardBg += theme === 'vibrant-red'
-                      ? ' ring-2 ring-[#FF0000] ring-offset-2 ring-offset-black'
-                      : ' ring-2 ring-indigo-500 ring-offset-2 ring-offset-slate-950';
+                    cardBg += theme === 'golden-olive'
+                      ? ' ring-2 ring-[#FFDE42] ring-offset-2 ring-offset-[#1B0C0C]'
+                      : theme === 'vibrant-red'
+                        ? ' ring-2 ring-[#FF0000] ring-offset-2 ring-offset-black'
+                        : ' ring-2 ring-indigo-500 ring-offset-2 ring-offset-slate-950';
                   }
 
                   return (
@@ -636,7 +675,7 @@ export default function CalendarView() {
                       <div className="flex items-center justify-between w-full">
                         <span
                           className={`text-sm sm:text-base font-extrabold ${isToday
-                              ? (theme === 'vibrant-red' ? 'text-[#FF0000] bg-red-500/20 px-1.5 py-0.5 rounded-lg' : 'text-indigo-400 bg-indigo-500/20 px-1.5 py-0.5 rounded-lg')
+                              ? (theme === 'golden-olive' ? 'text-[#FFDE42] bg-[#4C5C2D]/50 px-1.5 py-0.5 rounded-lg' : theme === 'vibrant-red' ? 'text-[#FF0000] bg-red-500/20 px-1.5 py-0.5 rounded-lg' : 'text-indigo-400 bg-indigo-500/20 px-1.5 py-0.5 rounded-lg')
                               : isFuture
                                 ? 'text-slate-500'
                                 : 'text-slate-200'
@@ -646,7 +685,7 @@ export default function CalendarView() {
                         </span>
 
                         {isToday && (
-                          <span className={`hidden sm:inline-block text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded-full ${theme === 'vibrant-red' ? 'bg-[#FF0000] text-white' : 'bg-indigo-500 text-white'}`}>
+                          <span className={`hidden sm:inline-block text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded-full ${theme === 'golden-olive' ? 'bg-[#FFDE42] text-[#1B0C0C] font-bold' : theme === 'vibrant-red' ? 'bg-[#FF0000] text-white' : 'bg-indigo-500 text-white'}`}>
                             Today
                           </span>
                         )}

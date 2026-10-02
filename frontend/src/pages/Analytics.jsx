@@ -275,14 +275,14 @@ export default function Analytics() {
                 <div className="h-64 w-full">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={analyticsData.weekly.days} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke={theme === 'vibrant-red' ? '#830000' : '#1e293b'} vertical={false} />
-                      <XAxis dataKey="day" stroke={theme === 'vibrant-red' ? '#d1d5db' : '#64748b'} fontSize={11} tickLine={false} />
-                      <YAxis stroke={theme === 'vibrant-red' ? '#d1d5db' : '#64748b'} fontSize={11} tickLine={false} domain={[0, Math.max(5, analyticsData.weekly.totalHabits)]} />
+                      <CartesianGrid strokeDasharray="3 3" stroke={theme === 'golden-olive' ? '#4C5C2D' : theme === 'vibrant-red' ? '#830000' : '#1e293b'} vertical={false} />
+                      <XAxis dataKey="day" stroke={theme === 'golden-olive' ? '#d5cebe' : theme === 'vibrant-red' ? '#d1d5db' : '#64748b'} fontSize={11} tickLine={false} />
+                      <YAxis stroke={theme === 'golden-olive' ? '#d5cebe' : theme === 'vibrant-red' ? '#d1d5db' : '#64748b'} fontSize={11} tickLine={false} domain={[0, Math.max(5, analyticsData.weekly.totalHabits)]} />
                       <Tooltip content={<CustomTooltip unit="habits" />} />
                       <Bar
                         dataKey="completed"
                         name="Completed Habits"
-                        fill={theme === 'vibrant-red' ? '#FF0000' : '#6366f1'}
+                        fill={theme === 'golden-olive' ? '#FFDE42' : theme === 'vibrant-red' ? '#FF0000' : '#6366f1'}
                         radius={[6, 6, 0, 0]}
                       />
                     </BarChart>
@@ -362,19 +362,27 @@ export default function Analytics() {
                   <AreaChart data={analyticsData.monthly.trend} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                     <defs>
                       <linearGradient id="colorRate" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={theme === 'vibrant-red' ? '#BC0202' : '#8b5cf6'} stopOpacity={theme === 'vibrant-red' ? 0.6 : 0.4} />
-                        <stop offset="95%" stopColor={theme === 'vibrant-red' ? '#830000' : '#8b5cf6'} stopOpacity={0.0} />
+                        <stop
+                          offset="5%"
+                          stopColor={theme === 'golden-olive' ? '#FFDE42' : theme === 'vibrant-red' ? '#BC0202' : '#8b5cf6'}
+                          stopOpacity={theme === 'golden-olive' ? 0.6 : theme === 'vibrant-red' ? 0.6 : 0.4}
+                        />
+                        <stop
+                          offset="95%"
+                          stopColor={theme === 'golden-olive' ? '#313E17' : theme === 'vibrant-red' ? '#830000' : '#8b5cf6'}
+                          stopOpacity={0.0}
+                        />
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke={theme === 'vibrant-red' ? '#830000' : '#1e293b'} vertical={false} />
-                    <XAxis dataKey="label" stroke={theme === 'vibrant-red' ? '#d1d5db' : '#64748b'} fontSize={11} tickLine={false} interval="preserveStartEnd" />
-                    <YAxis stroke={theme === 'vibrant-red' ? '#d1d5db' : '#64748b'} fontSize={11} tickLine={false} domain={[0, 100]} unit="%" />
+                    <CartesianGrid strokeDasharray="3 3" stroke={theme === 'golden-olive' ? '#4C5C2D' : theme === 'vibrant-red' ? '#830000' : '#1e293b'} vertical={false} />
+                    <XAxis dataKey="label" stroke={theme === 'golden-olive' ? '#d5cebe' : theme === 'vibrant-red' ? '#d1d5db' : '#64748b'} fontSize={11} tickLine={false} interval="preserveStartEnd" />
+                    <YAxis stroke={theme === 'golden-olive' ? '#d5cebe' : theme === 'vibrant-red' ? '#d1d5db' : '#64748b'} fontSize={11} tickLine={false} domain={[0, 100]} unit="%" />
                     <Tooltip content={<CustomTooltip unit="%" />} />
                     <Area
                       type="monotone"
                       dataKey="rate"
                       name="Completion Rate"
-                      stroke={theme === 'vibrant-red' ? '#FF0000' : '#8b5cf6'}
+                      stroke={theme === 'golden-olive' ? '#FFDE42' : theme === 'vibrant-red' ? '#FF0000' : '#8b5cf6'}
                       strokeWidth={3}
                       fillOpacity={1}
                       fill="url(#colorRate)"
@@ -404,11 +412,11 @@ export default function Analytics() {
                 <div className="h-60 w-full mt-4">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={analyticsData.dayOfWeek.days} layout="vertical" margin={{ top: 0, right: 20, left: 10, bottom: 0 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke={theme === 'vibrant-red' ? '#830000' : '#1e293b'} horizontal={false} />
-                      <XAxis type="number" stroke={theme === 'vibrant-red' ? '#d1d5db' : '#64748b'} fontSize={11} tickLine={false} />
-                      <YAxis type="category" dataKey="short" stroke={theme === 'vibrant-red' ? '#d1d5db' : '#64748b'} fontSize={11} tickLine={false} />
+                      <CartesianGrid strokeDasharray="3 3" stroke={theme === 'golden-olive' ? '#4C5C2D' : theme === 'vibrant-red' ? '#830000' : '#1e293b'} horizontal={false} />
+                      <XAxis type="number" stroke={theme === 'golden-olive' ? '#d5cebe' : theme === 'vibrant-red' ? '#d1d5db' : '#64748b'} fontSize={11} tickLine={false} />
+                      <YAxis type="category" dataKey="short" stroke={theme === 'golden-olive' ? '#d5cebe' : theme === 'vibrant-red' ? '#d1d5db' : '#64748b'} fontSize={11} tickLine={false} />
                       <Tooltip content={<CustomTooltip unit="habits" />} />
-                      <Bar dataKey="completions" name="Logged Completions" fill={theme === 'vibrant-red' ? '#BC0202' : '#10b981'} radius={[0, 4, 4, 0]} />
+                      <Bar dataKey="completions" name="Logged Completions" fill={theme === 'golden-olive' ? '#4C5C2D' : theme === 'vibrant-red' ? '#BC0202' : '#10b981'} radius={[0, 4, 4, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
