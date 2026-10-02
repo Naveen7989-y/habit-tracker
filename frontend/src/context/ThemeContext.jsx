@@ -1,20 +1,20 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const ThemeContext = createContext({
-  theme: 'golden-olive',
+  theme: 'soft-sunrise',
   toggleTheme: () => {},
   setTheme: () => {},
-  availableThemes: ['golden-olive', 'vibrant-red', 'dark', 'light'],
+  availableThemes: ['soft-sunrise', 'golden-olive', 'vibrant-red', 'dark', 'light'],
 });
 
 export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState(() => {
     const saved = localStorage.getItem('habytat_theme');
-    if (saved && ['golden-olive', 'vibrant-red', 'dark', 'light'].includes(saved)) {
+    if (saved && ['soft-sunrise', 'golden-olive', 'vibrant-red', 'dark', 'light'].includes(saved)) {
       return saved;
     }
-    // Default active theme is Golden Olive
-    return 'golden-olive';
+    // Default active theme is Soft Sunrise
+    return 'soft-sunrise';
   });
 
   useEffect(() => {
@@ -22,9 +22,11 @@ export function ThemeProvider({ children }) {
     root.setAttribute('data-theme', theme);
 
     // Sync theme class list for utility compatibility
-    root.classList.remove('theme-golden-olive', 'theme-vibrant-red', 'dark', 'light');
+    root.classList.remove('theme-soft-sunrise', 'theme-golden-olive', 'theme-vibrant-red', 'dark', 'light');
 
-    if (theme === 'golden-olive') {
+    if (theme === 'soft-sunrise') {
+      root.classList.add('theme-soft-sunrise', 'light');
+    } else if (theme === 'golden-olive') {
       root.classList.add('theme-golden-olive', 'dark');
     } else if (theme === 'vibrant-red') {
       root.classList.add('theme-vibrant-red', 'dark');
@@ -39,15 +41,16 @@ export function ThemeProvider({ children }) {
 
   const toggleTheme = () => {
     setTheme((prev) => {
+      if (prev === 'soft-sunrise') return 'golden-olive';
       if (prev === 'golden-olive') return 'vibrant-red';
       if (prev === 'vibrant-red') return 'dark';
       if (prev === 'dark') return 'light';
-      return 'golden-olive';
+      return 'soft-sunrise';
     });
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme, setTheme, availableThemes: ['golden-olive', 'vibrant-red', 'dark', 'light'] }}>
+    <ThemeContext.Provider value={{ theme, toggleTheme, setTheme, availableThemes: ['soft-sunrise', 'golden-olive', 'vibrant-red', 'dark', 'light'] }}>
       {children}
     </ThemeContext.Provider>
   );

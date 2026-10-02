@@ -250,6 +250,20 @@ export default function CalendarView() {
 
   // Color classes for GitHub-style heatmap cells
   const getHeatmapColorClass = (level) => {
+    if (theme === 'soft-sunrise') {
+      switch (level) {
+        case 1:
+          return 'bg-[#FFFCE1] border-[#FFDDB0] text-[#78716c] hover:border-[#FFBE91]';
+        case 2:
+          return 'bg-[#FFDDB0] border-[#FFBE91] text-[#1c1917] hover:border-[#FFBE91]';
+        case 3:
+          return 'bg-[#FFBE91] border-[#FFDDB0] text-[#1c1917] font-semibold hover:brightness-105';
+        case 4:
+          return 'bg-[#CFEBFF] border-[#b0dcff] text-[#1e293b] font-bold shadow-sm hover:brightness-105';
+        default:
+          return 'bg-[#FFFFFF] border-[#FFDDB0] text-slate-400 hover:border-[#FFBE91]';
+      }
+    }
     if (theme === 'golden-olive') {
       switch (level) {
         case 1:
@@ -479,7 +493,7 @@ export default function CalendarView() {
                             onClick={() => openDayInspector(day.date)}
                             className={`w-4 h-4 sm:w-4.5 sm:h-4.5 rounded-[4px] border transition-all relative group cursor-pointer ${getHeatmapColorClass(
                               day.level
-                            )} ${isCurrentDay ? (theme === 'golden-olive' ? 'ring-1.5 ring-[#FFDE42] ring-offset-1 ring-offset-[#1B0C0C]' : theme === 'vibrant-red' ? 'ring-1.5 ring-[#FF0000] ring-offset-1 ring-offset-black' : 'ring-1.5 ring-emerald-400 ring-offset-1 ring-offset-slate-950') : ''}`}
+                            )} ${isCurrentDay ? (theme === 'soft-sunrise' ? 'ring-1.5 ring-[#FFBE91] ring-offset-1 ring-offset-[#FFFCE1]' : theme === 'golden-olive' ? 'ring-1.5 ring-[#FFDE42] ring-offset-1 ring-offset-[#1B0C0C]' : theme === 'vibrant-red' ? 'ring-1.5 ring-[#FF0000] ring-offset-1 ring-offset-black' : 'ring-1.5 ring-emerald-400 ring-offset-1 ring-offset-slate-950') : ''}`}
                             title={`${day.date}: ${day.count} habit(s) completed (${day.percentage}%)`}
                           >
                             {/* Hover tooltip for quick preview */}
@@ -502,22 +516,27 @@ export default function CalendarView() {
                 <div className="flex items-center gap-1.5">
                   <span className="text-[11px] text-slate-400">Less</span>
                   <div className={`w-3 h-3 rounded-[3px] border ${
+                    theme === 'soft-sunrise' ? 'bg-[#FFFFFF] border-[#FFDDB0]' :
                     theme === 'golden-olive' ? 'bg-[#1B0C0C] border-[#313E17]' :
                     theme === 'vibrant-red' ? 'bg-[#000000] border-[#830000]/60' : 'bg-slate-900 border-slate-800'
                   }`} />
                   <div className={`w-3 h-3 rounded-[3px] border ${
+                    theme === 'soft-sunrise' ? 'bg-[#FFFCE1] border-[#FFDDB0]' :
                     theme === 'golden-olive' ? 'bg-[#253012] border-[#313E17]' :
                     theme === 'vibrant-red' ? 'bg-[#3d0000] border-[#830000]' : 'bg-emerald-950/80 border-emerald-800/40'
                   }`} />
                   <div className={`w-3 h-3 rounded-[3px] border ${
+                    theme === 'soft-sunrise' ? 'bg-[#FFDDB0] border-[#FFBE91]' :
                     theme === 'golden-olive' ? 'bg-[#313E17] border-[#4C5C2D]' :
                     theme === 'vibrant-red' ? 'bg-[#830000] border-[#BC0202]' : 'bg-emerald-800/80 border-emerald-600/50'
                   }`} />
                   <div className={`w-3 h-3 rounded-[3px] border ${
+                    theme === 'soft-sunrise' ? 'bg-[#FFBE91] border-[#FFDDB0]' :
                     theme === 'golden-olive' ? 'bg-[#4C5C2D] border-[#FFDE42]/70' :
                     theme === 'vibrant-red' ? 'bg-[#BC0202] border-[#FF0000]' : 'bg-emerald-600 border-emerald-500'
                   }`} />
                   <div className={`w-3 h-3 rounded-[3px] border ${
+                    theme === 'soft-sunrise' ? 'bg-[#CFEBFF] border-[#b0dcff]' :
                     theme === 'golden-olive' ? 'bg-[#FFDE42] border-[#fff089]' :
                     theme === 'vibrant-red' ? 'bg-[#FF0000] border-[#ff4d4d]' : 'bg-emerald-400 border-emerald-300'
                   }`} />
@@ -614,55 +633,65 @@ export default function CalendarView() {
                   const isToday = day.isToday;
                   const isFuture = day.isFuture;
 
-                  let cardBg = theme === 'golden-olive'
-                    ? 'bg-[#1B0C0C] border-[#4C5C2D]/60 hover:border-[#FFDE42]'
-                    : theme === 'vibrant-red'
-                      ? 'bg-[#000000] border-[#830000]/80 hover:border-[#BC0202]'
-                      : 'bg-slate-950/60 border-slate-800/80 hover:border-slate-700';
+                  let cardBg = theme === 'soft-sunrise'
+                    ? 'bg-[#FFFFFF] border-[#FFDDB0] hover:border-[#FFBE91] text-[#1c1917]'
+                    : theme === 'golden-olive'
+                      ? 'bg-[#1B0C0C] border-[#4C5C2D]/60 hover:border-[#FFDE42]'
+                      : theme === 'vibrant-red'
+                        ? 'bg-[#000000] border-[#830000]/80 hover:border-[#BC0202]'
+                        : 'bg-slate-950/60 border-slate-800/80 hover:border-slate-700';
                   let statusBadge = null;
 
                   if (day.status === 'full') {
-                    cardBg = theme === 'golden-olive'
-                      ? 'bg-[#313E17] border-[#FFDE42] hover:border-[#ffe873] shadow-sm shadow-yellow-500/10'
-                      : theme === 'vibrant-red'
-                        ? 'bg-[#830000]/25 border-[#BC0202] hover:border-[#FF0000] shadow-sm shadow-red-500/10'
-                        : 'bg-emerald-950/30 border-emerald-500/40 hover:border-emerald-400 shadow-sm shadow-emerald-500/5';
+                    cardBg = theme === 'soft-sunrise'
+                      ? 'bg-[#FFDDB0] border-[#FFBE91] hover:border-[#FFBE91] shadow-sm shadow-orange-500/10 text-[#1c1917]'
+                      : theme === 'golden-olive'
+                        ? 'bg-[#313E17] border-[#FFDE42] hover:border-[#ffe873] shadow-sm shadow-yellow-500/10'
+                        : theme === 'vibrant-red'
+                          ? 'bg-[#830000]/25 border-[#BC0202] hover:border-[#FF0000] shadow-sm shadow-red-500/10'
+                          : 'bg-emerald-950/30 border-emerald-500/40 hover:border-emerald-400 shadow-sm shadow-emerald-500/5';
                     statusBadge = (
-                      <span className={`text-[10px] font-bold flex items-center gap-0.5 ${theme === 'golden-olive' ? 'text-[#FFDE42]' : theme === 'vibrant-red' ? 'text-[#FF0000]' : 'text-emerald-400'}`}>
-                        <CheckCircle2 className="w-3 h-3" />
+                      <span className={`text-[10px] font-bold flex items-center gap-0.5 ${theme === 'soft-sunrise' ? 'text-[#1c1917]' : theme === 'golden-olive' ? 'text-[#FFDE42]' : theme === 'vibrant-red' ? 'text-[#FF0000]' : 'text-emerald-400'}`}>
+                        <CheckCircle2 className={`w-3 h-3 ${theme === 'soft-sunrise' ? 'text-[#d97746]' : ''}`} />
                         <span>{day.completedCount}/{day.totalHabits}</span>
                       </span>
                     );
                   } else if (day.status === 'partial') {
-                    cardBg = theme === 'golden-olive'
-                      ? 'bg-[#313E17]/60 border-[#4C5C2D] hover:border-[#FFDE42]'
-                      : theme === 'vibrant-red'
-                        ? 'bg-[#830000]/15 border-[#830000] hover:border-[#BC0202]'
-                        : 'bg-indigo-950/30 border-indigo-500/40 hover:border-indigo-400';
+                    cardBg = theme === 'soft-sunrise'
+                      ? 'bg-[#FFFDF5] border-[#FFDDB0] hover:border-[#FFBE91] text-[#1c1917]'
+                      : theme === 'golden-olive'
+                        ? 'bg-[#313E17]/60 border-[#4C5C2D] hover:border-[#FFDE42]'
+                        : theme === 'vibrant-red'
+                          ? 'bg-[#830000]/15 border-[#830000] hover:border-[#BC0202]'
+                          : 'bg-indigo-950/30 border-indigo-500/40 hover:border-indigo-400';
                     statusBadge = (
-                      <span className={`text-[10px] font-semibold ${theme === 'golden-olive' ? 'text-[#FFDE42]/80' : theme === 'vibrant-red' ? 'text-[#ff8080]' : 'text-indigo-300'}`}>
+                      <span className={`text-[10px] font-semibold ${theme === 'soft-sunrise' ? 'text-[#d97746]' : theme === 'golden-olive' ? 'text-[#FFDE42]/80' : theme === 'vibrant-red' ? 'text-[#ff8080]' : 'text-indigo-300'}`}>
                         {day.completedCount}/{day.totalHabits}
                       </span>
                     );
                   } else if (day.status === 'missed') {
-                    cardBg = theme === 'golden-olive'
-                      ? 'bg-[#1B0C0C] border-[#313E17] text-slate-500'
-                      : theme === 'vibrant-red'
-                        ? 'bg-[#000000] border-[#830000]/50 text-slate-500'
-                        : 'bg-slate-950/70 border-slate-800/90 text-slate-500';
+                    cardBg = theme === 'soft-sunrise'
+                      ? 'bg-[#FFFCE1] border-[#FFDDB0]/70 text-[#a8a29e]'
+                      : theme === 'golden-olive'
+                        ? 'bg-[#1B0C0C] border-[#313E17] text-slate-500'
+                        : theme === 'vibrant-red'
+                          ? 'bg-[#000000] border-[#830000]/50 text-slate-500'
+                          : 'bg-slate-950/70 border-slate-800/90 text-slate-500';
                     statusBadge = (
-                      <span className="text-[10px] text-slate-500">
+                      <span className={`text-[10px] ${theme === 'soft-sunrise' ? 'text-[#a8a29e]' : 'text-slate-500'}`}>
                         0/{day.totalHabits}
                       </span>
                     );
                   }
 
                   if (isToday) {
-                    cardBg += theme === 'golden-olive'
-                      ? ' ring-2 ring-[#FFDE42] ring-offset-2 ring-offset-[#1B0C0C]'
-                      : theme === 'vibrant-red'
-                        ? ' ring-2 ring-[#FF0000] ring-offset-2 ring-offset-black'
-                        : ' ring-2 ring-indigo-500 ring-offset-2 ring-offset-slate-950';
+                    cardBg += theme === 'soft-sunrise'
+                      ? ' ring-2 ring-[#FFBE91] ring-offset-2 ring-offset-[#FFFCE1]'
+                      : theme === 'golden-olive'
+                        ? ' ring-2 ring-[#FFDE42] ring-offset-2 ring-offset-[#1B0C0C]'
+                        : theme === 'vibrant-red'
+                          ? ' ring-2 ring-[#FF0000] ring-offset-2 ring-offset-black'
+                          : ' ring-2 ring-indigo-500 ring-offset-2 ring-offset-slate-950';
                   }
 
                   return (
@@ -675,17 +704,17 @@ export default function CalendarView() {
                       <div className="flex items-center justify-between w-full">
                         <span
                           className={`text-sm sm:text-base font-extrabold ${isToday
-                              ? (theme === 'golden-olive' ? 'text-[#FFDE42] bg-[#4C5C2D]/50 px-1.5 py-0.5 rounded-lg' : theme === 'vibrant-red' ? 'text-[#FF0000] bg-red-500/20 px-1.5 py-0.5 rounded-lg' : 'text-indigo-400 bg-indigo-500/20 px-1.5 py-0.5 rounded-lg')
+                              ? (theme === 'soft-sunrise' ? 'text-[#1c1917] bg-[#FFBE91] px-1.5 py-0.5 rounded-lg font-black' : theme === 'golden-olive' ? 'text-[#FFDE42] bg-[#4C5C2D]/50 px-1.5 py-0.5 rounded-lg' : theme === 'vibrant-red' ? 'text-[#FF0000] bg-red-500/20 px-1.5 py-0.5 rounded-lg' : 'text-indigo-400 bg-indigo-500/20 px-1.5 py-0.5 rounded-lg')
                               : isFuture
-                                ? 'text-slate-500'
-                                : 'text-slate-200'
+                                ? (theme === 'soft-sunrise' ? 'text-stone-400' : 'text-slate-500')
+                                : (theme === 'soft-sunrise' ? 'text-[#1c1917]' : 'text-slate-200')
                             }`}
                         >
                           {day.day}
                         </span>
 
                         {isToday && (
-                          <span className={`hidden sm:inline-block text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded-full ${theme === 'golden-olive' ? 'bg-[#FFDE42] text-[#1B0C0C] font-bold' : theme === 'vibrant-red' ? 'bg-[#FF0000] text-white' : 'bg-indigo-500 text-white'}`}>
+                          <span className={`hidden sm:inline-block text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded-full ${theme === 'soft-sunrise' ? 'bg-[#FFBE91] text-[#1c1917] font-bold' : theme === 'golden-olive' ? 'bg-[#FFDE42] text-[#1B0C0C] font-bold' : theme === 'vibrant-red' ? 'bg-[#FF0000] text-white' : 'bg-indigo-500 text-white'}`}>
                             Today
                           </span>
                         )}

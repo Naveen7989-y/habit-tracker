@@ -4,17 +4,97 @@
 
 /* ==================================================
    CENTRALIZED THEME SYSTEM & DESIGN TOKENS
-   Theme 1: Golden Olive (Default)
-   Theme 2: Vibrant Red
-   Theme 3: Dark Mode
-   Theme 4: Light Mode
+   Theme 1: Soft Sunrise (Default)
+   Theme 2: Golden Olive
+   Theme 3: Vibrant Red
+   Theme 4: Dark Mode
+   Theme 5: Light Mode
    ================================================== */
 
 /* --------------------------------------------------
-   THEME: GOLDEN OLIVE (DEFAULT)
-   Base: #1B0C0C | Surface: #313E17 | Olive: #4C5C2D | Accent: #FFDE42
+   THEME: SOFT SUNRISE (DEFAULT)
+   Ivory: #FFFCE1 | Cream: #FFDDB0 | Peach: #FFBE91 | Sky: #CFEBFF
    -------------------------------------------------- */
 :root,
+[data-theme="soft-sunrise"],
+.theme-soft-sunrise {
+  color-scheme: light;
+
+  /* Theme Core Palette Tokens */
+  --theme-peach: #FFBE91;
+  --theme-cream: #FFDDB0;
+  --theme-ivory: #FFFCE1;
+  --theme-sky: #CFEBFF;
+
+  /* Semantic Variables */
+  --background: #FFFCE1;
+  --foreground: #1c1917;
+  
+  --card: #FFFFFF;
+  --card-elevated: #FFFDF5;
+  --card-surface: #FFDDB0;
+  --card-foreground: #1c1917;
+  --card-info: #CFEBFF;
+  
+  --primary: #FFBE91;
+  --primary-foreground: #1c1917;
+  
+  --secondary: #CFEBFF;
+  --secondary-foreground: #1e293b;
+  
+  --accent: #FFBE91;
+  --accent-foreground: #1c1917;
+  
+  --muted: #FFDDB0;
+  --muted-foreground: #78716c;
+  
+  --border: #FFDDB0;
+  --border-muted: rgba(255, 221, 176, 0.7);
+  --border-strong: #FFBE91;
+  --border-accent: #FFBE91;
+  
+  --input: #FFFFFF;
+  --input-border: #FFDDB0;
+  --input-focus-border: #FFBE91;
+  --input-focus-ring: #FFBE91;
+  --input-foreground: #1c1917;
+  --input-placeholder: #a8a29e;
+  
+  --ring: #FFBE91;
+  --ring-focus: #FFBE91;
+  
+  --btn-primary-bg: #FFBE91;
+  --btn-primary-text: #1c1917;
+  --btn-primary-hover: #FFDDB0;
+  --btn-primary-active: #FFBE91;
+  --btn-primary-focus-ring: #FFBE91;
+
+  --btn-secondary-bg: #CFEBFF;
+  --btn-secondary-border: #CFEBFF;
+  --btn-secondary-text: #1e293b;
+  --btn-secondary-hover: #FFDDB0;
+
+  /* Semantic Status Colors (Accessibility Preserved) */
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --info: #0284c7;
+
+  /* Habit UI Specific Tokens */
+  --habit-completed: #FFBE91;
+  --habit-progress-fill: #FFBE91;
+  --habit-progress-track: #FFDDB0;
+  --habit-progress-secondary: #CFEBFF;
+  --habit-streak-flame: #FFBE91;
+  --habit-achievement: #FFDDB0;
+  --habit-card-border: #FFDDB0;
+  --habit-card-border-hover: #FFBE91;
+}
+
+/* --------------------------------------------------
+   THEME: GOLDEN OLIVE
+   Base: #1B0C0C | Surface: #313E17 | Olive: #4C5C2D | Accent: #FFDE42
+   -------------------------------------------------- */
 [data-theme="golden-olive"],
 .theme-golden-olive {
   color-scheme: dark;
@@ -287,11 +367,396 @@
 }
 
 /* ==================================================
+   SOFT SUNRISE THEME RULE MAPPINGS (DEFAULT)
+   Ivory foundation (#FFFCE1) -> Warm cream surfaces (#FFDDB0) -> Peach actions/progress (#FFBE91) -> Sky blue secondary info (#CFEBFF)
+   ================================================== */
+
+:root,
+[data-theme="soft-sunrise"],
+.theme-soft-sunrise {
+  /* Selection Highlight */
+  ::selection {
+    background-color: #FFDDB0;
+    color: #1c1917;
+  }
+
+  /* Main Canvas & Base Background (#FFFCE1) */
+  .bg-slate-950 {
+    background-color: #FFFCE1 !important;
+    color: #1c1917 !important;
+  }
+
+  /* Base Body Text */
+  color: #1c1917;
+
+  /* Navigation / Header */
+  header {
+    background-color: rgba(255, 252, 225, 0.95) !important;
+    border-bottom: 1px solid #FFDDB0 !important;
+    box-shadow: 0 2px 10px rgba(255, 221, 176, 0.25) !important;
+    backdrop-filter: blur(12px) !important;
+  }
+
+  header a,
+  header button,
+  nav a {
+    color: #1c1917 !important;
+  }
+
+  header a.text-slate-300:hover,
+  header button.text-slate-400:hover,
+  nav a.text-slate-400:hover,
+  nav a.text-slate-300:hover {
+    color: #1c1917 !important;
+    background-color: #FFDDB0 !important;
+  }
+
+  /* Active Navigation Indicator */
+  nav a.bg-indigo-600,
+  nav a.shadow-indigo-600\/30 {
+    background-color: #FFBE91 !important;
+    color: #1c1917 !important;
+    box-shadow: 0 2px 12px rgba(255, 190, 145, 0.5) !important;
+    font-weight: 700 !important;
+  }
+
+  /* Primary CTA Buttons (Add Habit, Create Habit, Save, Complete, Start Tracking) */
+  button.bg-indigo-600,
+  a.bg-indigo-600,
+  .bg-indigo-600,
+  .bg-gradient-to-r.from-indigo-600.to-violet-600,
+  a.from-indigo-600.to-violet-600 {
+    background: #FFBE91 !important;
+    background-image: none !important;
+    color: #1c1917 !important;
+    font-weight: 700 !important;
+    box-shadow: 0 4px 14px rgba(255, 190, 145, 0.38) !important;
+    border: 1px solid transparent !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+
+  button.bg-indigo-600:hover,
+  a.bg-indigo-600:hover,
+  .bg-indigo-600:hover,
+  .bg-gradient-to-r.from-indigo-600.to-violet-600:hover,
+  a.from-indigo-600.to-violet-600:hover {
+    background: #FFDDB0 !important;
+    background-color: #FFDDB0 !important;
+    color: #1c1917 !important;
+    box-shadow: 0 6px 18px rgba(255, 221, 176, 0.55) !important;
+    transform: translateY(-1px);
+  }
+
+  button.bg-indigo-600:active,
+  a.bg-indigo-600:active,
+  .bg-indigo-600:active {
+    background: #FFBE91 !important;
+    background-color: #FFBE91 !important;
+    color: #1c1917 !important;
+    transform: translateY(0);
+  }
+
+  button.bg-indigo-600:focus-visible,
+  a.bg-indigo-600:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    outline: 2px solid #FFBE91 !important;
+    outline-offset: 2px !important;
+  }
+
+  /* Secondary Buttons (Sky blue #CFEBFF) */
+  button.bg-slate-800,
+  a.bg-slate-800,
+  a.bg-slate-800\/80,
+  button.bg-slate-800\/80,
+  button.bg-slate-900,
+  a.bg-slate-900 {
+    background-color: #CFEBFF !important;
+    border: 1px solid #CFEBFF !important;
+    color: #1e293b !important;
+    font-weight: 600 !important;
+    transition: all 0.2s ease !important;
+  }
+
+  button.bg-slate-800:hover,
+  a.bg-slate-800:hover,
+  a.bg-slate-800\/80:hover,
+  button.bg-slate-800\/80:hover,
+  button.bg-slate-900:hover,
+  a.bg-slate-900:hover {
+    background-color: #FFDDB0 !important;
+    border-color: #FFBE91 !important;
+    color: #1c1917 !important;
+  }
+
+  /* Cards - Primary Card (#FFFFFF) with subtle contrast against #FFFCE1 ivory background */
+  .bg-slate-900,
+  .bg-slate-900\/60,
+  .bg-slate-900\/70,
+  .bg-slate-900\/80,
+  .bg-slate-900\/90 {
+    background-color: #FFFFFF !important;
+    border: 1px solid #FFDDB0 !important;
+    box-shadow: 0 4px 16px rgba(255, 221, 176, 0.2) !important;
+    color: #1c1917 !important;
+  }
+
+  /* Subtle Card Hover Peach Highlight */
+  .bg-slate-900\/60:hover,
+  .bg-slate-900\/70:hover,
+  .bg-slate-900\/80:hover,
+  .bg-slate-900:hover {
+    border-color: #FFBE91 !important;
+    box-shadow: 0 6px 22px rgba(255, 190, 145, 0.25) !important;
+  }
+
+  /* Inner Secondary Surfaces (#FFFDF5 / #FFDDB0) */
+  .bg-slate-950\/60,
+  .bg-slate-950\/70,
+  .bg-slate-950\/80,
+  .bg-slate-950\/40,
+  .bg-slate-950\/50,
+  .bg-slate-950\/30 {
+    background-color: #FFFDF5 !important;
+    border: 1px solid #FFDDB0 !important;
+    color: #1c1917 !important;
+  }
+
+  /* Borders across layout */
+  .border-slate-800,
+  .border-slate-800\/60,
+  .border-slate-800\/80,
+  .border-slate-800\/90,
+  .border-slate-700,
+  .border-slate-700\/80,
+  .border-slate-900\/60 {
+    border-color: #FFDDB0 !important;
+  }
+
+  /* Milestone / Hero Card in Dashboard */
+  .from-indigo-950\/60 {
+    background: linear-gradient(135deg, #FFDDB0 0%, #FFFCE1 100%) !important;
+    border: 1px solid #FFBE91 !important;
+    box-shadow: 0 8px 30px rgba(255, 190, 145, 0.25) !important;
+  }
+
+  .text-indigo-300 {
+    color: #d97746 !important;
+    font-weight: 700 !important;
+  }
+
+  /* Text & Headings (Strong Dark Contrast for Light Theme) */
+  h1, h2, h3, h4, h5, h6,
+  .text-white,
+  .text-slate-100,
+  .text-slate-200 {
+    color: #1c1917 !important;
+  }
+
+  .text-slate-300 {
+    color: #44403c !important;
+  }
+
+  .text-slate-400 {
+    color: #78716c !important;
+  }
+
+  .text-slate-500 {
+    color: #a8a29e !important;
+  }
+
+  /* Metrics & Numbers */
+  .from-indigo-400.to-emerald-400 {
+    background: linear-gradient(90deg, #d97746 0%, #ea580c 100%) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+  }
+
+  .text-indigo-400 {
+    color: #0284c7 !important;
+  }
+
+  .text-violet-400 {
+    color: #7c3aed !important;
+  }
+
+  .text-amber-400 {
+    color: #ea580c !important;
+  }
+
+  .text-emerald-400 {
+    color: #059669 !important;
+  }
+
+  /* Links & Accents (Darker accessible blue derived from #CFEBFF family) */
+  a.text-indigo-400,
+  a.text-indigo-300 {
+    color: #0284c7 !important;
+  }
+
+  a.text-indigo-400:hover,
+  a.text-indigo-300:hover,
+  a.text-violet-400:hover {
+    color: #0369a1 !important;
+    text-decoration: underline;
+  }
+
+  /* Badges & Tags */
+  .bg-amber-500\/10 {
+    background-color: #FFDDB0 !important;
+    border-color: #FFBE91 !important;
+    color: #1c1917 !important;
+  }
+
+  .bg-indigo-500\/10,
+  .bg-violet-500\/10 {
+    background-color: #CFEBFF !important;
+    border-color: #CFEBFF !important;
+    color: #1e293b !important;
+  }
+
+  .bg-emerald-500\/10 {
+    background-color: #FFDDB0 !important;
+    border-color: #FFBE91 !important;
+    color: #1c1917 !important;
+  }
+
+  /* Progress Bar Track & Fill */
+  .w-full.bg-slate-950\/70.border.border-slate-800 {
+    background-color: #FFDDB0 !important;
+    border-color: #FFDDB0 !important;
+  }
+
+  .bg-gradient-to-r.from-indigo-500.via-violet-500.to-emerald-400 {
+    background: linear-gradient(90deg, #FFBE91 0%, #f97316 100%) !important;
+    box-shadow: 0 0 10px rgba(255, 190, 145, 0.45) !important;
+  }
+
+  /* Forms & Inputs */
+  input,
+  textarea,
+  select {
+    background-color: #FFFFFF !important;
+    border: 1px solid #FFDDB0 !important;
+    color: #1c1917 !important;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: #a8a29e !important;
+  }
+
+  input:focus,
+  textarea:focus,
+  select:focus,
+  .focus\:ring-indigo-500:focus,
+  .focus\:border-indigo-500:focus {
+    border-color: #FFBE91 !important;
+    box-shadow: 0 0 0 2px rgba(255, 190, 145, 0.45) !important;
+    outline: none !important;
+  }
+
+  /* Modals / Dialogs */
+  .fixed.inset-0.bg-slate-950\/80 {
+    background-color: rgba(41, 37, 36, 0.45) !important;
+    backdrop-filter: blur(6px) !important;
+  }
+
+  .fixed.inset-0 .bg-slate-900 {
+    background-color: #FFFFFF !important;
+    border: 1px solid #FFDDB0 !important;
+    box-shadow: 0 20px 45px rgba(255, 190, 145, 0.25), 0 4px 16px rgba(0, 0, 0, 0.08) !important;
+    color: #1c1917 !important;
+  }
+
+  .fixed.inset-0 .border-b.border-slate-800 {
+    border-bottom-color: #FFDDB0 !important;
+  }
+
+  /* Close Buttons on Modals */
+  .fixed.inset-0 button.text-slate-400:hover {
+    color: #1c1917 !important;
+    background-color: #FFDDB0 !important;
+  }
+
+  /* Habit Tracking Completed vs Incomplete */
+  button.bg-emerald-500 {
+    background-color: #FFBE91 !important;
+    color: #1c1917 !important;
+    box-shadow: 0 2px 10px rgba(255, 190, 145, 0.4) !important;
+  }
+
+  button.bg-emerald-500:hover {
+    background-color: #FFDDB0 !important;
+  }
+
+  .bg-emerald-500\/20.text-emerald-300,
+  .bg-emerald-950\/20 {
+    background-color: rgba(255, 221, 176, 0.35) !important;
+    color: #1c1917 !important;
+    border-color: #FFBE91 !important;
+  }
+
+  .bg-emerald-500\/20.text-emerald-300:hover {
+    background-color: #FFDDB0 !important;
+  }
+
+  .border-emerald-500\/40,
+  .border-emerald-500\/30 {
+    border-color: #FFBE91 !important;
+  }
+
+  /* Incomplete Habit Checkbox / Button */
+  button.bg-slate-800 {
+    background-color: #FFFDF5 !important;
+    border: 1px solid #FFDDB0 !important;
+    color: #78716c !important;
+  }
+
+  button.bg-slate-800:hover {
+    border-color: #FFBE91 !important;
+    color: #1c1917 !important;
+    background-color: #FFDDB0 !important;
+  }
+
+  /* Decorative Orbs in Auth Pages */
+  .bg-indigo-600\/20,
+  .bg-violet-600\/20 {
+    background-color: rgba(255, 221, 176, 0.45) !important;
+  }
+
+  /* Preserve Semantic Status Colors */
+  .text-emerald-400,
+  .text-emerald-600 {
+    color: #059669 !important;
+  }
+
+  .bg-emerald-500\/10 {
+    background-color: rgba(16, 185, 129, 0.12) !important;
+    border-color: rgba(16, 185, 129, 0.25) !important;
+    color: #059669 !important;
+  }
+
+  /* Error states */
+  .bg-red-500\/10 {
+    background-color: rgba(239, 68, 68, 0.12) !important;
+    border-color: rgba(239, 68, 68, 0.3) !important;
+    color: #dc2626 !important;
+  }
+
+  /* HAByTAT Logo on Ivory */
+  img[alt="HAbyTAT"] {
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+}
+
+/* ==================================================
    GOLDEN OLIVE THEME RULE MAPPINGS
    Base: #1B0C0C | Surface: #313E17 | Structure: #4C5C2D | Accent: #FFDE42
    ================================================== */
 
-:root,
 [data-theme="golden-olive"],
 .theme-golden-olive {
   /* Selection Highlight */
