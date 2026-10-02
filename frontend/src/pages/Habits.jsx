@@ -313,7 +313,7 @@ export default function Habits() {
             <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-500/25">
               <Flame className="w-6 h-6 text-white" />
             </div>
-            <span className="font-bold text-lg text-white">HabitPulse</span>
+            <span className="font-bold text-lg text-white">HAbyTAT</span>
           </Link>
           <div className="flex items-center gap-3">
             <Link
@@ -1053,7 +1053,7 @@ export default function Habits() {
 
       {/* Footer */}
       <footer className="border-t border-slate-800/80 py-6 text-center text-xs text-slate-400">
-        HabitPulse SaaS • Built with React, Express, Prisma & PostgreSQL
+        HAbyTAT SaaS • Built with React, Express, Prisma & PostgreSQL
       </footer>
     </div>
   );

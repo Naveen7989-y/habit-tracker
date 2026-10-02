@@ -95,7 +95,7 @@ export default function Analytics() {
               <Flame className="w-6 h-6 text-white" />
             </div>
             <div>
-              <span className="font-bold text-lg text-white">HabitPulse</span>
+              <span className="font-bold text-lg text-white">HAbyTAT</span>
               <span className="hidden sm:inline-block ml-2 text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-violet-500/10 text-violet-400 border border-violet-500/20">
                 Analytics & Charts
               </span>
@@ -491,7 +491,7 @@ export default function Analytics() {
 
       {/* Footer */}
       <footer className="border-t border-slate-800/80 py-6 text-center text-xs text-slate-400">
-        HabitPulse SaaS • Built with React, Recharts, Express, Prisma & PostgreSQL
+        HAbyTAT SaaS • Built with React, Recharts, Express, Prisma & PostgreSQL
       </footer>
     </div>
   );

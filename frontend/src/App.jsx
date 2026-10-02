@@ -26,7 +26,7 @@ function LandingPage() {
             </div>
             <div>
               <span className="font-bold text-lg tracking-tight bg-gradient-to-r from-white via-slate-200 to-indigo-300 bg-clip-text text-transparent">
-                HabitPulse
+                HAbyTAT
               </span>
               <span className="ml-2 text-[10px] uppercase px-2 py-0.5 rounded-full font-bold tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                 Production Ready v1.0
@@ -190,7 +190,7 @@ function LandingPage() {
       </main>
 
       <footer className="border-t border-slate-800/80 py-6 text-center text-xs text-slate-400">
-        HabitPulse SaaS • Built with React, Vite, Express, Prisma & PostgreSQL
+        HAbyTAT SaaS • Built with React, Vite, Express, Prisma & PostgreSQL
       </footer>
     </div>
   );

@@ -17,7 +17,7 @@ export default function AuthLayout({ children, title, subtitle }) {
               <Flame className="w-7 h-7 text-white" />
             </div>
             <span className="font-extrabold text-2xl tracking-tight bg-gradient-to-r from-white via-slate-100 to-indigo-300 bg-clip-text text-transparent">
-              HabitPulse
+              HAbyTAT
             </span>
           </Link>
           {title && <h2 className="mt-4 text-2xl font-bold text-white tracking-tight">{title}</h2>}
@@ -30,7 +30,7 @@ export default function AuthLayout({ children, title, subtitle }) {
 
       {/* Footer */}
       <footer className="relative z-10 py-6 text-center text-xs text-slate-500">
-        HabitPulse SaaS • Secure JWT Authentication
+        HAbyTAT SaaS • Secure JWT Authentication
       </footer>
     </div>
   );

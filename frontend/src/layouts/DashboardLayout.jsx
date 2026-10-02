@@ -52,7 +52,7 @@ export default function DashboardLayout({ children }) {
             </div>
             <div>
               <span className="font-extrabold text-lg tracking-tight bg-gradient-to-r from-white via-slate-100 to-indigo-300 bg-clip-text text-transparent">
-                HabitPulse
+                HAbyTAT
               </span>
             </div>
           </Link>
@@ -200,7 +200,7 @@ export default function DashboardLayout({ children }) {
 
       {/* Persistent Footer */}
       <footer className="border-t border-slate-800/80 py-6 text-center text-xs text-slate-400">
-        HabitPulse SaaS • Built with React, Vite, Express, Prisma & PostgreSQL
+        HAbyTAT SaaS • Built with React, Vite, Express, Prisma & PostgreSQL
       </footer>
 
       {/* Profile Modal */}

@@ -8,9 +8,9 @@ const ThemeContext = createContext({
 
 export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState(() => {
-    const saved = localStorage.getItem('habitpulse_theme');
+    const saved = localStorage.getItem('habytat_theme') || localStorage.getItem('habitpulse_theme');
     if (saved === 'light' || saved === 'dark') return saved;
-    return 'dark'; // Dark theme default for HabitPulse aesthetic
+    return 'dark'; // Dark theme default for HAbyTAT aesthetic
   });
 
   useEffect(() => {
@@ -20,7 +20,7 @@ export function ThemeProvider({ children }) {
     } else {
       root.classList.remove('dark');
     }
-    localStorage.setItem('habitpulse_theme', theme);
+    localStorage.setItem('habytat_theme', theme);
   }, [theme]);
 
   const toggleTheme = () => {

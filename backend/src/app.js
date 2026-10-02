@@ -72,7 +72,7 @@ app.use(cookieParser());
 // Base health route
 app.get('/', (req, res) => {
   res.json({
-    name: 'HabitPulse API',
+    name: 'HAbyTAT API',
     status: 'active',
     version: '1.0.0',
     documentation: '/api/health',

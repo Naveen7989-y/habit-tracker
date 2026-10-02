@@ -164,7 +164,7 @@ export default function Dashboard() {
               <Flame className="w-6 h-6 text-white" />
             </div>
             <div>
-              <span className="font-bold text-lg text-white">HabitPulse</span>
+              <span className="font-bold text-lg text-white">HAbyTAT</span>
               <span className="hidden sm:inline-block ml-2 text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
                 Dashboard
               </span>
@@ -519,7 +519,7 @@ export default function Dashboard() {
 
       {/* Footer */}
       <footer className="border-t border-slate-800/80 py-6 text-center text-xs text-slate-400">
-        HabitPulse SaaS • Built with React, Express, Prisma & PostgreSQL
+        HAbyTAT SaaS • Built with React, Express, Prisma & PostgreSQL
       </footer>
     </div>
   );
