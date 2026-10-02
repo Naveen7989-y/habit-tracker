@@ -1566,6 +1566,48 @@
     border-color: rgba(239, 68, 68, 0.3) !important;
     color: #fca5a5 !important;
   }
+
+  /* Dropdown Select Options */
+  select option {
+    background-color: #313E17 !important;
+    color: #ffffff !important;
+  }
+
+  /* Disabled Inputs & Selects */
+  input:disabled,
+  select:disabled {
+    background-color: #241414 !important;
+    color: #a8a29e !important;
+    border-color: #4C5C2D !important;
+  }
+
+  /* Container Divs with slate-800 */
+  div.bg-slate-800,
+  div.bg-slate-800\/60,
+  div.bg-slate-800\/70,
+  div.bg-slate-800\/80,
+  div.bg-slate-800\/90 {
+    background-color: #313E17 !important;
+    border-color: #4C5C2D !important;
+    color: #ffffff !important;
+  }
+
+  /* Category Filter Pills & Opacity Badges */
+  .bg-indigo-500\/20 {
+    background-color: rgba(76, 92, 45, 0.5) !important;
+    border-color: #FFDE42 !important;
+    color: #FFDE42 !important;
+  }
+
+  .border-indigo-500\/40,
+  .border-indigo-500\/30 {
+    border-color: #4C5C2D !important;
+  }
+
+  .text-indigo-300\/80,
+  .text-indigo-300\/70 {
+    color: #fff089 !important;
+  }
 }
 
 /* ==================================================
@@ -1870,6 +1912,48 @@
     background-color: rgba(255, 0, 0, 0.12) !important;
     border-color: var(--theme-primary) !important;
     color: #ff8080 !important;
+  }
+
+  /* Dropdown Select Options */
+  select option {
+    background-color: #0c0202 !important;
+    color: #ffffff !important;
+  }
+
+  /* Disabled Inputs & Selects */
+  input:disabled,
+  select:disabled {
+    background-color: #150303 !important;
+    color: #9ca3af !important;
+    border-color: #830000 !important;
+  }
+
+  /* Container Divs with slate-800 */
+  div.bg-slate-800,
+  div.bg-slate-800\/60,
+  div.bg-slate-800\/70,
+  div.bg-slate-800\/80,
+  div.bg-slate-800\/90 {
+    background-color: #0c0202 !important;
+    border-color: #830000 !important;
+    color: #ffffff !important;
+  }
+
+  /* Category Filter Pills & Opacity Badges */
+  .bg-indigo-500\/20 {
+    background-color: rgba(188, 2, 2, 0.3) !important;
+    border-color: #FF0000 !important;
+    color: #ffffff !important;
+  }
+
+  .border-indigo-500\/40,
+  .border-indigo-500\/30 {
+    border-color: #830000 !important;
+  }
+
+  .text-indigo-300\/80,
+  .text-indigo-300\/70 {
+    color: #ffcccc !important;
   }
 }
 
