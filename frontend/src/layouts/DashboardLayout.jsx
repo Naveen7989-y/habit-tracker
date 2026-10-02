@@ -46,15 +46,12 @@ export default function DashboardLayout({ children }) {
       <header className="border-b border-slate-800/80 bg-slate-900/70 backdrop-blur-md sticky top-0 z-40">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           {/* Logo */}
-          <Link to="/dashboard" className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-500/25">
-              <Flame className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <span className="font-extrabold text-lg tracking-tight bg-gradient-to-r from-white via-slate-100 to-indigo-300 bg-clip-text text-transparent">
-                HAbyTAT
-              </span>
-            </div>
+          <Link to="/dashboard" className="flex items-center gap-2">
+            <img
+              src="/logo.png"
+              alt="HAbyTAT"
+              className="h-9 w-auto object-contain dark:bg-white/90 dark:px-2 dark:py-1 dark:rounded-xl transition-all"
+            />
           </Link>
 
           {/* Desktop Nav Items */}
@@ -200,7 +197,7 @@ export default function DashboardLayout({ children }) {
 
       {/* Persistent Footer */}
       <footer className="border-t border-slate-800/80 py-6 text-center text-xs text-slate-400">
-        HAbyTAT SaaS • Built with React, Vite, Express, Prisma & PostgreSQL
+        HabitPulse SaaS • Built with React, Vite, Express, Prisma & PostgreSQL
       </footer>
 
       {/* Profile Modal */}

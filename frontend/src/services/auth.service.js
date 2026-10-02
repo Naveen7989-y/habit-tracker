@@ -4,8 +4,8 @@ export const authService = {
   async register(userData) {
     const response = await api.post('/auth/register', userData);
     if (response.data?.token) {
-      localStorage.setItem('habytat_token', response.data.token);
-      localStorage.setItem('habytat_user', JSON.stringify(response.data.user));
+      localStorage.setItem('habitpulse_token', response.data.token);
+      localStorage.setItem('habitpulse_user', JSON.stringify(response.data.user));
     }
     return response.data;
   },
@@ -13,8 +13,8 @@ export const authService = {
   async login(credentials) {
     const response = await api.post('/auth/login', credentials);
     if (response.data?.token) {
-      localStorage.setItem('habytat_token', response.data.token);
-      localStorage.setItem('habytat_user', JSON.stringify(response.data.user));
+      localStorage.setItem('habitpulse_token', response.data.token);
+      localStorage.setItem('habitpulse_user', JSON.stringify(response.data.user));
     }
     return response.data;
   },
@@ -23,8 +23,6 @@ export const authService = {
     try {
       await api.post('/auth/logout');
     } finally {
-      localStorage.removeItem('habytat_token');
-      localStorage.removeItem('habytat_user');
       localStorage.removeItem('habitpulse_token');
       localStorage.removeItem('habitpulse_user');
     }
@@ -33,7 +31,7 @@ export const authService = {
   async getCurrentUser() {
     const response = await api.get('/auth/me');
     if (response.data?.user) {
-      localStorage.setItem('habytat_user', JSON.stringify(response.data.user));
+      localStorage.setItem('habitpulse_user', JSON.stringify(response.data.user));
     }
     return response.data.user;
   },
@@ -41,7 +39,7 @@ export const authService = {
   async updateProfile(profileData) {
     const response = await api.put('/users/me', profileData);
     if (response.data?.user) {
-      localStorage.setItem('habytat_user', JSON.stringify(response.data.user));
+      localStorage.setItem('habitpulse_user', JSON.stringify(response.data.user));
     }
     return response.data.user;
   },

@@ -54,7 +54,7 @@ export default function Register() {
               <Flame className="w-7 h-7 text-white" />
             </div>
             <span className="font-extrabold text-2xl tracking-tight bg-gradient-to-r from-white via-slate-100 to-indigo-300 bg-clip-text text-transparent">
-              HAbyTAT
+              HabitPulse
             </span>
           </Link>
           <h2 className="mt-6 text-2xl sm:text-3xl font-bold tracking-tight text-white">

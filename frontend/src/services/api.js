@@ -13,7 +13,7 @@ const api = axios.create({
 // Request interceptor: attach token from localStorage if available
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('habytat_token') || localStorage.getItem('habitpulse_token');
+    const token = localStorage.getItem('habitpulse_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -35,8 +35,6 @@ api.interceptors.response.use(
 
     // If 401 and token is expired/invalid, clear local auth
     if (customError.statusCode === 401) {
-      localStorage.removeItem('habytat_token');
-      localStorage.removeItem('habytat_user');
       localStorage.removeItem('habitpulse_token');
       localStorage.removeItem('habitpulse_user');
     }

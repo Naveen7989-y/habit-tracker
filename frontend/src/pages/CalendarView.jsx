@@ -269,16 +269,15 @@ export default function CalendarView() {
       {/* Navigation Header */}
       <header className="border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-md sticky top-0 z-30">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-500/25">
-              <Flame className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <span className="font-bold text-lg text-white">HAbyTAT</span>
-              <span className="hidden sm:inline-block ml-2 text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                Calendar & Heatmap
-              </span>
-            </div>
+          <Link to="/" className="flex items-center gap-2">
+            <img
+              src="/logo.png"
+              alt="HAbyTAT"
+              className="h-9 w-auto object-contain dark:bg-white/90 dark:px-2 dark:py-1 dark:rounded-xl transition-all"
+            />
+            <span className="hidden sm:inline-block ml-1 text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+              Calendar
+            </span>
           </Link>
 
           <div className="flex items-center gap-2 sm:gap-3">
@@ -375,11 +374,10 @@ export default function CalendarView() {
                 <button
                   key={days}
                   onClick={() => setHeatmapDaysRange(days)}
-                  className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
-                    heatmapDaysRange === days
+                  className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${heatmapDaysRange === days
                       ? 'bg-emerald-500 text-slate-950 shadow-sm'
                       : 'text-slate-400 hover:text-white'
-                  }`}
+                    }`}
                 >
                   {days === 365 ? '1 Year' : `${days}d`}
                 </button>
@@ -608,19 +606,17 @@ export default function CalendarView() {
                     <button
                       key={day.date}
                       onClick={() => openDayInspector(day.date)}
-                      className={`min-h-[75px] sm:min-h-[90px] p-2.5 rounded-2xl border transition-all text-left flex flex-col justify-between group cursor-pointer ${cardBg} ${
-                        isFuture ? 'opacity-40 hover:opacity-80' : ''
-                      }`}
+                      className={`min-h-[75px] sm:min-h-[90px] p-2.5 rounded-2xl border transition-all text-left flex flex-col justify-between group cursor-pointer ${cardBg} ${isFuture ? 'opacity-40 hover:opacity-80' : ''
+                        }`}
                     >
                       <div className="flex items-center justify-between w-full">
                         <span
-                          className={`text-sm sm:text-base font-extrabold ${
-                            isToday
+                          className={`text-sm sm:text-base font-extrabold ${isToday
                               ? 'text-indigo-400 bg-indigo-500/20 px-1.5 py-0.5 rounded-lg'
                               : isFuture
-                              ? 'text-slate-500'
-                              : 'text-slate-200'
-                          }`}
+                                ? 'text-slate-500'
+                                : 'text-slate-200'
+                            }`}
                         >
                           {day.day}
                         </span>
@@ -735,11 +731,10 @@ export default function CalendarView() {
                       return (
                         <div
                           key={h.id}
-                          className={`p-3 sm:p-3.5 rounded-2xl border transition-all flex items-center justify-between gap-3 ${
-                            h.isCompleted
+                          className={`p-3 sm:p-3.5 rounded-2xl border transition-all flex items-center justify-between gap-3 ${h.isCompleted
                               ? 'bg-emerald-950/20 border-emerald-500/30'
                               : 'bg-slate-950/50 border-slate-800/80'
-                          }`}
+                            }`}
                         >
                           <div className="flex items-center gap-3 min-w-0">
                             {/* Toggle Button (active only for Today) */}
@@ -747,11 +742,10 @@ export default function CalendarView() {
                               <button
                                 onClick={() => handleToggleHabitInModal(h)}
                                 disabled={isToggling}
-                                className={`w-8 h-8 rounded-xl flex items-center justify-center transition-all ${
-                                  h.isCompleted
+                                className={`w-8 h-8 rounded-xl flex items-center justify-center transition-all ${h.isCompleted
                                     ? 'bg-emerald-500 text-white shadow-sm shadow-emerald-500/40'
                                     : 'bg-slate-800 border border-slate-700 text-slate-400 hover:text-white'
-                                }`}
+                                  }`}
                                 title={h.isCompleted ? 'Click to undo' : 'Click to complete'}
                               >
                                 {isToggling ? (
@@ -764,11 +758,10 @@ export default function CalendarView() {
                               </button>
                             ) : (
                               <div
-                                className={`w-8 h-8 rounded-xl flex items-center justify-center ${
-                                  h.isCompleted
+                                className={`w-8 h-8 rounded-xl flex items-center justify-center ${h.isCompleted
                                     ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
                                     : 'bg-slate-800/60 text-slate-500 border border-slate-800'
-                                }`}
+                                  }`}
                               >
                                 {h.isCompleted ? (
                                   <CheckCircle2 className="w-4.5 h-4.5" />
@@ -780,9 +773,8 @@ export default function CalendarView() {
 
                             <div className="min-w-0">
                               <p
-                                className={`text-sm font-bold truncate ${
-                                  h.isCompleted ? 'text-white' : 'text-slate-300'
-                                }`}
+                                className={`text-sm font-bold truncate ${h.isCompleted ? 'text-white' : 'text-slate-300'
+                                  }`}
                               >
                                 {h.name}
                               </p>
@@ -836,7 +828,7 @@ export default function CalendarView() {
 
       {/* Footer */}
       <footer className="border-t border-slate-800/80 py-6 text-center text-xs text-slate-400">
-        HAbyTAT SaaS • Built with React, Vite, Express, Prisma & PostgreSQL
+        HabitPulse SaaS • Built with React, Vite, Express, Prisma & PostgreSQL
       </footer>
     </div>
   );

@@ -1,4 +1,4 @@
-# HAbyTAT — Production-Ready Full-Stack Habit Tracker
+# HabitPulse — Production-Ready Full-Stack Habit Tracker
 
 A modern, production-grade SaaS Habit Tracking application built with React, Vite, Node.js, Express, PostgreSQL, Prisma ORM, and Tailwind CSS.
 

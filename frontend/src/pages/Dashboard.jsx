@@ -159,16 +159,15 @@ export default function Dashboard() {
       {/* Navigation Header */}
       <header className="border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-md sticky top-0 z-40">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-500/25">
-              <Flame className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <span className="font-bold text-lg text-white">HAbyTAT</span>
-              <span className="hidden sm:inline-block ml-2 text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-                Dashboard
-              </span>
-            </div>
+          <Link to="/" className="flex items-center gap-2">
+            <img
+              src="/logo.png"
+              alt="HAbyTAT"
+              className="h-9 w-auto object-contain dark:bg-white/90 dark:px-2 dark:py-1 dark:rounded-xl transition-all"
+            />
+            <span className="hidden sm:inline-block ml-1 text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+              Dashboard
+            </span>
           </Link>
           <div className="flex items-center gap-2 sm:gap-3">
             <Link
@@ -426,11 +425,10 @@ export default function Dashboard() {
                     return (
                       <div
                         key={habit.id}
-                        className={`group p-4 sm:p-5 rounded-2xl border transition-all duration-300 flex items-center justify-between gap-4 ${
-                          habit.isCompletedToday
+                        className={`group p-4 sm:p-5 rounded-2xl border transition-all duration-300 flex items-center justify-between gap-4 ${habit.isCompletedToday
                             ? 'bg-slate-900/90 border-emerald-500/40 shadow-sm shadow-emerald-500/5'
                             : 'bg-slate-900/60 border-slate-800 hover:border-slate-700 hover:bg-slate-900/90'
-                        }`}
+                          }`}
                       >
                         {/* Left: Icon & Habit Info */}
                         <div className="flex items-center gap-3.5 min-w-0">
@@ -438,11 +436,10 @@ export default function Dashboard() {
                           <button
                             onClick={() => handleToggleHabit(habit)}
                             disabled={isToggling}
-                            className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-200 shrink-0 ${
-                              habit.isCompletedToday
+                            className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-200 shrink-0 ${habit.isCompletedToday
                                 ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/30'
                                 : 'bg-slate-800 border border-slate-700 text-slate-400 hover:text-white hover:border-indigo-500 hover:bg-slate-700'
-                            }`}
+                              }`}
                             title={habit.isCompletedToday ? 'Click to undo' : 'Click to complete'}
                           >
                             {isToggling ? (
@@ -458,11 +455,10 @@ export default function Dashboard() {
                           <div className="min-w-0">
                             <div className="flex items-center gap-2">
                               <h3
-                                className={`text-sm sm:text-base font-bold truncate transition-colors ${
-                                  habit.isCompletedToday
+                                className={`text-sm sm:text-base font-bold truncate transition-colors ${habit.isCompletedToday
                                     ? 'text-slate-300 line-through decoration-emerald-500/60'
                                     : 'text-white'
-                                }`}
+                                  }`}
                               >
                                 {habit.name}
                               </h3>
@@ -497,11 +493,10 @@ export default function Dashboard() {
                         {/* Right: Streak Flame Badge */}
                         <div className="shrink-0 text-right">
                           <span
-                            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold ${
-                              habit.currentStreak > 0
+                            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold ${habit.currentStreak > 0
                                 ? 'bg-amber-500/10 text-amber-400 border border-amber-500/25'
                                 : 'bg-slate-800 text-slate-400'
-                            }`}
+                              }`}
                           >
                             <Flame className={`w-3.5 h-3.5 ${habit.currentStreak > 0 ? 'text-amber-400' : 'text-slate-500'}`} />
                             <span>{habit.currentStreak}d streak</span>
@@ -519,7 +514,7 @@ export default function Dashboard() {
 
       {/* Footer */}
       <footer className="border-t border-slate-800/80 py-6 text-center text-xs text-slate-400">
-        HAbyTAT SaaS • Built with React, Express, Prisma & PostgreSQL
+        HabitPulse SaaS • Built with React, Express, Prisma & PostgreSQL
       </footer>
     </div>
   );

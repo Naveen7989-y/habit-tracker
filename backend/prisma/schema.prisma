@@ -1,4 +1,4 @@
-// Prisma Schema for Habit Tracker (HAbyTAT)
+// Prisma Schema for Habit Tracker (HabitPulse)
 
 generator client {
   provider = "prisma-client-js"

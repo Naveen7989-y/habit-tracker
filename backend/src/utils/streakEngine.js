@@ -1,5 +1,5 @@
 /**
- * HAbyTAT Streak Engine
+ * HabitPulse Streak Engine
  * Computes Current Streak, Longest Streak, Total Completions, and Completion Rate.
  */
 

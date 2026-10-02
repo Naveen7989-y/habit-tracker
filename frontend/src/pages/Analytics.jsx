@@ -90,16 +90,15 @@ export default function Analytics() {
       {/* Navigation Header */}
       <header className="border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-md sticky top-0 z-30">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-500/25">
-              <Flame className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <span className="font-bold text-lg text-white">HAbyTAT</span>
-              <span className="hidden sm:inline-block ml-2 text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-violet-500/10 text-violet-400 border border-violet-500/20">
-                Analytics & Charts
-              </span>
-            </div>
+          <Link to="/" className="flex items-center gap-2">
+            <img
+              src="/logo.png"
+              alt="HAbyTAT"
+              className="h-9 w-auto object-contain dark:bg-white/90 dark:px-2 dark:py-1 dark:rounded-xl transition-all"
+            />
+            <span className="hidden sm:inline-block ml-1 text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-violet-500/10 text-violet-600 dark:text-violet-400 border border-violet-500/20">
+              Analytics
+            </span>
           </Link>
 
           <div className="flex items-center gap-2 sm:gap-3">
@@ -170,11 +169,10 @@ export default function Analytics() {
               <button
                 key={d}
                 onClick={() => setTrendDays(d)}
-                className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
-                  trendDays === d
+                className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${trendDays === d
                     ? 'bg-violet-600 text-white shadow-sm'
                     : 'text-slate-400 hover:text-white'
-                }`}
+                  }`}
               >
                 Last {d} Days
               </button>
@@ -491,7 +489,7 @@ export default function Analytics() {
 
       {/* Footer */}
       <footer className="border-t border-slate-800/80 py-6 text-center text-xs text-slate-400">
-        HAbyTAT SaaS • Built with React, Recharts, Express, Prisma & PostgreSQL
+        HabitPulse SaaS • Built with React, Recharts, Express, Prisma & PostgreSQL
       </footer>
     </div>
   );

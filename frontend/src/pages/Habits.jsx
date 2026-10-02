@@ -309,11 +309,15 @@ export default function Habits() {
       {/* Navigation Header */}
       <header className="border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-md sticky top-0 z-40">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-500/25">
-              <Flame className="w-6 h-6 text-white" />
-            </div>
-            <span className="font-bold text-lg text-white">HAbyTAT</span>
+          <Link to="/" className="flex items-center gap-2">
+            <img
+              src="/logo.png"
+              alt="HAbyTAT"
+              className="h-9 w-auto object-contain dark:bg-white/90 dark:px-2 dark:py-1 dark:rounded-xl transition-all"
+            />
+            <span className="hidden sm:inline-block ml-1 text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
+              Habits
+            </span>
           </Link>
           <div className="flex items-center gap-3">
             <Link
@@ -492,11 +496,10 @@ export default function Habits() {
                 <button
                   key={status}
                   onClick={() => setSelectedStatus(status)}
-                  className={`flex-1 md:flex-none px-3.5 py-1.5 rounded-lg text-xs font-semibold capitalize transition-all ${
-                    selectedStatus === status
+                  className={`flex-1 md:flex-none px-3.5 py-1.5 rounded-lg text-xs font-semibold capitalize transition-all ${selectedStatus === status
                       ? 'bg-indigo-600 text-white shadow'
                       : 'text-slate-400 hover:text-white'
-                  }`}
+                    }`}
                 >
                   {status}
                 </button>
@@ -526,11 +529,10 @@ export default function Habits() {
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                className={`px-3 py-1 rounded-lg text-xs font-medium shrink-0 transition-all ${
-                  selectedCategory === cat
+                className={`px-3 py-1 rounded-lg text-xs font-medium shrink-0 transition-all ${selectedCategory === cat
                     ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 font-semibold'
                     : 'bg-slate-950/50 text-slate-400 border border-slate-800/80 hover:text-white hover:border-slate-700'
-                }`}
+                  }`}
               >
                 {cat}
               </button>
@@ -584,13 +586,12 @@ export default function Habits() {
               return (
                 <div
                   key={habit.id}
-                  className={`relative bg-slate-900/80 border rounded-3xl p-5 transition-all duration-300 hover:shadow-xl hover:shadow-slate-950/50 flex flex-col justify-between ${
-                    habit.isArchived
+                  className={`relative bg-slate-900/80 border rounded-3xl p-5 transition-all duration-300 hover:shadow-xl hover:shadow-slate-950/50 flex flex-col justify-between ${habit.isArchived
                       ? 'border-slate-800/60 opacity-60'
                       : habit.isCompletedToday
-                      ? 'border-emerald-500/40 bg-gradient-to-b from-emerald-500/5 to-slate-900/80'
-                      : 'border-slate-800 hover:border-slate-700'
-                  }`}
+                        ? 'border-emerald-500/40 bg-gradient-to-b from-emerald-500/5 to-slate-900/80'
+                        : 'border-slate-800 hover:border-slate-700'
+                    }`}
                 >
                   {/* Top Bar: Icon, Category & Actions */}
                   <div>
@@ -737,11 +738,10 @@ export default function Habits() {
                       <button
                         onClick={() => handleToggleCompletion(habit)}
                         disabled={isToggling || habit.isArchived}
-                        className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all duration-200 ${
-                          habit.isCompletedToday
+                        className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all duration-200 ${habit.isCompletedToday
                             ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30'
                             : 'bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white border border-slate-700/60'
-                        }`}
+                          }`}
                         title={habit.isCompletedToday ? 'Click to undo today\'s completion' : 'Click to complete for today'}
                       >
                         {isToggling ? (
@@ -964,11 +964,10 @@ export default function Habits() {
                       key={color}
                       type="button"
                       onClick={() => setFormData({ ...formData, color })}
-                      className={`w-7 h-7 rounded-xl transition-all duration-200 ${
-                        formData.color === color
+                      className={`w-7 h-7 rounded-xl transition-all duration-200 ${formData.color === color
                           ? 'ring-2 ring-white ring-offset-2 ring-offset-slate-900 scale-110'
                           : 'opacity-70 hover:opacity-100'
-                      }`}
+                        }`}
                       style={{ backgroundColor: color }}
                     />
                   ))}
@@ -986,11 +985,10 @@ export default function Habits() {
                       key={name}
                       type="button"
                       onClick={() => setFormData({ ...formData, icon: name })}
-                      className={`p-2 rounded-xl border flex items-center justify-center transition-all ${
-                        formData.icon === name
+                      className={`p-2 rounded-xl border flex items-center justify-center transition-all ${formData.icon === name
                           ? 'bg-indigo-600/20 border-indigo-500 text-indigo-400'
                           : 'border-slate-800 text-slate-400 hover:text-white hover:bg-slate-800'
-                      }`}
+                        }`}
                     >
                       <IconComp className="w-4 h-4" />
                     </button>
@@ -1053,7 +1051,7 @@ export default function Habits() {
 
       {/* Footer */}
       <footer className="border-t border-slate-800/80 py-6 text-center text-xs text-slate-400">
-        HAbyTAT SaaS • Built with React, Express, Prisma & PostgreSQL
+        HabitPulse SaaS • Built with React, Express, Prisma & PostgreSQL
       </footer>
     </div>
   );

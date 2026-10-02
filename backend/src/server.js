@@ -10,7 +10,7 @@ async function startServer() {
 
   server = app.listen(config.port, () => {
     console.log(`\n=================================================`);
-    console.log(`🚀 HAbyTAT Backend running on port ${config.port}`);
+    console.log(`🚀 HabitPulse Backend running on port ${config.port}`);
     console.log(`📡 Environment: ${config.nodeEnv}`);
     console.log(`🔗 API Base URL: http://localhost:${config.port}/api`);
     console.log(`🏥 Health Check: http://localhost:${config.port}/api/health`);

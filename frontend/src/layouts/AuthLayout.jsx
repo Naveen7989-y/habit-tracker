@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Flame, Sun, Moon } from 'lucide-react';
+import { Sun, Moon } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 
 export default function AuthLayout({ children, title, subtitle }) {
@@ -23,23 +23,23 @@ export default function AuthLayout({ children, title, subtitle }) {
           )}
         </button>
       </div>
+
       {/* Background Gradient Orbs */}
-      <div className="absolute top-1/4 -left-32 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-violet-600/20 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/4 -left-32 w-96 h-96 bg-emerald-500/10 dark:bg-emerald-600/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
 
       <div className="w-full max-w-md space-y-8 relative z-10 py-12">
         {/* Header Logo */}
         <div className="text-center">
-          <Link to="/" className="inline-flex items-center gap-2.5">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-500/25">
-              <Flame className="w-7 h-7 text-white" />
-            </div>
-            <span className="font-extrabold text-2xl tracking-tight bg-gradient-to-r from-white via-slate-100 to-indigo-300 bg-clip-text text-transparent">
-              HAbyTAT
-            </span>
+          <Link to="/" className="inline-flex items-center justify-center">
+            <img
+              src="/logo.png"
+              alt="HAbyTAT"
+              className="h-14 sm:h-16 w-auto object-contain dark:bg-white/90 dark:px-3 dark:py-1.5 dark:rounded-2xl transition-all"
+            />
           </Link>
-          {title && <h2 className="mt-4 text-2xl font-bold text-white tracking-tight">{title}</h2>}
-          {subtitle && <p className="mt-1 text-xs text-slate-400">{subtitle}</p>}
+          {title && <h2 className="mt-5 text-2xl font-bold text-slate-900 dark:text-white tracking-tight">{title}</h2>}
+          {subtitle && <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400">{subtitle}</p>}
         </div>
 
         {/* Content Card */}
@@ -48,7 +48,7 @@ export default function AuthLayout({ children, title, subtitle }) {
 
       {/* Footer */}
       <footer className="relative z-10 py-6 text-center text-xs text-slate-500">
-        HAbyTAT SaaS • Secure JWT Authentication
+        HAbyTAT SaaS • Build habits. Build your habitat.
       </footer>
     </div>
   );

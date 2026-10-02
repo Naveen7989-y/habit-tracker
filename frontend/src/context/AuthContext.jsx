@@ -5,17 +5,17 @@ const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem('habytat_user') || localStorage.getItem('habitpulse_user');
+    const saved = localStorage.getItem('habitpulse_user');
     return saved ? JSON.parse(saved) : null;
   });
-  const [token, setToken] = useState(() => localStorage.getItem('habytat_token') || localStorage.getItem('habitpulse_token') || null);
+  const [token, setToken] = useState(() => localStorage.getItem('habitpulse_token') || null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   // Initial user verification on app load
   useEffect(() => {
     const initAuth = async () => {
-      const storedToken = localStorage.getItem('habytat_token') || localStorage.getItem('habitpulse_token');
+      const storedToken = localStorage.getItem('habitpulse_token');
       if (storedToken) {
         try {
           const freshUser = await authService.getCurrentUser();
