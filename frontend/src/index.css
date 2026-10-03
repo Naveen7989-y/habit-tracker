@@ -551,17 +551,6 @@
     color: #1890df !important;
   }
 
-  /* Streak Cards (Fresh Lime Background with Blue Accent) */
-  .bg-slate-900\/80.hover\:border-amber-500\/40,
-  .hover\:border-amber-500\/40 {
-    background-color: #D8FFC5 !important;
-    border-color: #bbf2a2 !important;
-  }
-
-  .hover\:border-amber-500\/40:hover {
-    border-color: #30AFFF !important;
-    box-shadow: 0 6px 18px rgba(48, 175, 255, 0.18) !important;
-  }
 
   /* Badges & Tags */
   /* Progress Badge (Aqua #92EEFF) */
