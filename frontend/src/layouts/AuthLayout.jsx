@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Sun } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import Logo from '../components/Logo';
 
 export default function AuthLayout({ children, title, subtitle }) {
   const { theme, toggleTheme } = useTheme();
@@ -30,11 +31,7 @@ export default function AuthLayout({ children, title, subtitle }) {
         {/* Header Logo */}
         <div className="text-center">
           <Link to="/" className="inline-flex items-center justify-center">
-            <img
-              src="/logo.png"
-              alt="HAbyTAT"
-              className="h-14 sm:h-16 w-auto object-contain dark:bg-white/90 dark:px-3 dark:py-1.5 dark:rounded-2xl transition-all"
-            />
+            <Logo className="h-14 sm:h-16 w-auto object-contain transition-all" />
           </Link>
           {title && <h2 className="mt-5 text-2xl font-bold text-slate-900 dark:text-white tracking-tight">{title}</h2>}
           {subtitle && <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400">{subtitle}</p>}

@@ -1,5 +1,6 @@
 import prisma from '../config/prisma.js';
 import { calculateHabitStreaks } from '../utils/streakEngine.js';
+import { deleteCachePattern } from '../utils/cache.js';
 
 class HabitService {
   /**
@@ -43,8 +44,11 @@ class HabitService {
       },
     });
 
+    deleteCachePattern(`cache:${userId}:*`).catch(() => {});
+
     return habit;
   }
+
 
   /**
    * Retrieve habits for a user with search, filter, and sorting
@@ -237,6 +241,8 @@ class HabitService {
       data,
     });
 
+    deleteCachePattern(`cache:${userId}:*`).catch(() => {});
+
     return updatedHabit;
   }
 
@@ -265,6 +271,8 @@ class HabitService {
     await prisma.habit.delete({
       where: { id: habitId },
     });
+
+    deleteCachePattern(`cache:${userId}:*`).catch(() => {});
 
     return { id: habitId, deleted: true };
   }
@@ -296,8 +304,11 @@ class HabitService {
       data: { isArchived: !habit.isArchived },
     });
 
+    deleteCachePattern(`cache:${userId}:*`).catch(() => {});
+
     return updatedHabit;
   }
 }
 
 export const habitService = new HabitService();
+

@@ -1,6 +1,7 @@
 import { authService } from '../services/auth.service.js';
 import { successResponse } from '../utils/response.js';
 import { setAuthCookie, clearAuthCookie } from '../utils/token.js';
+import { blacklistToken } from '../utils/cache.js';
 
 export const register = async (req, res, next) => {
   try {
@@ -23,9 +24,23 @@ export const login = async (req, res, next) => {
 };
 
 export const logout = async (req, res) => {
+  let token = null;
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    token = authHeader.split(' ')[1];
+  }
+  if (!token && req.cookies && req.cookies.token) {
+    token = req.cookies.token;
+  }
+
+  if (token) {
+    await blacklistToken(token);
+  }
+
   clearAuthCookie(res);
   return successResponse(res, 200, 'Logged out successfully');
 };
+
 
 export const getMe = async (req, res, next) => {
   try {

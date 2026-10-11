@@ -8,5 +8,7 @@ export const config = {
   jwtSecret: process.env.JWT_SECRET || 'habittracker_super_secure_jwt_secret_key_2026_dev',
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
   frontendUrl: process.env.FRONTEND_URL || 'http://localhost:5173',
+  redisUrl: process.env.REDIS_URL || '',
   isProduction: process.env.NODE_ENV === 'production',
 };
+

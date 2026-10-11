@@ -6,6 +6,7 @@ import { useTheme } from '../context/ThemeContext';
 import { habitService } from '../services/habit.service';
 import { completionService } from '../services/completion.service';
 import { statisticsService } from '../services/statistics.service';
+import DashboardLayout from '../layouts/DashboardLayout';
 import {
   Flame,
   Plus,
@@ -305,78 +306,9 @@ export default function Habits() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between selection:bg-indigo-500 selection:text-white">
-      {/* Navigation Header */}
-      <header className="border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-md sticky top-0 z-40">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
-            <img
-              src="/logo.png"
-              alt="HAbyTAT"
-              className="h-9 w-auto object-contain dark:bg-white/90 dark:px-2 dark:py-1 dark:rounded-xl transition-all"
-            />
-            <span className="hidden sm:inline-block ml-1 text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
-              Habits
-            </span>
-          </Link>
-          <div className="flex items-center gap-3">
-            <Link
-              to="/dashboard"
-              className="px-3.5 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800/60 text-xs font-semibold transition-colors"
-            >
-              Dashboard
-            </Link>
-            <Link
-              to="/statistics"
-              className="px-3.5 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800/60 text-xs font-semibold transition-colors flex items-center gap-1.5"
-            >
-              <TrendingUp className="w-3.5 h-3.5 text-violet-400" />
-              <span>Analytics</span>
-            </Link>
-            <Link
-              to="/calendar"
-              className="px-3.5 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800/60 text-xs font-semibold transition-colors flex items-center gap-1.5"
-            >
-              <CalendarIcon className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Calendar</span>
-            </Link>
-            <button
-              onClick={handleOpenCreateModal}
-              className="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-lg shadow-indigo-600/30 flex items-center gap-1.5 transition-all duration-200"
-            >
-              <Plus className="w-4 h-4" />
-              <span>New Habit</span>
-            </button>
-            <button
-              onClick={toggleTheme}
-              className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
-              title={`Switch theme (Current: ${theme === 'midnight-sea' ? 'Midnight Sea' : (theme === 'warm-horizon' ? 'Warm Horizon' : (theme === 'fresh-sky' ? 'Fresh Sky' : 'Soft Sunrise'))})`}
-            >
-              <Sun className={`w-4 h-4 ${
-                theme === 'midnight-sea' ? 'text-[#068FFF]' : (theme === 'warm-horizon' ? 'text-[#F2765E]' : (theme === 'fresh-sky' ? 'text-sky-400' : 'text-amber-500'))
-              }`} />
-            </button>
-            <Link
-              to="/settings"
-              className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-xs text-slate-300 hover:text-white transition-colors"
-              title="Account Settings"
-            >
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span>{user?.name}</span>
-            </Link>
-            <button
-              onClick={logout}
-              className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
-              title="Sign Out"
-            >
-              <LogOut className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      </header>
-
+    <DashboardLayout>
       {/* Main Content Area */}
-      <main className="flex-1 max-w-6xl mx-auto px-4 sm:px-6 py-8 w-full space-y-6">
+      <main className="flex-1 max-w-6xl mx-auto px-3.5 sm:px-6 py-6 sm:py-8 w-full space-y-6">
         {/* Top Header & Metrics */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
@@ -404,67 +336,67 @@ export default function Habits() {
 
         {/* High-Impact Streak Summary Cards */}
         {streakSummary && (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-            <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-4 sm:p-5 relative overflow-hidden">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
+            <div className="bg-slate-900/70 border border-slate-800 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5 relative overflow-hidden">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                <span className="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider">
                   Current Best
                 </span>
-                <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
-                  <Flame className="w-4 h-4" />
+                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 shrink-0">
+                  <Flame className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </div>
               </div>
-              <p className="text-2xl sm:text-3xl font-extrabold text-amber-400 mt-2">
+              <p className="text-xl sm:text-2xl md:text-3xl font-extrabold text-amber-400 mt-1.5 sm:mt-2">
                 {streakSummary.bestCurrentStreak}{' '}
-                <span className="text-xs font-normal text-slate-400">days</span>
+                <span className="text-[10px] sm:text-xs font-normal text-slate-400">days</span>
               </p>
-              <p className="text-[11px] text-slate-500 mt-1">Active consecutive momentum</p>
+              <p className="text-[10px] sm:text-[11px] text-slate-500 mt-0.5 sm:mt-1 truncate">Active momentum</p>
             </div>
 
-            <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-4 sm:p-5 relative overflow-hidden">
+            <div className="bg-slate-900/70 border border-slate-800 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5 relative overflow-hidden">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                <span className="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider">
                   Longest Ever
                 </span>
-                <div className="w-8 h-8 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
-                  <Trophy className="w-4 h-4" />
+                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 shrink-0">
+                  <Trophy className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </div>
               </div>
-              <p className="text-2xl sm:text-3xl font-extrabold text-indigo-400 mt-2">
+              <p className="text-xl sm:text-2xl md:text-3xl font-extrabold text-indigo-400 mt-1.5 sm:mt-2">
                 {streakSummary.bestEverStreak}{' '}
-                <span className="text-xs font-normal text-slate-400">days</span>
+                <span className="text-[10px] sm:text-xs font-normal text-slate-400">days</span>
               </p>
-              <p className="text-[11px] text-slate-500 mt-1">All-time record streak</p>
+              <p className="text-[10px] sm:text-[11px] text-slate-500 mt-0.5 sm:mt-1 truncate">All-time record</p>
             </div>
 
-            <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-4 sm:p-5 relative overflow-hidden">
+            <div className="bg-slate-900/70 border border-slate-800 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5 relative overflow-hidden">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                <span className="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider">
                   Success Rate
                 </span>
-                <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
-                  <Percent className="w-4 h-4" />
+                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
+                  <Percent className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </div>
               </div>
-              <p className="text-2xl sm:text-3xl font-extrabold text-emerald-400 mt-2">
+              <p className="text-xl sm:text-2xl md:text-3xl font-extrabold text-emerald-400 mt-1.5 sm:mt-2">
                 {streakSummary.averageCompletionRate}%
               </p>
-              <p className="text-[11px] text-slate-500 mt-1">Average consistency</p>
+              <p className="text-[10px] sm:text-[11px] text-slate-500 mt-0.5 sm:mt-1 truncate">Avg consistency</p>
             </div>
 
-            <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-4 sm:p-5 relative overflow-hidden">
+            <div className="bg-slate-900/70 border border-slate-800 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5 relative overflow-hidden">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                <span className="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider">
                   Total Completed
                 </span>
-                <div className="w-8 h-8 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center text-violet-400">
-                  <CheckCircle2 className="w-4 h-4" />
+                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center text-violet-400 shrink-0">
+                  <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </div>
               </div>
-              <p className="text-2xl sm:text-3xl font-extrabold text-violet-400 mt-2">
+              <p className="text-xl sm:text-2xl md:text-3xl font-extrabold text-violet-400 mt-1.5 sm:mt-2">
                 {streakSummary.totalCompletions}
               </p>
-              <p className="text-[11px] text-slate-500 mt-1">Logged check-ins</p>
+              <p className="text-[10px] sm:text-[11px] text-slate-500 mt-0.5 sm:mt-1 truncate">Logged check-ins</p>
             </div>
           </div>
         )}
@@ -771,8 +703,8 @@ export default function Habits() {
 
       {/* Completion History Modal */}
       {historyHabit && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-fade-in">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-5 max-h-[85vh] flex flex-col">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-sm animate-fade-in">
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl sm:rounded-3xl max-w-lg w-full p-4 sm:p-6 shadow-2xl space-y-4 sm:space-y-5 max-h-[85vh] flex flex-col">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <div>
                 <span className="text-[10px] uppercase font-bold text-indigo-400 tracking-wider">
@@ -843,8 +775,8 @@ export default function Habits() {
 
       {/* Create / Edit Habit Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-fade-in">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-sm animate-fade-in">
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl sm:rounded-3xl max-w-lg w-full p-4 sm:p-6 md:p-8 shadow-2xl space-y-5 sm:space-y-6 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-slate-800 pb-4">
               <h2 className="text-lg font-bold text-white">
                 {editingHabit ? 'Edit Habit' : 'Create New Habit'}
@@ -960,7 +892,7 @@ export default function Habits() {
                 <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
                   Theme Color
                 </label>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   {COLOR_PALETTE.map((color) => (
                     <button
                       key={color}
@@ -981,7 +913,7 @@ export default function Habits() {
                 <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
                   Icon
                 </label>
-                <div className="grid grid-cols-7 gap-2">
+                <div className="grid grid-cols-5 sm:grid-cols-7 gap-2">
                   {Object.entries(ICONS).map(([name, IconComp]) => (
                     <button
                       key={name}
@@ -1051,10 +983,6 @@ export default function Habits() {
         </div>
       )}
 
-      {/* Footer */}
-      <footer className="border-t border-slate-800/80 py-6 text-center text-xs text-slate-400">
-        HAbyTAT SaaS • Built with React, Express, Prisma & PostgreSQL
-      </footer>
-    </div>
+    </DashboardLayout>
   );
 }

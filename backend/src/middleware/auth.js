@@ -1,5 +1,6 @@
 import { verifyToken } from '../utils/token.js';
 import { errorResponse } from '../utils/response.js';
+import { isTokenBlacklisted } from '../utils/cache.js';
 import prisma from '../config/prisma.js';
 
 export const authenticate = async (req, res, next) => {
@@ -31,6 +32,12 @@ export const authenticate = async (req, res, next) => {
       }
       return errorResponse(res, 401, 'Invalid authentication token.', 'INVALID_TOKEN');
     }
+
+    // 4. Check if token is blacklisted in Redis (e.g. after logout)
+    if (await isTokenBlacklisted(token)) {
+      return errorResponse(res, 401, 'Session has been invalidated. Please log in again.', 'TOKEN_REVOKED');
+    }
+
 
     // 4. Verify user exists in database
     const user = await prisma.user.findUnique({

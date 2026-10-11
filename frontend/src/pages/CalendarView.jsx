@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { calendarService } from '../services/calendar.service';
 import { completionService } from '../services/completion.service';
+import DashboardLayout from '../layouts/DashboardLayout';
 import {
   Flame,
   ChevronLeft,
@@ -308,73 +309,9 @@ export default function CalendarView() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between selection:bg-indigo-500 selection:text-white">
-      {/* Navigation Header */}
-      <header className="border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-md sticky top-0 z-30">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
-            <img
-              src="/logo.png"
-              alt="HAbyTAT"
-              className="h-9 w-auto object-contain dark:bg-white/90 dark:px-2 dark:py-1 dark:rounded-xl transition-all"
-            />
-            <span className="hidden sm:inline-block ml-1 text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-              Calendar
-            </span>
-          </Link>
-
-          <div className="flex items-center gap-2 sm:gap-3">
-            <Link
-              to="/dashboard"
-              className="px-3 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800/60 text-xs font-semibold transition-colors flex items-center gap-1.5"
-            >
-              <BarChart3 className="w-3.5 h-3.5 text-indigo-400" />
-              <span>Dashboard</span>
-            </Link>
-            <Link
-              to="/statistics"
-              className="px-3 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800/60 text-xs font-semibold transition-colors flex items-center gap-1.5"
-            >
-              <TrendingUp className="w-3.5 h-3.5 text-violet-400" />
-              <span>Analytics</span>
-            </Link>
-            <Link
-              to="/habits"
-              className="px-3 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800/60 text-xs font-semibold transition-colors flex items-center gap-1.5"
-            >
-              <ListTodo className="w-3.5 h-3.5 text-violet-400" />
-              <span>Habits</span>
-            </Link>
-            <button
-              onClick={toggleTheme}
-              className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
-              title={`Switch theme (Current: ${theme === 'midnight-sea' ? 'Midnight Sea' : (theme === 'warm-horizon' ? 'Warm Horizon' : (theme === 'fresh-sky' ? 'Fresh Sky' : 'Soft Sunrise'))})`}
-            >
-              <Sun className={`w-4 h-4 ${
-                theme === 'midnight-sea' ? 'text-[#068FFF]' : (theme === 'warm-horizon' ? 'text-[#F2765E]' : (theme === 'fresh-sky' ? 'text-sky-400' : 'text-amber-500'))
-              }`} />
-            </button>
-            <Link
-              to="/settings"
-              className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-xs text-slate-300 hover:text-white transition-colors"
-              title="Account Settings"
-            >
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span>{user?.name}</span>
-            </Link>
-            <button
-              onClick={logout}
-              className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
-              title="Sign Out"
-            >
-              <LogOut className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      </header>
-
+    <DashboardLayout>
       {/* Main Container */}
-      <main className="flex-1 max-w-6xl mx-auto px-4 sm:px-6 py-8 w-full space-y-8">
+      <main className="flex-1 max-w-6xl mx-auto px-3 sm:px-6 py-6 sm:py-8 w-full space-y-6 sm:space-y-8">
         {/* Title & Description */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
@@ -398,8 +335,8 @@ export default function CalendarView() {
         </div>
 
         {/* SECTION 1: GitHub-Style Contribution Heatmap */}
-        <div className="bg-slate-900/80 border border-slate-800/90 rounded-3xl p-6 sm:p-7 shadow-xl space-y-5">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="bg-slate-900/80 border border-slate-800/90 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-7 shadow-xl space-y-4 sm:space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-400">
@@ -408,18 +345,18 @@ export default function CalendarView() {
                 <span className="text-xs text-slate-500">•</span>
                 <span className="text-xs text-slate-400">GitHub-Style Activity</span>
               </div>
-              <h2 className="text-xl font-bold text-white mt-0.5">
+              <h2 className="text-lg sm:text-xl font-bold text-white mt-0.5">
                 Contribution Heatmap
               </h2>
             </div>
 
             {/* Range Selector */}
-            <div className="flex items-center gap-1.5 bg-slate-950/80 border border-slate-800/80 p-1 rounded-xl">
+            <div className="flex items-center gap-1 bg-slate-950/80 border border-slate-800/80 p-1 rounded-xl self-start sm:self-auto">
               {[30, 90, 180, 365].map((days) => (
                 <button
                   key={days}
                   onClick={() => setHeatmapDaysRange(days)}
-                  className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${heatmapDaysRange === days
+                  className={`px-2.5 sm:px-3 py-1 rounded-lg text-xs font-semibold transition-all ${heatmapDaysRange === days
                       ? 'bg-emerald-500 text-slate-950 shadow-sm'
                       : 'text-slate-400 hover:text-white'
                     }`}
@@ -432,33 +369,33 @@ export default function CalendarView() {
 
           {/* Heatmap Metrics Bar */}
           {heatmapData && (
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 py-2 border-y border-slate-800/60">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 py-2 border-y border-slate-800/60">
               <div>
-                <p className="text-[11px] text-slate-400 uppercase font-semibold">Active Days</p>
-                <p className="text-lg sm:text-xl font-extrabold text-white mt-0.5">
+                <p className="text-[10px] sm:text-[11px] text-slate-400 uppercase font-semibold">Active Days</p>
+                <p className="text-base sm:text-xl font-extrabold text-white mt-0.5">
                   {heatmapData.activeDaysCount}{' '}
                   <span className="text-xs text-slate-400 font-normal">/ {heatmapData.daysCount}</span>
                 </p>
               </div>
 
               <div>
-                <p className="text-[11px] text-slate-400 uppercase font-semibold">Consistency Rate</p>
-                <p className="text-lg sm:text-xl font-extrabold text-emerald-400 mt-0.5">
+                <p className="text-[10px] sm:text-[11px] text-slate-400 uppercase font-semibold">Consistency Rate</p>
+                <p className="text-base sm:text-xl font-extrabold text-emerald-400 mt-0.5">
                   {heatmapData.consistencyRate}%
                 </p>
               </div>
 
               <div>
-                <p className="text-[11px] text-slate-400 uppercase font-semibold">Current Streak</p>
-                <p className="text-lg sm:text-xl font-extrabold text-amber-400 mt-0.5 flex items-center gap-1">
-                  <Flame className="w-4 h-4" />
+                <p className="text-[10px] sm:text-[11px] text-slate-400 uppercase font-semibold">Current Streak</p>
+                <p className="text-base sm:text-xl font-extrabold text-amber-400 mt-0.5 flex items-center gap-1">
+                  <Flame className="w-4 h-4 shrink-0" />
                   <span>{heatmapData.currentStreak} days</span>
                 </p>
               </div>
 
               <div>
-                <p className="text-[11px] text-slate-400 uppercase font-semibold">Total Logged</p>
-                <p className="text-lg sm:text-xl font-extrabold text-indigo-400 mt-0.5">
+                <p className="text-[10px] sm:text-[11px] text-slate-400 uppercase font-semibold">Total Logged</p>
+                <p className="text-base sm:text-xl font-extrabold text-indigo-400 mt-0.5">
                   {heatmapData.totalCompletions}{' '}
                   <span className="text-xs text-slate-400 font-normal">habits</span>
                 </p>
@@ -474,7 +411,7 @@ export default function CalendarView() {
             </div>
           ) : (
             <div className="space-y-3">
-              <div className="overflow-x-auto pb-2 scrollbar-thin">
+              <div className="overflow-x-auto pb-2 touch-scroll scrollbar-thin">
                 <div className="inline-flex gap-1.5 min-w-max p-1">
                   {heatmapWeeks.map((week, weekIdx) => (
                     <div key={weekIdx} className="flex flex-col gap-1.5">
@@ -512,7 +449,7 @@ export default function CalendarView() {
               </div>
 
               {/* Heatmap Legend */}
-              <div className="flex items-center justify-between text-xs text-slate-400 pt-2">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-slate-400 pt-2">
                 <span className="text-[11px] text-slate-500">
                   Tip: Click any cell to inspect or log habit completions for that date.
                 </span>
@@ -541,7 +478,7 @@ export default function CalendarView() {
         </div>
 
         {/* SECTION 2: Monthly Calendar View */}
-        <div className="bg-slate-900/80 border border-slate-800/90 rounded-3xl p-6 sm:p-7 shadow-xl space-y-6">
+        <div className="bg-slate-900/80 border border-slate-800/90 rounded-2xl sm:rounded-3xl p-3.5 sm:p-6 lg:p-7 shadow-xl space-y-5 sm:space-y-6">
           {/* Calendar Header with Navigation */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
@@ -552,7 +489,7 @@ export default function CalendarView() {
                 <span className="text-xs text-slate-500">•</span>
                 <span className="text-xs text-slate-400">Day-by-Day Breakdown</span>
               </div>
-              <h2 className="text-2xl font-bold text-white mt-0.5 flex items-center gap-2">
+              <h2 className="text-xl sm:text-2xl font-bold text-white mt-0.5 flex items-center gap-2">
                 <span>{calendarData ? `${calendarData.monthName} ${calendarData.year}` : 'Loading...'}</span>
               </h2>
             </div>
@@ -578,17 +515,17 @@ export default function CalendarView() {
 
           {/* Calendar Status Summary Tags */}
           {calendarData && (
-            <div className="flex flex-wrap items-center gap-3 text-xs">
-              <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-[11px] sm:text-xs">
+              <span className="px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">
                 {calendarData.fullDaysCount} Full Days (100%)
               </span>
-              <span className="px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 font-medium">
+              <span className="px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 font-medium">
                 {calendarData.partialDaysCount} Partial Days
               </span>
-              <span className="px-3 py-1 rounded-full bg-slate-800 text-slate-400 font-medium">
+              <span className="px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-slate-800 text-slate-400 font-medium">
                 {calendarData.missedDaysCount} Missed Days
               </span>
-              <span className="px-3 py-1 rounded-full bg-slate-800 text-slate-300 font-medium">
+              <span className="px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-slate-800 text-slate-300 font-medium">
                 {calendarData.totalCompletionsInMonth} Completions Logged
               </span>
             </div>
@@ -605,19 +542,19 @@ export default function CalendarView() {
           ) : (
             <div className="space-y-2">
               {/* Weekday Labels */}
-              <div className="grid grid-cols-7 gap-2 text-center text-xs font-bold text-slate-400 uppercase tracking-wider py-1 border-b border-slate-800">
+              <div className="grid grid-cols-7 gap-1 sm:gap-2 text-center text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider py-1 border-b border-slate-800">
                 {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((d) => (
                   <div key={d}>{d}</div>
                 ))}
               </div>
 
               {/* Day Cells Grid */}
-              <div className="grid grid-cols-7 gap-2">
+              <div className="grid grid-cols-7 gap-1 sm:gap-2">
                 {/* Empty padding slots before first day */}
                 {Array.from({ length: calendarData.firstDayOfWeek }).map((_, i) => (
                   <div
                     key={`pad-${i}`}
-                    className="min-h-[75px] sm:min-h-[90px] rounded-2xl bg-slate-950/30 border border-slate-900/60 opacity-20 pointer-events-none"
+                    className="min-h-[50px] sm:min-h-[75px] md:min-h-[90px] rounded-xl sm:rounded-2xl bg-slate-950/30 border border-slate-900/60 opacity-20 pointer-events-none"
                   />
                 ))}
 
@@ -691,12 +628,12 @@ export default function CalendarView() {
                     <button
                       key={day.date}
                       onClick={() => openDayInspector(day.date)}
-                      className={`min-h-[75px] sm:min-h-[90px] p-2.5 rounded-2xl border transition-all text-left flex flex-col justify-between group cursor-pointer ${cardBg} ${isFuture ? 'opacity-60 hover:opacity-90' : ''
+                      className={`min-h-[50px] sm:min-h-[75px] md:min-h-[90px] p-1 sm:p-2.5 rounded-xl sm:rounded-2xl border transition-all text-left flex flex-col justify-between group cursor-pointer ${cardBg} ${isFuture ? 'opacity-60 hover:opacity-90' : ''
                         }`}
                     >
                       <div className="flex items-center justify-between w-full">
                         <span
-                          className={`text-sm sm:text-base font-extrabold ${isToday
+                          className={`text-xs sm:text-base font-extrabold ${isToday
                               ? (theme === 'midnight-sea' ? 'text-white bg-[#068FFF] px-1.5 py-0.5 rounded-lg font-black' : (theme === 'warm-horizon' ? 'text-white bg-[#F2765E] px-1.5 py-0.5 rounded-lg font-black' : (theme === 'fresh-sky' ? 'text-white bg-[#30AFFF] px-1.5 py-0.5 rounded-lg font-black' : 'text-[#1c1917] bg-[#FFBE91] px-1.5 py-0.5 rounded-lg font-black')))
                               : isFuture
                                 ? (theme === 'midnight-sea' ? 'text-[#888888]' : (theme === 'warm-horizon' ? 'text-[#8C7E78]' : (theme === 'fresh-sky' ? 'text-slate-400' : 'text-[#78716c]')))
@@ -911,10 +848,6 @@ export default function CalendarView() {
         </div>
       )}
 
-      {/* Footer */}
-      <footer className="border-t border-slate-800/80 py-6 text-center text-xs text-slate-400">
-        HAbyTAT SaaS • Built with React, Vite, Express, Prisma & PostgreSQL
-      </footer>
-    </div>
+    </DashboardLayout>
   );
 }

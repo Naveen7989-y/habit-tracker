@@ -1,4 +1,4 @@
-// Prisma Schema for Habit Tracker (HabitPulse)
+// Prisma Schema for Habit Tracker & Indian Nutrition Tracker (HAbyTAT)
 
 generator client {
   provider = "prisma-client-js"
@@ -11,17 +11,24 @@ datasource db {
 }
 
 model User {
-  id          String            @id @default(uuid())
-  name        String
-  email       String            @unique
-  password    String
-  avatar      String?
-  timezone    String            @default("UTC")
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
+  id             String            @id @default(uuid())
+  name           String
+  email          String            @unique
+  password       String
+  avatar         String?
+  timezone       String            @default("UTC")
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
 
-  habits      Habit[]
-  completions HabitCompletion[]
+  habits         Habit[]
+  completions    HabitCompletion[]
+  foodLogs       FoodLog[]
+  recipes        Recipe[]
+  nutritionGoal  NutritionGoal?
+  waterLogs      WaterLog[]
+  weightLogs     WeightLog[]
+  customFoods    FoodItem[]
+  favoriteFoods  FavoriteFood[]
 
   @@map("users")
 }
@@ -69,4 +76,205 @@ model HabitCompletion {
   @@index([userId, completedDate])
   @@index([habitId, completedDate])
   @@map("habit_completions")
+}
+
+// ==========================================
+// INDIAN CALORIE & NUTRITION TRACKER MODELS
+// ==========================================
+
+model FoodItem {
+  id               String          @id @default(uuid())
+  name             String
+  regionalName     String?         // Regional name in Hindi / Tamil / Telugu / etc.
+  aliases          String?         // Search aliases e.g. "palak, saag paneer, palak paneer"
+  category         String          // Breakfast, Breads, Rice & Grains, Dal & Curries, Protein & Meat, Vegetables, Snacks & Street Food, Beverages, Sweets & Desserts, Staples & Ingredients
+  cuisine          String          @default("Pan-Indian") // South Indian, North Indian, Andhra/Telangana, Maharashtrian, Bengali, Gujarati, Street Food, etc.
+  dietaryType      String          @default("Veg") // Veg, Non-Veg, Egg, Vegan, Jain
+  servingUnit      String          @default("100g") // 100g, piece, katori, cup, tbsp
+  servingSizeGrams Float           @default(100)
+  calories         Float           // kcal per standard serving
+  protein          Float           // grams
+  carbs            Float           // grams
+  fat              Float           // grams
+  fiber            Float           @default(0) // grams
+  sugar            Float?          @default(0) // grams
+  sodium           Float?          @default(0) // mg
+  source           String          @default("ICMR-NIN IFCT") // e.g. "ICMR-NIN IFCT 2017", "Standardized Recipe"
+  isVerified       Boolean         @default(true)
+  isCustom         Boolean         @default(false)
+  userId           String?         // Optional: set if created as a custom food by a specific user
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  user             User?           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  servings         FoodServing[]
+  foodLogs         FoodLog[]
+  recipeIngredients RecipeIngredient[]
+  favorites        FavoriteFood[]
+
+  @@index([name])
+  @@index([category])
+  @@index([cuisine])
+  @@index([dietaryType])
+  @@index([userId])
+  @@map("food_items")
+}
+
+model FoodServing {
+  id          String    @id @default(uuid())
+  foodItemId  String
+  unitName    String    // e.g. "medium piece (45g)", "katori (150g)", "cup (200g)", "tablespoon (15g)"
+  gramWeight  Float     // Equivalence in grams
+  isDefault   Boolean   @default(false)
+
+  foodItem    FoodItem  @relation(fields: [foodItemId], references: [id], onDelete: Cascade)
+
+  @@index([foodItemId])
+  @@map("food_servings")
+}
+
+model FavoriteFood {
+  id         String    @id @default(uuid())
+  userId     String
+  foodItemId String
+  createdAt  DateTime  @default(now())
+
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  foodItem   FoodItem  @relation(fields: [foodItemId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, foodItemId])
+  @@index([userId])
+  @@map("favorite_foods")
+}
+
+model FoodLog {
+  id              String    @id @default(uuid())
+  userId          String
+  foodItemId      String?
+  recipeId        String?
+  foodName        String
+  mealType        String    // Breakfast, Morning Snack, Lunch, Evening Snack, Dinner, Custom
+  logDate         String    // YYYY-MM-DD
+  servingQuantity Float     @default(1)
+  servingUnit     String    // e.g. "piece", "katori", "g", "ml"
+  totalGrams      Float
+  calories        Float
+  protein         Float
+  carbs           Float
+  fat             Float
+  fiber           Float     @default(0)
+  notes           String?
+  loggedAt        DateTime  @default(now())
+
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  foodItem        FoodItem? @relation(fields: [foodItemId], references: [id], onDelete: SetNull)
+  recipe          Recipe?   @relation(fields: [recipeId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([userId, logDate])
+  @@index([logDate])
+  @@map("food_logs")
+}
+
+model Recipe {
+  id                  String             @id @default(uuid())
+  userId              String
+  name                String
+  description         String?
+  servings            Int                @default(1)
+  cookedWeightGrams   Float?
+  totalCalories       Float
+  totalProtein        Float
+  totalCarbs          Float
+  totalFat            Float
+  totalFiber          Float              @default(0)
+  caloriesPerServing  Float
+  proteinPerServing   Float
+  carbsPerServing     Float
+  fatPerServing       Float
+  fiberPerServing     Float              @default(0)
+  notes               String?
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+
+  user                User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ingredients         RecipeIngredient[]
+  foodLogs            FoodLog[]
+
+  @@index([userId])
+  @@map("recipes")
+}
+
+model RecipeIngredient {
+  id             String    @id @default(uuid())
+  recipeId       String
+  foodItemId     String?
+  ingredientName String
+  quantity       Float
+  unit           String    // "g", "ml", "katori", "tbsp", "piece"
+  grams          Float
+  calories       Float
+  protein        Float
+  carbs          Float
+  fat            Float
+  fiber          Float     @default(0)
+
+  recipe         Recipe    @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  foodItem       FoodItem? @relation(fields: [foodItemId], references: [id], onDelete: SetNull)
+
+  @@index([recipeId])
+  @@map("recipe_ingredients")
+}
+
+model NutritionGoal {
+  id                String    @id @default(uuid())
+  userId            String    @unique
+  dailyCalories     Float     @default(2000)
+  proteinGrams      Float     @default(125)
+  carbsGrams        Float     @default(225)
+  fatGrams          Float     @default(65)
+  fiberGrams        Float     @default(30)
+  waterTargetMl     Int       @default(2500)
+  fitnessGoal       String    @default("maintenance") // weight_loss, maintenance, weight_gain
+  activityLevel     String    @default("sedentary")   // sedentary, light, moderate, very_active
+  age               Int?
+  gender            String?   // male, female, other
+  heightCm          Float?
+  currentWeightKg   Float?
+  targetWeightKg    Float?
+  dietaryPreference String?   @default("Veg") // Veg, Non-Veg, Egg, Vegan, Jain
+  calculationMethod String?   @default("Mifflin-St Jeor")
+  updatedAt         DateTime  @updatedAt
+
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("nutrition_goals")
+}
+
+model WaterLog {
+  id         String    @id @default(uuid())
+  userId     String
+  logDate    String    // YYYY-MM-DD
+  amountMl   Int       // e.g. 250ml per glass
+  loggedAt   DateTime  @default(now())
+
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, logDate])
+  @@map("water_logs")
+}
+
+model WeightLog {
+  id         String    @id @default(uuid())
+  userId     String
+  logDate    String    // YYYY-MM-DD
+  weightKg   Float
+  note       String?
+  loggedAt   DateTime  @default(now())
+
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, logDate])
+  @@index([userId])
+  @@map("weight_logs")
 }

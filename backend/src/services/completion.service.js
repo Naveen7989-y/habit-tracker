@@ -1,4 +1,5 @@
 import prisma from '../config/prisma.js';
+import { deleteCachePattern } from '../utils/cache.js';
 
 class CompletionService {
   /**
@@ -62,8 +63,12 @@ class CompletionService {
       },
     });
 
+    // Invalidate user cached responses
+    deleteCachePattern(`cache:${userId}:*`).catch(() => {});
+
     return completion;
   }
+
 
   /**
    * Undo / remove completion for a habit on a specific date
@@ -110,11 +115,15 @@ class CompletionService {
       where: { id: completion.id },
     });
 
+    // Invalidate user cached responses
+    deleteCachePattern(`cache:${userId}:*`).catch(() => {});
+
     return {
       habitId,
       completedDate: dateStr,
       undone: true,
     };
+
   }
 
   /**

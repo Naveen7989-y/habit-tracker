@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { dashboardService } from '../services/dashboard.service';
 import { completionService } from '../services/completion.service';
+import DashboardLayout from '../layouts/DashboardLayout';
 import {
   Flame,
   Trophy,
@@ -155,72 +156,9 @@ export default function Dashboard() {
   });
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between selection:bg-indigo-500 selection:text-white">
-      {/* Navigation Header */}
-      <header className="border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-md sticky top-0 z-40">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
-            <img
-              src="/logo.png"
-              alt="HAbyTAT"
-              className="h-9 w-auto object-contain dark:bg-white/90 dark:px-2 dark:py-1 dark:rounded-xl transition-all"
-            />
-            <span className="hidden sm:inline-block ml-1 text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-              Dashboard
-            </span>
-          </Link>
-          <div className="flex items-center gap-2 sm:gap-3">
-            <Link
-              to="/statistics"
-              className="px-3.5 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800/60 text-xs font-semibold transition-colors flex items-center gap-1.5"
-            >
-              <TrendingUp className="w-3.5 h-3.5 text-violet-400" />
-              <span>Analytics</span>
-            </Link>
-            <Link
-              to="/calendar"
-              className="px-3.5 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800/60 text-xs font-semibold transition-colors flex items-center gap-1.5"
-            >
-              <CalendarIcon className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Calendar</span>
-            </Link>
-            <Link
-              to="/habits"
-              className="px-3.5 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800/60 text-xs font-semibold transition-colors flex items-center gap-1.5"
-            >
-              <ListTodo className="w-3.5 h-3.5" />
-              <span>All Habits</span>
-            </Link>
-            <button
-              onClick={toggleTheme}
-              className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
-              title={`Switch theme (Current: ${theme === 'midnight-sea' ? 'Midnight Sea' : (theme === 'warm-horizon' ? 'Warm Horizon' : (theme === 'fresh-sky' ? 'Fresh Sky' : 'Soft Sunrise'))})`}
-            >
-              <Sun className={`w-4 h-4 ${
-                theme === 'midnight-sea' ? 'text-[#068FFF]' : (theme === 'warm-horizon' ? 'text-[#F2765E]' : (theme === 'fresh-sky' ? 'text-sky-400' : 'text-amber-500'))
-              }`} />
-            </button>
-            <Link
-              to="/settings"
-              className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-xs text-slate-300 hover:text-white transition-colors"
-              title="Account Settings"
-            >
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span>{user?.name}</span>
-            </Link>
-            <button
-              onClick={logout}
-              className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
-              title="Sign Out"
-            >
-              <LogOut className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      </header>
-
+    <DashboardLayout>
       {/* Main Dashboard Content */}
-      <main className="flex-1 max-w-6xl mx-auto px-4 sm:px-6 py-8 w-full space-y-8">
+      <main className="flex-1 max-w-6xl mx-auto px-3.5 sm:px-6 py-6 sm:py-8 w-full space-y-6 sm:space-y-8">
         {loading ? (
           <div className="py-24 flex flex-col items-center justify-center gap-3">
             <Loader2 className="w-9 h-9 text-indigo-500 animate-spin" />
@@ -302,7 +240,7 @@ export default function Dashboard() {
             </div>
 
             {/* 5 KPI Metric Cards (Section 7 Specification) */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-4">
               {/* Card 1: Current Streak */}
               <div className="bg-slate-900/80 border border-slate-800/80 rounded-2xl p-4 sm:p-5 hover:border-amber-500/40 transition-colors">
                 <div className="flex items-center justify-between">
@@ -513,11 +451,6 @@ export default function Dashboard() {
           </>
         )}
       </main>
-
-      {/* Footer */}
-      <footer className="border-t border-slate-800/80 py-6 text-center text-xs text-slate-400">
-        HAbyTAT SaaS • Built with React, Express, Prisma & PostgreSQL
-      </footer>
-    </div>
+    </DashboardLayout>
   );
 }

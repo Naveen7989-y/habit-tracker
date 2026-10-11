@@ -1,6 +1,17 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const getApiBaseUrl = () => {
+  const envUrl = import.meta.env.VITE_API_URL;
+  if (typeof window !== 'undefined') {
+    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    if (isLocalhost && (!envUrl || envUrl.includes('onrender.com'))) {
+      return 'http://localhost:5000/api';
+    }
+  }
+  return envUrl || 'http://localhost:5000/api';
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -9,6 +20,7 @@ const api = axios.create({
     'Content-Type': 'application/json',
   },
 });
+
 
 // Request interceptor: attach token from localStorage if available
 api.interceptors.request.use(

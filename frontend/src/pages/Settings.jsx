@@ -41,7 +41,7 @@ export default function Settings() {
     <DashboardLayout>
       <main className="flex-1 max-w-4xl mx-auto px-4 sm:px-6 py-8 w-full space-y-8">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-white">Account Settings</h1>
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">Account Settings</h1>
           <p className="text-xs sm:text-sm text-slate-400 mt-1">
             Manage your personal profile, regional timezone, and application appearance
           </p>
@@ -61,9 +61,9 @@ export default function Settings() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
           {/* Profile Overview Card */}
-          <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 flex flex-col items-center text-center space-y-4">
+          <div className="bg-slate-900/80 border border-slate-800 rounded-2xl sm:rounded-3xl p-4 sm:p-6 flex flex-col items-center text-center space-y-4">
             <div className="relative">
               {avatar ? (
                 <img
@@ -156,8 +156,8 @@ export default function Settings() {
           </div>
 
           {/* Edit Form */}
-          <div className="md:col-span-2 bg-slate-900/80 border border-slate-800 rounded-3xl p-6 sm:p-8">
-            <h2 className="text-lg font-bold text-white mb-6">Profile Details</h2>
+          <div className="md:col-span-2 bg-slate-900/80 border border-slate-800 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8">
+            <h2 className="text-base sm:text-lg font-bold text-white mb-4 sm:mb-6">Profile Details</h2>
 
             <form onSubmit={handleSubmit} className="space-y-5">
               <div>
@@ -226,7 +226,7 @@ export default function Settings() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white text-xs font-semibold shadow-lg shadow-indigo-600/30 transition-all flex items-center gap-2"
+                  className="w-full sm:w-auto justify-center px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white text-xs font-semibold shadow-lg shadow-indigo-600/30 transition-all flex items-center gap-2"
                 >
                   {saving ? (
                     <>

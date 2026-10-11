@@ -24,6 +24,7 @@
   --theme-aqua: #92EEFF;
   --theme-lime: #D8FFC5;
   --theme-mint: #C4F7CA;
+  --theme-mint-soft: #EBFDEA;
 
   /* Semantic Variables */
   --background: #FAFDFF;
@@ -31,7 +32,7 @@
   
   --card: #FFFFFF;
   --card-elevated: #F4FBFF;
-  --card-surface: #D8FFC5;
+  --card-surface: #EBFDEA;
   --card-foreground: #0f172a;
   --card-info: #92EEFF;
   --card-achievement: #C4F7CA;
@@ -45,8 +46,8 @@
   --accent: #30AFFF;
   --accent-foreground: #FFFFFF;
   
-  --muted: #F0F9FF;
-  --muted-foreground: #64748b;
+  --muted: #EBFDEA;
+  --muted-foreground: #475569;
   
   --border: #C4F7CA;
   --border-muted: rgba(196, 247, 202, 0.65);
@@ -353,9 +354,10 @@
    Light Foundation (#FAFDFF) -> Clean White Cards with Mint Borders (#C4F7CA) -> Primary Action Blue (#30AFFF) -> Aqua Progress (#92EEFF) -> Fresh Lime Growth (#D8FFC5) -> Mint Achievement (#C4F7CA)
    ================================================== */
 
-:root,
+:root:not([data-theme]),
 [data-theme="fresh-sky"],
 .theme-fresh-sky {
+
   /* Selection Highlight */
   ::selection {
     background-color: #92EEFF;
@@ -379,6 +381,14 @@
     backdrop-filter: blur(12px) !important;
   }
 
+  /* Desktop Navigation Pill Bar */
+  header nav,
+  .desktop-navbar-pill,
+  .bg-slate-950\/40 {
+    background-color: #EBFDEA !important;
+    border-color: #C4F7CA !important;
+  }
+
   header a,
   header button,
   nav a {
@@ -400,6 +410,36 @@
     color: #FFFFFF !important;
     box-shadow: 0 2px 12px rgba(48, 175, 255, 0.35) !important;
     font-weight: 700 !important;
+  }
+
+  /* Mobile Navigation Dropdown & Bottom Bar */
+  .mobile-nav-dropdown,
+  .mobile-bottom-nav {
+    background-color: rgba(255, 255, 255, 0.98) !important;
+    border-color: #C4F7CA !important;
+  }
+
+  .mobile-nav-dropdown a,
+  .mobile-nav-dropdown a *,
+  .mobile-bottom-nav a,
+  .mobile-bottom-nav a * {
+    color: #334155 !important;
+  }
+
+  .mobile-nav-dropdown a:hover {
+    background-color: #92EEFF !important;
+    color: #0f172a !important;
+  }
+
+  .mobile-nav-dropdown a.bg-indigo-600,
+  .mobile-nav-dropdown a.bg-indigo-600 * {
+    background-color: #30AFFF !important;
+    color: #FFFFFF !important;
+  }
+
+  .mobile-bottom-nav a.text-indigo-400,
+  .mobile-bottom-nav a.text-indigo-400 * {
+    color: #30AFFF !important;
   }
 
   /* Primary CTA Buttons (Add Habit, Create Habit, Save, Complete, Start Tracking) */
@@ -473,7 +513,8 @@
   .bg-slate-900\/60,
   .bg-slate-900\/70,
   .bg-slate-900\/80,
-  .bg-slate-900\/90 {
+  .bg-slate-900\/90,
+  .bg-slate-900\/95 {
     background-color: #FFFFFF !important;
     border: 1px solid #C4F7CA !important;
     color: #0f172a !important;
@@ -490,13 +531,27 @@
     box-shadow: 0 6px 20px rgba(48, 175, 255, 0.14) !important;
   }
 
-  /* Alternative / Inner Cards */
+  /* Alternative / Inner Cards, Pills, Segmented Controls & Containers (#EBFDEA Soft Mint) */
+  .bg-slate-950\/10,
+  .bg-slate-950\/20,
+  .bg-slate-950\/30,
+  .bg-slate-950\/40,
+  .bg-slate-950\/50,
   .bg-slate-950\/60,
   .bg-slate-950\/70,
   .bg-slate-950\/80,
-  .bg-slate-950 {
-    background-color: #FAFDFF !important;
-    border: 1px solid #C4F7CA !important;
+  .bg-slate-950\/90,
+  .bg-slate-900\/40,
+  .bg-slate-900\/50,
+  div.bg-slate-800,
+  div.bg-slate-800\/40,
+  div.bg-slate-800\/50,
+  div.bg-slate-800\/60,
+  div.bg-slate-800\/70,
+  div.bg-slate-800\/80,
+  div.bg-slate-800\/90 {
+    background-color: #EBFDEA !important;
+    border-color: #C4F7CA !important;
     color: #0f172a !important;
   }
 
@@ -581,9 +636,10 @@
   }
 
   /* Progress Bar Track & Fill */
-  .w-full.bg-slate-950\/70.border.border-slate-800 {
-    background-color: #92EEFF !important;
-    border-color: #92EEFF !important;
+  .w-full.bg-slate-950\/70.border.border-slate-800,
+  .w-full.bg-slate-950.rounded-full {
+    background-color: #EBFDEA !important;
+    border-color: #C4F7CA !important;
   }
 
   .bg-gradient-to-r.from-indigo-500.via-violet-500.to-emerald-400 {
@@ -642,6 +698,18 @@
     color: #0f172a !important;
   }
 
+  .fixed.inset-0 .bg-slate-950,
+  .fixed.inset-0 .bg-slate-950\/95,
+  .fixed.inset-0 .bg-slate-950\/80,
+  .fixed.inset-0 .bg-slate-950\/70,
+  .fixed.inset-0 .bg-slate-950\/60,
+  .fixed.inset-0 .bg-slate-950\/50,
+  .fixed.inset-0 .bg-slate-950\/40,
+  .fixed.inset-0 .bg-slate-950\/30 {
+    background-color: #EBFDEA !important;
+    border-color: #C4F7CA !important;
+  }
+
   .fixed.inset-0 .border-b.border-slate-800 {
     border-bottom-color: #92EEFF !important;
   }
@@ -687,7 +755,7 @@
 
   /* Incomplete Habit Checkbox / Button */
   button.bg-slate-800 {
-    background-color: #FAFDFF !important;
+    background-color: #EBFDEA !important;
     border: 1px solid #C4F7CA !important;
     color: #475569 !important;
   }
@@ -696,17 +764,6 @@
     border-color: #30AFFF !important;
     color: #0f172a !important;
     background-color: #92EEFF !important;
-  }
-
-  /* Container Divs with slate-800 */
-  div.bg-slate-800,
-  div.bg-slate-800\/60,
-  div.bg-slate-800\/70,
-  div.bg-slate-800\/80,
-  div.bg-slate-800\/90 {
-    background-color: #FAFDFF !important;
-    border-color: #C4F7CA !important;
-    color: #0f172a !important;
   }
 
   /* Completed Habit Card in Habits.jsx */
@@ -733,7 +790,10 @@
   }
 
   /* Text Contrast Enforcement */
-  .text-white {
+  h1:not(button *), h2:not(button *), h3:not(button *), h4:not(button *), h5, h6,
+  .text-white,
+  .text-slate-100,
+  .text-slate-100:not(button *):not(button) {
     color: #0f172a !important;
   }
 
@@ -745,10 +805,22 @@
   .bg-indigo-600 *,
   button.bg-emerald-500,
   button.bg-emerald-500 *,
+  button.bg-emerald-600,
+  button.bg-emerald-600 *,
   button.bg-red-600,
   button.bg-red-600 *,
   button.bg-violet-600,
   button.bg-violet-600 *,
+  button[type="submit"],
+  button[type="submit"] *,
+  button#register-btn,
+  button#register-btn *,
+  button#signin-btn,
+  button#signin-btn *,
+  button[class*="from-"],
+  button[class*="from-"] *,
+  span[class*="!text-white"],
+  .\!text-white,
   .text-white.font-bold.shadow-sm,
   [class*="bg-\\[\\#30AFFF\\]"] {
     color: #FFFFFF !important;
@@ -801,6 +873,13 @@
     background-color: #ef4444 !important;
     color: #FFFFFF !important;
   }
+
+  /* HAByTAT Logo on Fresh Sky */
+  img[alt="HAbyTAT"] {
+    content: url('/logo.png');
+    background: transparent !important;
+    box-shadow: none !important;
+  }
 }
 
 /* ==================================================
@@ -833,6 +912,13 @@
     backdrop-filter: blur(12px) !important;
   }
 
+  /* Desktop Navigation Pill Bar */
+  header nav,
+  .desktop-navbar-pill {
+    background-color: #FFFDF0 !important;
+    border-color: #FFDDB0 !important;
+  }
+
   header a,
   header button,
   nav a {
@@ -854,6 +940,36 @@
     color: #1c1917 !important;
     box-shadow: 0 2px 12px rgba(255, 190, 145, 0.5) !important;
     font-weight: 700 !important;
+  }
+
+  /* Mobile Navigation Dropdown & Bottom Bar */
+  .mobile-nav-dropdown,
+  .mobile-bottom-nav {
+    background-color: rgba(255, 252, 225, 0.98) !important;
+    border-color: #FFDDB0 !important;
+  }
+
+  .mobile-nav-dropdown a,
+  .mobile-nav-dropdown a *,
+  .mobile-bottom-nav a,
+  .mobile-bottom-nav a * {
+    color: #1c1917 !important;
+  }
+
+  .mobile-nav-dropdown a:hover {
+    background-color: #FFDDB0 !important;
+    color: #1c1917 !important;
+  }
+
+  .mobile-nav-dropdown a.bg-indigo-600,
+  .mobile-nav-dropdown a.bg-indigo-600 * {
+    background-color: #FFBE91 !important;
+    color: #1c1917 !important;
+  }
+
+  .mobile-bottom-nav a.text-indigo-400,
+  .mobile-bottom-nav a.text-indigo-400 * {
+    color: #d97746 !important;
   }
 
   /* Primary CTA Buttons (Add Habit, Create Habit, Save, Complete, Start Tracking) */
@@ -931,7 +1047,8 @@
   .bg-slate-900\/60,
   .bg-slate-900\/70,
   .bg-slate-900\/80,
-  .bg-slate-900\/90 {
+  .bg-slate-900\/90,
+  .bg-slate-900\/95 {
     background-color: #FFFFFF !important;
     border: 1px solid #FFDDB0 !important;
     box-shadow: 0 4px 16px rgba(255, 221, 176, 0.2) !important;
@@ -948,6 +1065,8 @@
   }
 
   /* Inner Secondary Surfaces (#FFFDF5 / #FFDDB0) */
+  .bg-slate-950,
+  .bg-slate-950\/95,
   .bg-slate-950\/60,
   .bg-slate-950\/70,
   .bg-slate-950\/80,
@@ -983,14 +1102,30 @@
   }
 
   /* Text & Headings (Strong Dark Contrast for Light Theme) */
-  h1, h2, h3, h4, h5, h6,
-  .text-white,
-  .text-slate-100,
-  .text-slate-200,
+  h1:not(button *), h2:not(button *), h3:not(button *), h4:not(button *), h5, h6,
+  .text-white:not(button *):not(button):not(.\!text-white):not([class*="!text-white"]),
+  .text-slate-100:not(button *):not(button),
+  .text-slate-200:not(button *):not(button),
   th,
   strong,
   b {
     color: #1c1917 !important;
+  }
+
+  /* White text preserved on primary buttons in soft-sunrise */
+  button[type="submit"],
+  button[type="submit"] *,
+  button#register-btn,
+  button#register-btn *,
+  button#signin-btn,
+  button#signin-btn *,
+  button[class*="from-"],
+  button[class*="from-"] *,
+  span[class*="!text-white"],
+  .\!text-white,
+  button.bg-emerald-600,
+  button.bg-emerald-600 * {
+    color: #FFFFFF !important;
   }
 
   .text-slate-300,
@@ -1395,8 +1530,9 @@
     color: #dc2626 !important;
   }
 
-  /* HAByTAT Logo on Ivory */
+  /* HAByTAT Logo on Soft Sunrise */
   img[alt="HAbyTAT"] {
+    content: url('/logo.png');
     background: transparent !important;
     box-shadow: none !important;
   }
@@ -1432,6 +1568,13 @@
     backdrop-filter: blur(12px) !important;
   }
 
+  /* Desktop Navigation Pill Bar */
+  header nav,
+  .desktop-navbar-pill {
+    background-color: #FAF5EE !important;
+    border-color: #E4D6C7 !important;
+  }
+
   header a,
   header button,
   nav a {
@@ -1453,6 +1596,36 @@
     color: #FFFFFF !important;
     box-shadow: 0 2px 12px rgba(242, 118, 94, 0.35) !important;
     font-weight: 700 !important;
+  }
+
+  /* Mobile Navigation Dropdown & Bottom Bar */
+  .mobile-nav-dropdown,
+  .mobile-bottom-nav {
+    background-color: rgba(245, 235, 221, 0.98) !important;
+    border-color: #E4D6C7 !important;
+  }
+
+  .mobile-nav-dropdown a,
+  .mobile-nav-dropdown a *,
+  .mobile-bottom-nav a,
+  .mobile-bottom-nav a * {
+    color: #413333 !important;
+  }
+
+  .mobile-nav-dropdown a:hover {
+    background-color: #EEE2D3 !important;
+    color: #413333 !important;
+  }
+
+  .mobile-nav-dropdown a.bg-indigo-600,
+  .mobile-nav-dropdown a.bg-indigo-600 * {
+    background-color: #F2765E !important;
+    color: #FFFFFF !important;
+  }
+
+  .mobile-bottom-nav a.text-indigo-400,
+  .mobile-bottom-nav a.text-indigo-400 * {
+    color: #F2765E !important;
   }
 
   /* Primary CTA Buttons (Add Habit, Create Habit, Save, Complete, Start Tracking) */
@@ -1552,7 +1725,8 @@
   .bg-slate-900\/60,
   .bg-slate-900\/70,
   .bg-slate-900\/80,
-  .bg-slate-900\/90 {
+  .bg-slate-900\/90,
+  .bg-slate-900\/95 {
     background-color: #FFFFFF !important;
     border: 1px solid #E4D6C7 !important;
     box-shadow: 0 4px 18px rgba(65, 51, 51, 0.05) !important;
@@ -1569,6 +1743,8 @@
   }
 
   /* Alternative / Secondary Surfaces (Warm Beige #F5EBDD) */
+  .bg-slate-950,
+  .bg-slate-950\/95,
   .bg-slate-950\/60,
   .bg-slate-950\/70,
   .bg-slate-950\/80,
@@ -1669,14 +1845,30 @@
   }
 
   /* Headings & Text */
-  h1, h2, h3, h4, h5, h6,
-  .text-white,
-  .text-slate-100,
-  .text-slate-200,
+  h1:not(button *), h2:not(button *), h3:not(button *), h4:not(button *), h5, h6,
+  .text-white:not(button *):not(button):not(.\!text-white):not([class*="!text-white"]),
+  .text-slate-100:not(button *):not(button),
+  .text-slate-200:not(button *):not(button),
   th,
   strong,
   b {
     color: #413333 !important;
+  }
+
+  /* White text preserved on primary buttons in warm-horizon */
+  button[type="submit"],
+  button[type="submit"] *,
+  button#register-btn,
+  button#register-btn *,
+  button#signin-btn,
+  button#signin-btn *,
+  button[class*="from-"],
+  button[class*="from-"] *,
+  span[class*="!text-white"],
+  .\!text-white,
+  button.bg-emerald-600,
+  button.bg-emerald-600 * {
+    color: #FFFFFF !important;
   }
 
   .text-slate-300,
@@ -1882,6 +2074,7 @@
 
   /* HAByTAT Logo on Warm Horizon */
   img[alt="HAbyTAT"] {
+    content: url('/logo.png');
     background: transparent !important;
     box-shadow: none !important;
   }
@@ -1917,6 +2110,13 @@
     backdrop-filter: blur(12px) !important;
   }
 
+  /* Desktop Navigation Pill Bar */
+  header nav,
+  .desktop-navbar-pill {
+    background-color: #161616 !important;
+    border-color: #2A2A2A !important;
+  }
+
   header a,
   header button,
   nav a {
@@ -1943,6 +2143,37 @@
 
   nav a.bg-indigo-600 *,
   nav a.shadow-indigo-600\/30 * {
+    color: #068FFF !important;
+  }
+
+  /* Mobile Navigation Dropdown & Bottom Bar */
+  .mobile-nav-dropdown,
+  .mobile-bottom-nav {
+    background-color: rgba(17, 17, 17, 0.95) !important;
+    border-color: #2A2A2A !important;
+  }
+
+  .mobile-nav-dropdown a,
+  .mobile-nav-dropdown a *,
+  .mobile-bottom-nav a,
+  .mobile-bottom-nav a * {
+    color: #EEEEEE !important;
+  }
+
+  .mobile-nav-dropdown a:hover {
+    background-color: #161616 !important;
+    color: #FFFFFF !important;
+  }
+
+  .mobile-nav-dropdown a.bg-indigo-600,
+  .mobile-nav-dropdown a.bg-indigo-600 * {
+    background-color: rgba(6, 143, 255, 0.15) !important;
+    color: #068FFF !important;
+    border: 1px solid #068FFF !important;
+  }
+
+  .mobile-bottom-nav a.text-indigo-400,
+  .mobile-bottom-nav a.text-indigo-400 * {
     color: #068FFF !important;
   }
 
@@ -2068,13 +2299,17 @@
   .bg-slate-950\/50,
   .bg-slate-950\/30,
   div.bg-slate-800,
+  div.bg-slate-800\/40,
+  div.bg-slate-800\/50,
   div.bg-slate-800\/60,
   div.bg-slate-800\/70,
-  div.bg-slate-800\/80 {
+  div.bg-slate-800\/80,
+  div.bg-slate-800\/90 {
     background-color: #161616 !important;
     border: 1px solid #2A2A2A !important;
     color: #EEEEEE !important;
   }
+
 
   /* Borders across layout */
   .border-slate-800,
@@ -2377,6 +2612,7 @@
 
   /* HAByTAT Logo on Midnight Sea */
   img[alt="HAbyTAT"] {
+    content: url('/logo-dark.png');
     background: transparent !important;
     box-shadow: none !important;
   }
@@ -2403,4 +2639,157 @@
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--primary, rgba(100, 116, 139, 0.7));
+}
+
+/* ==================================================
+   UNIVERSAL DEVICE COMPATIBILITY & MOBILE RESPONSIVE
+   ================================================== */
+html,
+body {
+  overflow-x: hidden;
+  max-width: 100vw;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Prevent auto-zooming on focus in iOS Safari */
+@media (max-width: 640px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* Safe area insets for modern mobile devices (iPhone notch/island) */
+.pb-safe {
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+}
+
+.pt-safe {
+  padding-top: max(0.75rem, env(safe-area-inset-top));
+}
+
+/* Hide scrollbar utility for touch drag/swipe containers */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Smooth touch scrolling */
+.touch-scroll {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* ==================================================
+   LANDING PAGE HERO & LIQUID GLASS SPECIFICATION
+   ================================================== */
+.landing-page {
+  background-color: #021526 !important;
+  color: #FFFFFF !important;
+}
+
+header.landing-header {
+  background: transparent !important;
+  background-color: transparent !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+header.landing-header a,
+header.landing-header button {
+  color: #FFFFFF !important;
+}
+
+header.landing-header img[alt="HAbyTAT"] {
+  content: url('/logo-dark.png') !important;
+}
+
+.landing-page .text-white,
+.landing-page h1,
+.landing-page h1 *,
+.landing-page h2,
+.landing-page h3 {
+  color: #FFFFFF !important;
+}
+
+.landing-page .text-\[\#A1A1AA\],
+.landing-page em.text-\[\#A1A1AA\] {
+  color: #A1A1AA !important;
+}
+
+.liquid-glass {
+  background: rgba(255, 255, 255, 0.01) !important;
+  background-blend-mode: luminosity;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: none !important;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1), 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.liquid-glass::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.4px;
+  background: linear-gradient(180deg,
+    rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.15) 20%,
+    rgba(255,255,255,0) 40%, rgba(255,255,255,0) 60%,
+    rgba(255,255,255,0.15) 80%, rgba(255,255,255,0.45) 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+@keyframes fade-rise {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-rise { animation: fade-rise 0.8s ease-out both; }
+.animate-fade-rise-delay { animation: fade-rise 0.8s ease-out 0.2s both; }
+.animate-fade-rise-delay-2 { animation: fade-rise 0.8s ease-out 0.4s both; }
+
+/* 3D Transform & Depth Utilities */
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.perspective-1200 {
+  perspective: 1200px;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+@keyframes float-subtle {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-8px) rotate(0.8deg); }
+}
+
+.animate-float-subtle {
+  animation: float-subtle 5s ease-in-out infinite;
+}
+
+@keyframes shimmer-sheen {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+.animate-shimmer {
+  animation: shimmer-sheen 2.5s infinite;
 }

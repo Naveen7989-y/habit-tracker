@@ -2,6 +2,7 @@ import app from './app.js';
 import { config } from './config/index.js';
 import prisma from './config/prisma.js';
 import { ensureDatabaseRunning, stopEmbeddedDatabase } from './config/db-bootstrap.js';
+import { closeRedis } from './config/redis.js';
 
 let server;
 
@@ -25,19 +26,22 @@ const gracefulShutdown = async (signal) => {
     server.close(async () => {
       console.log('HTTP server closed.');
       try {
+        await closeRedis();
         await prisma.$disconnect();
         console.log('Prisma disconnected from database.');
       } catch (err) {
-        console.error('Error disconnecting Prisma:', err);
+        console.error('Error disconnecting resources:', err);
       }
       await stopEmbeddedDatabase();
       process.exit(0);
     });
   } else {
+    await closeRedis();
     await stopEmbeddedDatabase();
     process.exit(0);
   }
 };
+
 
 process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 process.on('SIGINT', () => gracefulShutdown('SIGINT'));

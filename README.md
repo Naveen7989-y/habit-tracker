@@ -113,3 +113,77 @@ npm install
     "uptime": 12.34
   }
   ```
+
+---
+
+## 🥗 Advanced Indian Calorie & Nutrition Tracker Integration
+
+HAByTAT includes a production-grade Indian Calorie and Nutrition Tracker integrated directly with the habit ecosystem.
+
+### Features
+1. **Curated Indian Food Catalogue:**
+   - 95+ verified Indian dishes and cooking staples with ICMR-NIN IFCT 2017 nutritional reference data.
+   - Covers South Indian, North Indian, Andhra/Telangana, Bengali, Street Food, and high-protein items.
+   - Exact household portion conversions: pieces, katoris (150g), cups (200g), tablespoons (15g), slices, etc.
+   - Dietary classification filters: Veg, Non-Veg, Egg, Vegan.
+2. **Daily Meal Diary:**
+   - 5 meal categories: Breakfast, Morning Snack, Lunch, Evening Snack, Dinner, and Custom.
+   - Live circular radial calorie gauge (Consumed vs. Configured Goal vs. Remaining Budget).
+   - Macronutrient progress bars (Protein, Carbohydrates, Healthy Fats, Dietary Fiber).
+   - Food logging actions: add, edit portions, duplicate items between meals, and delete.
+3. **Homemade Indian Recipe Calculator:**
+   - Batch ingredient builder calculating raw vs. cooked recipe nutrition.
+   - Automatic per-serving calorie and macronutrient breakdown.
+   - Direct logging of recipe servings into the daily diary.
+4. **Personalized Goals & Mifflin-St Jeor TDEE Engine:**
+   - Scientific TDEE estimation based on age, gender, height, current weight, activity level, and fitness goals (weight loss, maintenance, muscle gain).
+   - Custom overrides for daily calories, protein, carbs, fat, fiber, and water targets.
+5. **Integrated Hydration & Weight Tracking:**
+   - Quick +250ml glass water logging with visual daily target progress.
+   - Historical bodyweight tracking with date-bound weigh-in records.
+6. **Analytics & Trends:**
+   - 7-day and 14-day Recharts calorie intake vs. target bar charts.
+   - Macronutrient split and daily food-logging consistency scoring.
+7. **AI-Assisted Natural Language Food Logging:**
+   - Natural language parser (`/api/nutrition/ai-parse`) converting spoken or written sentences (e.g., *"I ate 2 dosas with coconut chutney and 1 cup sambar"*) into structured database-matched items with portion estimates ready for one-click confirmation.
+
+### Nutrition API Endpoints
+- `GET /api/nutrition/foods` — Search food catalogue by name, regional transliteration, category, cuisine, or dietary preference.
+- `GET /api/nutrition/foods/favorites` — Retrieve user's bookmarked favorite dishes.
+- `POST /api/nutrition/foods/:foodItemId/favorite` — Toggle food favorite bookmark.
+- `POST /api/nutrition/foods/custom` — Create user-specific custom food item.
+- `GET /api/nutrition/logs?date=YYYY-MM-DD` — Daily diary summary with meal subtotals, day totals, goals, water, and weight.
+- `POST /api/nutrition/logs` — Log food or recipe serving with server-authoritative nutrient calculations.
+- `PUT /api/nutrition/logs/:id` — Update quantity or portion unit of a logged food.
+- `DELETE /api/nutrition/logs/:id` — Delete a logged food entry.
+- `POST /api/nutrition/logs/:id/duplicate` — Duplicate entry to another meal or date.
+- `POST /api/nutrition/logs/copy-day` — Copy an entire previous day's meals.
+- `GET /api/nutrition/recipes` — List user's saved homemade recipes.
+- `POST /api/nutrition/recipes` — Create new recipe with ingredient-based auto-calculation.
+- `GET /api/nutrition/goals` — Retrieve user's nutrition goals.
+- `PUT /api/nutrition/goals` — Update goals (supports Mifflin-St Jeor TDEE calculation).
+- `GET /api/nutrition/water?date=YYYY-MM-DD` — Retrieve hydration logs for a date.
+- `POST /api/nutrition/water` — Log water intake in ml.
+- `GET /api/nutrition/weight` — Retrieve weight history logs.
+- `POST /api/nutrition/weight` — Record bodyweight for date.
+- `GET /api/nutrition/analytics?days=7` — Retrieve multi-day calorie trends and averages.
+- `POST /api/nutrition/ai-parse` — Parse natural language meal descriptions.
+
+### Testing & Verification
+- **Run Backend Test Suite:**
+  ```bash
+  cd backend
+  npm test
+  ```
+  Executes all 8 test suites including `test-nutrition.js` (12 tests) and existing habit/streak/calendar suites.
+- **Run Nutrition Integration Tests Individually:**
+  ```bash
+  cd backend
+  node scripts/test-nutrition.js
+  ```
+- **Build Frontend Production Bundle:**
+  ```bash
+  cd frontend
+  npm run build
+  ```
+

@@ -6,6 +6,7 @@ import habitRoutes from './habit.routes.js';
 import statisticsRoutes from './statistics.routes.js';
 import dashboardRoutes from './dashboard.routes.js';
 import calendarRoutes from './calendar.routes.js';
+import nutritionRoutes from './nutrition.routes.js';
 
 const router = Router();
 
@@ -30,4 +31,8 @@ router.use('/calendar', calendarRoutes);
 // Statistics and analytics endpoints: /api/statistics/*
 router.use('/statistics', statisticsRoutes);
 
+// Nutrition endpoints: /api/nutrition/*
+router.use('/nutrition', nutritionRoutes);
+
 export default router;
+

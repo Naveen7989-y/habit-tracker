@@ -11,8 +11,7 @@ async function main() {
   await prisma.habit.deleteMany();
   await prisma.user.deleteMany();
 
-  // 1. Create Demo User
-  // Password: Demo@123 (Hashed for production security standard)
+  // 1. Create Demo Users
   const hashedPassword = await bcrypt.hash('Demo@123', 10);
   const demoUser = await prisma.user.create({
     data: {
@@ -24,8 +23,19 @@ async function main() {
     },
   });
 
+  const alexHashed = await bcrypt.hash('password123', 10);
+  const alexUser = await prisma.user.create({
+    data: {
+      name: 'Alex Morgan',
+      email: 'alex@example.com',
+      password: alexHashed,
+      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=256&q=80',
+      timezone: 'UTC',
+    },
+  });
+
   console.log(`👤 Created Demo User: ${demoUser.email} (ID: ${demoUser.id})`);
-  console.log('⚠️  NOTE: Credentials [demo@habittracker.com / Demo@123] are strictly for development/demo testing.');
+  console.log(`👤 Created Alex User: ${alexUser.email} (ID: ${alexUser.id})`);
 
   // 2. Create 5 Predefined Realistic Habits
   const habitDefinitions = [

@@ -18,6 +18,7 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { statisticsService } from '../services/statistics.service';
+import DashboardLayout from '../layouts/DashboardLayout';
 import {
   Flame,
   Trophy,
@@ -85,73 +86,9 @@ export default function Analytics() {
   }, [trendDays]);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between selection:bg-indigo-500 selection:text-white">
-      {/* Navigation Header */}
-      <header className="border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-md sticky top-0 z-30">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
-            <img
-              src="/logo.png"
-              alt="HAbyTAT"
-              className="h-9 w-auto object-contain dark:bg-white/90 dark:px-2 dark:py-1 dark:rounded-xl transition-all"
-            />
-            <span className="hidden sm:inline-block ml-1 text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-violet-500/10 text-violet-600 dark:text-violet-400 border border-violet-500/20">
-              Analytics
-            </span>
-          </Link>
-
-          <div className="flex items-center gap-2 sm:gap-3">
-            <Link
-              to="/dashboard"
-              className="px-3.5 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800/60 text-xs font-semibold transition-colors flex items-center gap-1.5"
-            >
-              <BarChart3 className="w-3.5 h-3.5 text-indigo-400" />
-              <span>Dashboard</span>
-            </Link>
-            <Link
-              to="/calendar"
-              className="px-3.5 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800/60 text-xs font-semibold transition-colors flex items-center gap-1.5"
-            >
-              <Calendar className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Calendar</span>
-            </Link>
-            <Link
-              to="/habits"
-              className="px-3.5 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800/60 text-xs font-semibold transition-colors flex items-center gap-1.5"
-            >
-              <ListTodo className="w-3.5 h-3.5 text-slate-400" />
-              <span>Habits</span>
-            </Link>
-            <button
-              onClick={toggleTheme}
-              className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
-              title={`Switch theme (Current: ${theme === 'midnight-sea' ? 'Midnight Sea' : (theme === 'warm-horizon' ? 'Warm Horizon' : (theme === 'fresh-sky' ? 'Fresh Sky' : 'Soft Sunrise'))})`}
-            >
-              <Sun className={`w-4 h-4 ${
-                theme === 'midnight-sea' ? 'text-[#068FFF]' : (theme === 'warm-horizon' ? 'text-[#F2765E]' : (theme === 'fresh-sky' ? 'text-sky-400' : 'text-amber-500'))
-              }`} />
-            </button>
-            <Link
-              to="/settings"
-              className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-xs text-slate-300 hover:text-white transition-colors"
-              title="Account Settings"
-            >
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span>{user?.name}</span>
-            </Link>
-            <button
-              onClick={logout}
-              className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
-              title="Sign Out"
-            >
-              <LogOut className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      </header>
-
+    <DashboardLayout>
       {/* Main Content */}
-      <main className="flex-1 max-w-6xl mx-auto px-4 sm:px-6 py-8 w-full space-y-8">
+      <main className="flex-1 max-w-6xl mx-auto px-3.5 sm:px-6 py-6 sm:py-8 w-full space-y-6 sm:space-y-8">
         {/* Title & Filter */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
@@ -165,7 +102,7 @@ export default function Analytics() {
           </div>
 
           {/* Time range selector for monthly trend */}
-          <div className="flex items-center gap-1.5 bg-slate-900 border border-slate-800 p-1 rounded-xl self-start sm:self-auto">
+          <div className="flex items-center gap-1.5 bg-slate-950/80 border border-slate-800 p-1 rounded-xl self-start sm:self-auto">
             {[30, 60, 90].map((d) => (
               <button
                 key={d}
@@ -202,52 +139,52 @@ export default function Analytics() {
         ) : (
           <>
             {/* Top 6 KPI Metric Cards */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3.5">
-              <div className="bg-slate-900/80 border border-slate-800/80 rounded-2xl p-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3.5">
+              <div className="bg-slate-900/80 border border-slate-800/80 rounded-xl sm:rounded-2xl p-3 sm:p-4">
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Avg Success Rate</span>
-                <p className="text-2xl font-black text-emerald-400 mt-1">
+                <p className="text-xl sm:text-2xl font-black text-emerald-400 mt-1">
                   {analyticsData.summary.averageCompletionRate}%
                 </p>
                 <p className="text-[10px] text-slate-500 mt-0.5">Across all habits</p>
               </div>
 
-              <div className="bg-slate-900/80 border border-slate-800/80 rounded-2xl p-4">
+              <div className="bg-slate-900/80 border border-slate-800/80 rounded-xl sm:rounded-2xl p-3 sm:p-4">
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Logged</span>
-                <p className="text-2xl font-black text-indigo-400 mt-1">
+                <p className="text-xl sm:text-2xl font-black text-indigo-400 mt-1">
                   {analyticsData.summary.totalCompletions}
                 </p>
                 <p className="text-[10px] text-slate-500 mt-0.5">Completions in DB</p>
               </div>
 
-              <div className="bg-slate-900/80 border border-slate-800/80 rounded-2xl p-4">
+              <div className="bg-slate-900/80 border border-slate-800/80 rounded-xl sm:rounded-2xl p-3 sm:p-4">
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Best Current</span>
-                <p className="text-2xl font-black text-amber-400 mt-1 flex items-center gap-1">
-                  <Flame className="w-4 h-4" />
+                <p className="text-xl sm:text-2xl font-black text-amber-400 mt-1 flex items-center gap-1">
+                  <Flame className="w-4 h-4 shrink-0" />
                   <span>{analyticsData.summary.bestCurrentStreak}d</span>
                 </p>
                 <p className="text-[10px] text-slate-500 mt-0.5">Active streak</p>
               </div>
 
-              <div className="bg-slate-900/80 border border-slate-800/80 rounded-2xl p-4">
+              <div className="bg-slate-900/80 border border-slate-800/80 rounded-xl sm:rounded-2xl p-3 sm:p-4">
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">All-Time Peak</span>
-                <p className="text-2xl font-black text-violet-400 mt-1 flex items-center gap-1">
-                  <Trophy className="w-4 h-4" />
+                <p className="text-xl sm:text-2xl font-black text-violet-400 mt-1 flex items-center gap-1">
+                  <Trophy className="w-4 h-4 shrink-0" />
                   <span>{analyticsData.summary.bestEverStreak}d</span>
                 </p>
                 <p className="text-[10px] text-slate-500 mt-0.5">Personal record</p>
               </div>
 
-              <div className="bg-slate-900/80 border border-slate-800/80 rounded-2xl p-4">
+              <div className="bg-slate-900/80 border border-slate-800/80 rounded-xl sm:rounded-2xl p-3 sm:p-4">
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Peak Weekday</span>
-                <p className="text-lg sm:text-xl font-black text-white mt-1.5 truncate">
+                <p className="text-base sm:text-xl font-black text-white mt-1 sm:mt-1.5 truncate">
                   {analyticsData.summary.bestDay}
                 </p>
                 <p className="text-[10px] text-emerald-400 mt-0.5 font-semibold">Highest completion</p>
               </div>
 
-              <div className="bg-slate-900/80 border border-slate-800/80 rounded-2xl p-4">
+              <div className="bg-slate-900/80 border border-slate-800/80 rounded-xl sm:rounded-2xl p-3 sm:p-4">
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Top Category</span>
-                <p className="text-lg sm:text-xl font-black text-white mt-1.5 truncate">
+                <p className="text-base sm:text-xl font-black text-white mt-1 sm:mt-1.5 truncate">
                   {analyticsData.summary.topCategory}
                 </p>
                 <p className="text-[10px] text-indigo-400 mt-0.5 font-semibold">Most consistent</p>
@@ -255,16 +192,16 @@ export default function Analytics() {
             </div>
 
             {/* CHART ROW 1: Weekly Bar Chart & Category Donut Chart */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
               {/* Weekly Completion Bar Chart (7 Cols) */}
-              <div className="lg:col-span-7 bg-slate-900/80 border border-slate-800 rounded-3xl p-6 shadow-xl flex flex-col justify-between">
-                <div className="flex items-center justify-between mb-4">
+              <div className="lg:col-span-7 bg-slate-900/80 border border-slate-800 rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-xl flex flex-col justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-4">
                   <div>
                     <span className="text-[11px] font-bold uppercase tracking-wider text-indigo-400">
                       Weekly Cadence
                     </span>
-                    <h2 className="text-lg font-bold text-white mt-0.5 flex items-center gap-2">
-                      <BarChart3 className="w-4 h-4 text-indigo-400" />
+                    <h2 className="text-base sm:text-lg font-bold text-white mt-0.5 flex items-center gap-2">
+                      <BarChart3 className="w-4 h-4 text-indigo-400 shrink-0" />
                       <span>Past 7 Days Completion</span>
                     </h2>
                   </div>
@@ -273,7 +210,7 @@ export default function Analytics() {
                   </span>
                 </div>
 
-                <div className="h-64 w-full">
+                <div className="h-60 sm:h-64 w-full">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={analyticsData.weekly.days} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke={theme === 'midnight-sea' ? '#222222' : (theme === 'warm-horizon' ? '#E4D6C7' : (theme === 'fresh-sky' ? 'rgba(196, 247, 202, 0.5)' : 'rgba(255, 221, 176, 0.7)'))} vertical={false} />
@@ -292,18 +229,18 @@ export default function Analytics() {
               </div>
 
               {/* Category Breakdown Donut Chart (5 Cols) */}
-              <div className="lg:col-span-5 bg-slate-900/80 border border-slate-800 rounded-3xl p-6 shadow-xl flex flex-col justify-between">
+              <div className="lg:col-span-5 bg-slate-900/80 border border-slate-800 rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-xl flex flex-col justify-between">
                 <div className="mb-2">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-pink-400">
                     Distribution
                   </span>
-                  <h2 className="text-lg font-bold text-white mt-0.5 flex items-center gap-2">
-                    <PieIcon className="w-4 h-4 text-pink-400" />
+                  <h2 className="text-base sm:text-lg font-bold text-white mt-0.5 flex items-center gap-2">
+                    <PieIcon className="w-4 h-4 text-pink-400 shrink-0" />
                     <span>Completions by Category</span>
                   </h2>
                 </div>
 
-                <div className="h-56 w-full relative">
+                <div className="h-52 sm:h-56 w-full relative">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
@@ -312,8 +249,8 @@ export default function Analytics() {
                         nameKey="name"
                         cx="50%"
                         cy="50%"
-                        innerRadius={55}
-                        outerRadius={80}
+                        innerRadius={50}
+                        outerRadius={75}
                         paddingAngle={4}
                       >
                         {analyticsData.categories.map((entry, index) => (
@@ -326,11 +263,11 @@ export default function Analytics() {
                 </div>
 
                 {/* Custom Category Legend Badges */}
-                <div className="flex flex-wrap items-center justify-center gap-2 pt-2 border-t border-slate-800">
+                <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 pt-2 border-t border-slate-800">
                   {analyticsData.categories.map((cat) => (
-                    <div key={cat.name} className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-950/60 border border-slate-800/80 text-[11px]">
-                      <span className="w-2 h-2 rounded-full" style={{ backgroundColor: cat.color }} />
-                      <span className="text-slate-300 font-medium">{cat.name}</span>
+                    <div key={cat.name} className="flex items-center gap-1.5 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg bg-slate-950/60 border border-slate-800/80 text-[10px] sm:text-[11px]">
+                      <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: cat.color }} />
+                      <span className="text-slate-300 font-medium truncate max-w-[90px]">{cat.name}</span>
                       <span className="text-slate-400 font-bold">{cat.percentage}%</span>
                     </div>
                   ))}
@@ -339,14 +276,14 @@ export default function Analytics() {
             </div>
 
             {/* CHART ROW 2: Monthly Rolling Momentum Curve (Area Chart) */}
-            <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
+            <div className="bg-slate-900/80 border border-slate-800 rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-xl space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div>
                   <span className="text-[11px] font-bold uppercase tracking-wider text-violet-400">
                     Long-Term Momentum
                   </span>
-                  <h2 className="text-xl font-bold text-white mt-0.5 flex items-center gap-2">
-                    <TrendingUp className="w-5 h-5 text-violet-400" />
+                  <h2 className="text-lg sm:text-xl font-bold text-white mt-0.5 flex items-center gap-2">
+                    <TrendingUp className="w-5 h-5 text-violet-400 shrink-0" />
                     <span>Rolling Habit Consistency Trend ({trendDays} Days)</span>
                   </h2>
                 </div>
@@ -358,7 +295,7 @@ export default function Analytics() {
                 </div>
               </div>
 
-              <div className="h-72 w-full">
+              <div className="h-60 sm:h-72 w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={analyticsData.monthly.trend} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                     <defs>
@@ -394,15 +331,15 @@ export default function Analytics() {
             </div>
 
             {/* CHART ROW 3: Weekday Performance & Habit Leaderboard */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
               {/* Day of Week Radar/Bar Chart (5 Cols) */}
-              <div className="lg:col-span-5 bg-slate-900/80 border border-slate-800 rounded-3xl p-6 shadow-xl flex flex-col justify-between">
+              <div className="lg:col-span-5 bg-slate-900/80 border border-slate-800 rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-xl flex flex-col justify-between">
                 <div>
                   <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-400">
                     Day-of-Week Patterns
                   </span>
-                  <h2 className="text-lg font-bold text-white mt-0.5 flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-emerald-400" />
+                  <h2 className="text-base sm:text-lg font-bold text-white mt-0.5 flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-emerald-400 shrink-0" />
                     <span>Consistency by Weekday</span>
                   </h2>
                   <p className="text-xs text-slate-400 mt-1">
@@ -410,7 +347,7 @@ export default function Analytics() {
                   </p>
                 </div>
 
-                <div className="h-60 w-full mt-4">
+                <div className="h-56 sm:h-60 w-full mt-4">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={analyticsData.dayOfWeek.days} layout="vertical" margin={{ top: 0, right: 20, left: 10, bottom: 0 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke={theme === 'midnight-sea' ? '#222222' : (theme === 'warm-horizon' ? '#E4D6C7' : (theme === 'fresh-sky' ? 'rgba(196, 247, 202, 0.5)' : 'rgba(255, 221, 176, 0.7)'))} horizontal={false} />
@@ -424,19 +361,19 @@ export default function Analytics() {
               </div>
 
               {/* Habit Leaderboard Table (7 Cols) */}
-              <div className="lg:col-span-7 bg-slate-900/80 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
+              <div className="lg:col-span-7 bg-slate-900/80 border border-slate-800 rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-xl space-y-4">
                 <div>
                   <span className="text-[11px] font-bold uppercase tracking-wider text-amber-400">
                     Leaderboard
                   </span>
-                  <h2 className="text-lg font-bold text-white mt-0.5 flex items-center gap-2">
-                    <Award className="w-4 h-4 text-amber-400" />
+                  <h2 className="text-base sm:text-lg font-bold text-white mt-0.5 flex items-center gap-2">
+                    <Award className="w-4 h-4 text-amber-400 shrink-0" />
                     <span>Habit Performance Comparison</span>
                   </h2>
                 </div>
 
-                <div className="overflow-x-auto scrollbar-thin">
-                  <table className="w-full text-left text-xs">
+                <div className="overflow-x-auto touch-scroll scrollbar-thin -mx-1 sm:mx-0">
+                  <table className="w-full min-w-[500px] text-left text-xs">
                     <thead>
                       <tr className="border-b border-slate-800 text-slate-400 font-semibold uppercase tracking-wider">
                         <th className="py-2.5 px-3">Habit</th>
@@ -495,11 +432,6 @@ export default function Analytics() {
           </>
         )}
       </main>
-
-      {/* Footer */}
-      <footer className="border-t border-slate-800/80 py-6 text-center text-xs text-slate-400">
-        HAbyTAT SaaS • Built with React, Recharts, Express, Prisma & PostgreSQL
-      </footer>
-    </div>
+    </DashboardLayout>
   );
 }

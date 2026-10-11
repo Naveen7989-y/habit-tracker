@@ -45,8 +45,11 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
 }));
 
-// Request rate limiting
-const limiter = rateLimit({
+import { RedisStore } from 'rate-limit-redis';
+import redisClient from './config/redis.js';
+
+// Request rate limiting (Redis-backed when Redis is configured, fallback to in-memory)
+const limiterOptions = {
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 300, // Limit each IP to 300 requests per window
   standardHeaders: true,
@@ -56,8 +59,18 @@ const limiter = rateLimit({
     message: 'Too many requests from this IP, please try again after 15 minutes',
     error: 'RATE_LIMIT_EXCEEDED',
   },
-});
+};
+
+if (redisClient) {
+  limiterOptions.store = new RedisStore({
+    sendCommand: (...args) => redisClient.call(...args),
+    prefix: 'rl:',
+  });
+}
+
+const limiter = rateLimit(limiterOptions);
 app.use('/api', limiter);
+
 
 // HTTP request logger
 if (config.nodeEnv !== 'test') {
