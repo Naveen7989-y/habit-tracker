@@ -229,10 +229,10 @@ export default function Dashboard() {
         {/* A. Screen 1 Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl sm:text-2xl font-black text-[#F5F7FC] tracking-tight">
+            <h1 className="text-base sm:text-lg font-semibold text-[#F5F7FC] tracking-tight">
               {getGreeting()}, {user?.name ? user.name.split(' ')[0] : 'Athlete'}! 👋
             </h1>
-            <p className="text-xs sm:text-sm font-medium text-[#70788D] mt-0.5">
+            <p className="text-xs text-[#70788D] font-normal mt-0.5">
               Let's crush your goals today.
             </p>
           </div>
