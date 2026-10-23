@@ -35,6 +35,8 @@ import {
   Loader2,
   AlertCircle,
   TrendingUp,
+  ListTodo,
+  LayoutDashboard,
 } from 'lucide-react';
 
 const ICONS = {
@@ -270,6 +272,37 @@ export default function Dashboard() {
               <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-[#39E58C] border-2 border-[#080A12]" />
             </Link>
           </div>
+        </div>
+
+        {/* Module Quick-Switcher Bar */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none select-none -mx-1 px-1">
+          {[
+            { label: 'Overview', path: '/dashboard', icon: Zap, active: true },
+            { label: 'Workouts', path: '/workouts', icon: Dumbbell, active: false },
+            { label: 'Nutrition', path: '/nutrition', icon: UtensilsCrossed, active: false },
+            { label: 'Habits', path: '/habits', icon: ListTodo, active: false },
+            { label: 'Calendar', path: '/calendar', icon: CalendarIcon, active: false },
+          ].map((tab) => {
+            const Icon = tab.icon;
+            return (
+              <Link
+                key={tab.label}
+                to={tab.path}
+                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold shrink-0 transition-all duration-150 active:scale-95 ${
+                  tab.active
+                    ? 'bg-[#C8FF00] text-[#080A12] font-bold shadow-[0_0_12px_rgba(200,255,0,0.25)]'
+                    : 'bg-[#111522] border border-[#242A3A] text-[#A4AABC] hover:text-[#F5F7FC] hover:border-[#C8FF00]/40'
+                }`}
+              >
+                <Icon
+                  className={`w-3.5 h-3.5 ${
+                    tab.active ? 'text-[#080A12]' : 'text-[#C8FF00]'
+                  }`}
+                />
+                <span>{tab.label}</span>
+              </Link>
+            );
+          })}
         </div>
 
         {/* B. Daily Progress Section with 3 Progress Rings */}
