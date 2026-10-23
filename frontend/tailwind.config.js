@@ -27,6 +27,26 @@ export default {
           card: '#1e293b',
           border: '#334155',
           muted: '#94a3b8'
+        },
+        fitness: {
+          bg: '#080A12',
+          bgSecondary: '#0D101B',
+          card: '#111522',
+          cardElevated: '#151A29',
+          input: '#0B0E17',
+          lime: '#C8FF00',
+          limeHover: '#B4E600',
+          violet: '#8B5CF6',
+          violetDark: '#6D3CF5',
+          cyan: '#25D9E6',
+          success: '#39E58C',
+          warning: '#FFBF47',
+          error: '#FF5C67',
+          text: '#F5F7FC',
+          textSecondary: '#A4AABC',
+          textMuted: '#70788D',
+          border: '#242A3A',
+          divider: '#1D2332',
         }
       },
       fontFamily: {

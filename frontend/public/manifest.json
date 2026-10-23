@@ -1,0 +1,22 @@
+{
+  "short_name": "HAByTAT",
+  "name": "HAByTAT — Habit, Fitness & Nutrition Tracker",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/logo-dark.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/dashboard",
+  "background_color": "#080A12",
+  "theme_color": "#080A12",
+  "display": "standalone",
+  "orientation": "portrait",
+  "categories": ["fitness", "health", "lifestyle"]
+}

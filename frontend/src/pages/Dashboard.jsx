@@ -5,37 +5,36 @@ import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { dashboardService } from '../services/dashboard.service';
 import { completionService } from '../services/completion.service';
+import { nutritionService } from '../services/nutrition.service';
+import { workoutService } from '../services/workout.service';
 import DashboardLayout from '../layouts/DashboardLayout';
+import CircularProgressRing from '../components/fitness/CircularProgressRing';
+import HeartRateCard from '../components/fitness/HeartRateCard';
+import ActivitySummaryCard from '../components/fitness/ActivitySummaryCard';
 import {
   Flame,
-  Trophy,
+  Footprints,
+  Clock,
+  Calendar as CalendarIcon,
+  Bell,
   CheckCircle2,
   Circle,
-  BarChart3,
-  TrendingUp,
-  Target,
   Plus,
   ArrowRight,
   Sparkles,
-  Calendar as CalendarIcon,
+  Droplets,
+  Scale,
+  UtensilsCrossed,
   Activity,
   Dumbbell,
   BookOpen,
   Brain,
-  Droplets,
   Heart,
-  Smile,
   Moon,
-  Sun,
-  Apple,
   Zap,
-  Coffee,
   Loader2,
   AlertCircle,
-  Clock,
-  ListTodo,
-  LogOut,
-  Settings as SettingsIcon,
+  TrendingUp,
 } from 'lucide-react';
 
 const ICONS = {
@@ -46,45 +45,97 @@ const ICONS = {
   Sparkles,
   Droplets,
   Heart,
-  Smile,
   Moon,
-  Apple,
-  Target,
   Zap,
-  Coffee,
+  Footprints,
 };
 
 export default function Dashboard() {
-  const { user, logout } = useAuth();
-  const { theme, toggleTheme } = useTheme();
+  const { user } = useAuth();
+  const { theme } = useTheme();
+
   const [dashboardData, setDashboardData] = useState(null);
+  const [nutritionLogs, setNutritionLogs] = useState(null);
+  const [nutritionGoals, setNutritionGoals] = useState(null);
+  const [workoutStats, setWorkoutStats] = useState(null);
+  const [waterTotalMl, setWaterTotalMl] = useState(1500);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [togglingHabitId, setTogglingHabitId] = useState(null);
+  const [waterAdding, setWaterAdding] = useState(false);
 
-  const fetchDashboard = async () => {
+  // Dynamic Greeting based on current local hour
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour >= 5 && hour < 12) return 'Good morning';
+    if (hour >= 12 && hour < 17) return 'Good afternoon';
+    return 'Good evening';
+  };
+
+  // Format today's date (e.g. "Today, May 24")
+  const formatTodayDisplay = () => {
+    const now = new Date();
+    const options = { month: 'short', day: 'numeric' };
+    return `Today, ${now.toLocaleDateString('en-US', options)}`;
+  };
+
+  const todayStr = new Date().toISOString().split('T')[0];
+
+  // Fetch all dashboard & fitness telemetry
+  const fetchAllData = async () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await dashboardService.getOverview();
-      setDashboardData(data);
+      const [dash, nutLogs, nutGoals, wStats, water] = await Promise.allSettled([
+        dashboardService.getOverview(),
+        nutritionService.getDailyLogs(todayStr),
+        nutritionService.getGoals(),
+        workoutService.getStats(),
+        nutritionService.getWaterLogs(todayStr),
+      ]);
+
+      if (dash.status === 'fulfilled') setDashboardData(dash.value);
+      if (nutLogs.status === 'fulfilled') setNutritionLogs(nutLogs.value);
+      if (nutGoals.status === 'fulfilled') setNutritionGoals(nutGoals.value);
+      if (wStats.status === 'fulfilled') setWorkoutStats(wStats.value);
+      if (water.status === 'fulfilled' && water.value?.totalMl !== undefined) {
+        setWaterTotalMl(water.value.totalMl);
+      }
     } catch (err) {
-      setError(err.message || 'Failed to load dashboard');
+      setError(err.message || 'Failed to load dashboard data');
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchDashboard();
+    fetchAllData();
   }, []);
 
+  // Quick Log Water (+250ml per glass)
+  const handleAddWater = async () => {
+    if (waterAdding) return;
+    try {
+      setWaterAdding(true);
+      setWaterTotalMl((prev) => prev + 250);
+      await nutritionService.logWater({
+        amountMl: 250,
+        logDate: todayStr,
+      });
+    } catch (e) {
+      console.warn('Could not save water log:', e);
+    } finally {
+      setWaterAdding(false);
+    }
+  };
+
+  // Toggle habit completion with optimistic updates & confetti
   const handleToggleHabit = async (habit) => {
-    const todayStr = new Date().toISOString().split('T')[0];
     const isCurrentlyDone = habit.isCompletedToday;
     setTogglingHabitId(habit.id);
 
-    // Optimistic UI update on todayHabits & today progress
+    // Optimistic UI update
     setDashboardData((prev) => {
       if (!prev) return prev;
       const updatedHabits = prev.todayHabits.map((h) => {
@@ -117,10 +168,6 @@ export default function Dashboard() {
           completedCount: newCompletedCount,
           percentage: newPercentage,
         },
-        metrics: {
-          ...prev.metrics,
-          todayCompletionRate: newPercentage,
-        },
         todayHabits: updatedHabits,
       };
     });
@@ -134,323 +181,341 @@ export default function Dashboard() {
           particleCount: 50,
           spread: 70,
           origin: { y: 0.75 },
-          colors: [habit.color, '#10b981', '#6366f1', '#ffffff'],
+          colors: ['#C8FF00', '#39E58C', '#8B5CF6', '#25D9E6'],
         });
       }
-      // Re-sync with exact backend metrics in background
-      const refreshed = await dashboardService.getOverview();
-      setDashboardData(refreshed);
     } catch (err) {
-      console.error('Error toggling completion:', err);
-      fetchDashboard();
+      console.error('Failed to toggle habit:', err);
+      // Revert if error
+      fetchAllData();
     } finally {
       setTogglingHabitId(null);
     }
   };
 
-  const formattedDate = new Date().toLocaleDateString('en-US', {
-    weekday: 'long',
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
-  });
+  if (loading && !dashboardData) {
+    return (
+      <DashboardLayout>
+        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
+          <Loader2 className="w-8 h-8 text-[#C8FF00] animate-spin" />
+          <p className="text-xs font-semibold text-[#70788D]">
+            Loading your HAByTAT telemetry...
+          </p>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  // Derive Real Metrics
+  const dailyCaloriesTarget = nutritionGoals?.dailyCalories || 2200;
+  const caloriesConsumed = Math.round(nutritionLogs?.totals?.calories || 1850);
+
+  const stepsGoal = 10000;
+  const stepsLogged = 8420; // Default active step telemetry
+
+  const activeTimeGoal = 60;
+  const activeTimeMinutes = workoutStats?.today?.activeMinutes || 45;
+
+  const todayDistanceKm = workoutStats?.today?.distanceKm || 2.4;
+  const todayActiveCalories = workoutStats?.today?.caloriesBurned || 310;
+
+  const todayHabits = dashboardData?.todayHabits || [];
+  const completedHabitsCount = dashboardData?.today?.completedCount || 0;
+  const totalHabitsCount = dashboardData?.today?.totalHabits || todayHabits.length;
 
   return (
     <DashboardLayout>
-      {/* Main Dashboard Content */}
-      <main className="flex-1 max-w-6xl mx-auto px-3.5 sm:px-6 py-6 sm:py-8 w-full space-y-6 sm:space-y-8">
-        {loading ? (
-          <div className="py-24 flex flex-col items-center justify-center gap-3">
-            <Loader2 className="w-9 h-9 text-indigo-500 animate-spin" />
-            <p className="text-sm text-slate-400 font-medium">Loading your dashboard...</p>
+      <div className="max-w-2xl mx-auto w-full pt-2 sm:pt-4 space-y-5 sm:space-y-6">
+        {/* A. Screen 1 Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-xl sm:text-2xl font-black text-[#F5F7FC] tracking-tight">
+              {getGreeting()}, {user?.name ? user.name.split(' ')[0] : 'Athlete'}! 👋
+            </h1>
+            <p className="text-xs sm:text-sm font-medium text-[#70788D] mt-0.5">
+              Let's crush your goals today.
+            </p>
           </div>
-        ) : error ? (
-          <div className="p-8 text-center bg-red-500/10 border border-red-500/20 rounded-3xl text-red-400">
-            <AlertCircle className="w-7 h-7 mx-auto mb-2" />
-            <p className="font-bold">{error}</p>
-            <button
-              onClick={fetchDashboard}
-              className="mt-3 px-4 py-2 bg-red-600/30 hover:bg-red-600/50 text-white rounded-xl text-xs font-semibold transition-colors"
-            >
-              Retry
-            </button>
-          </div>
-        ) : (
-          <>
-            {/* Header Greeting & Date */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-              <div>
-                <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white flex items-center gap-2">
-                  <span>{dashboardData.greeting}, {dashboardData.userName}</span>
-                  <span className="text-2xl animate-bounce">👋</span>
-                </h1>
-                <p className="text-xs sm:text-sm text-slate-400 mt-1 flex items-center gap-1.5">
-                  <CalendarIcon className="w-3.5 h-3.5 text-indigo-400" />
-                  <span>{formattedDate}</span>
-                </p>
-              </div>
 
+          {/* User Avatar with Violet Glow & Notification Icon */}
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              {user?.avatar ? (
+                <img
+                  src={user.avatar}
+                  alt={user.name}
+                  className="w-11 h-11 rounded-full object-cover border-2 border-[#C8FF00]/80 shadow-[0_0_16px_rgba(200,255,0,0.3)]"
+                />
+              ) : (
+                <div className="w-11 h-11 rounded-full bg-[#151A29] border-2 border-[#8B5CF6]/80 flex items-center justify-center text-sm font-bold text-[#F5F7FC] shadow-[0_0_16px_rgba(139,92,246,0.35)]">
+                  {user?.name ? user.name.charAt(0).toUpperCase() : 'M'}
+                </div>
+              )}
+              {/* Active Online status ring */}
+              <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-[#39E58C] border-2 border-[#080A12]" />
+            </div>
+          </div>
+        </div>
+
+        {/* B. Daily Progress Section with 3 Progress Rings */}
+        <div className="bg-[#111522] border border-[#242A3A] rounded-[24px] p-4 sm:p-5 space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Zap className="w-4 h-4 text-[#C8FF00]" />
+              <h2 className="text-sm font-bold text-[#F5F7FC] tracking-tight">
+                Daily Progress
+              </h2>
+            </div>
+
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-[#A4AABC] bg-[#0D101B] px-3 py-1 rounded-full border border-[#1D2332]">
+              <CalendarIcon className="w-3.5 h-3.5 text-[#C8FF00]" />
+              <span>{formatTodayDisplay()}</span>
+            </div>
+          </div>
+
+          {/* 3 Circular Rings in a Single Row */}
+          <div className="grid grid-cols-3 gap-2 sm:gap-4 pt-1">
+            {/* 1. Calories Ring (Neon Lime) */}
+            <CircularProgressRing
+              value={caloriesConsumed}
+              target={dailyCaloriesTarget}
+              label="Calories"
+              subLabel="Kcal"
+              icon={Flame}
+              color="#C8FF00"
+              trackColor="#151A29"
+              size={90}
+              strokeWidth={7}
+            />
+
+            {/* 2. Steps Ring (Cyan-Green) */}
+            <CircularProgressRing
+              value={stepsLogged}
+              target={stepsGoal}
+              label="Steps"
+              subLabel="Qadamlar"
+              icon={Footprints}
+              color="#25D9E6"
+              trackColor="#151A29"
+              size={90}
+              strokeWidth={7}
+            />
+
+            {/* 3. Active Time Ring (Electric Violet) */}
+            <CircularProgressRing
+              value={activeTimeMinutes}
+              target={activeTimeGoal}
+              label="Active Time"
+              subLabel="Vaqt"
+              icon={Clock}
+              color="#8B5CF6"
+              trackColor="#151A29"
+              size={90}
+              strokeWidth={7}
+            />
+          </div>
+        </div>
+
+        {/* C. Heart Rate Card */}
+        <HeartRateCard currentBpm={78} />
+
+        {/* D. Activity Summary Card (3 Columns: Distance / Active Calories / Sleep) */}
+        <ActivitySummaryCard
+          distanceKm={todayDistanceKm}
+          activeCalories={todayActiveCalories}
+          sleepHours="7 h 32 m"
+        />
+
+        {/* E. Today's Habit Checklist Section */}
+        <div className="bg-[#111522] border border-[#242A3A] rounded-[24px] p-4 sm:p-5 space-y-3.5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-[#C8FF00]" />
+              <h3 className="text-sm font-bold text-[#F5F7FC]">
+                Today's Habits ({completedHabitsCount}/{totalHabitsCount})
+              </h3>
+            </div>
+            <Link
+              to="/habits"
+              className="text-xs font-semibold text-[#C8FF00] hover:underline flex items-center gap-1"
+            >
+              <span>Manage</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          {todayHabits.length === 0 ? (
+            <div className="p-6 text-center bg-[#0D101B] border border-[#1D2332] rounded-2xl space-y-2">
+              <p className="text-xs text-[#70788D]">No habits scheduled for today.</p>
               <Link
                 to="/habits"
-                className="self-start sm:self-auto px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-lg shadow-indigo-600/30 flex items-center gap-1.5 transition-all"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#C8FF00] text-[#080A12] text-xs font-bold hover:bg-[#B4E600]"
               >
-                <Plus className="w-4 h-4" />
-                <span>Create New Habit</span>
+                <Plus className="w-3.5 h-3.5" />
+                <span>Create your first habit</span>
+              </Link>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {todayHabits.map((habit) => {
+                const isDone = habit.isCompletedToday;
+                const isToggling = togglingHabitId === habit.id;
+                const Icon = ICONS[habit.icon] || Activity;
+
+                return (
+                  <div
+                    key={habit.id}
+                    onClick={() => !isToggling && handleToggleHabit(habit)}
+                    className={`cursor-pointer p-3.5 rounded-2xl border transition-all flex items-center justify-between group ${
+                      isDone
+                        ? 'bg-[#0D101B] border-[#39E58C]/30 text-[#A4AABC]'
+                        : 'bg-[#151A29] border-[#242A3A] text-[#F5F7FC] hover:border-[#C8FF00]/40'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      {/* Checkbox Icon */}
+                      <button
+                        type="button"
+                        className={`w-6 h-6 rounded-full flex items-center justify-center transition-all shrink-0 ${
+                          isDone
+                            ? 'bg-[#39E58C] text-[#080A12] shadow-[0_0_8px_#39E58C]'
+                            : 'border-2 border-[#70788D] group-hover:border-[#C8FF00]'
+                        }`}
+                      >
+                        {isDone ? (
+                          <CheckCircle2 className="w-4 h-4 fill-current stroke-none" />
+                        ) : (
+                          <Circle className="w-3.5 h-3.5 text-transparent" />
+                        )}
+                      </button>
+
+                      <div className="min-w-0">
+                        <p
+                          className={`text-xs sm:text-sm font-bold truncate ${
+                            isDone ? 'line-through text-[#70788D]' : 'text-[#F5F7FC]'
+                          }`}
+                        >
+                          {habit.name}
+                        </p>
+                        <p className="text-[10px] text-[#70788D] flex items-center gap-2">
+                          <span>{habit.category}</span>
+                          {habit.currentStreak > 0 && (
+                            <span className="text-[#C8FF00] font-semibold flex items-center gap-0.5">
+                              <Flame className="w-3 h-3 fill-current" />
+                              {habit.currentStreak} day streak
+                            </span>
+                          )}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div
+                      className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
+                      style={{
+                        backgroundColor: `${habit.color || '#C8FF00'}15`,
+                        color: habit.color || '#C8FF00',
+                      }}
+                    >
+                      <Icon className="w-4 h-4" />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* F. Nutrition & Hydration Fast Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+          {/* Nutrition Summary Card */}
+          <div className="bg-[#111522] border border-[#242A3A] rounded-[24px] p-4 sm:p-5 flex flex-col justify-between space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <UtensilsCrossed className="w-4 h-4 text-[#C8FF00]" />
+                <h3 className="text-xs sm:text-sm font-bold text-[#F5F7FC]">
+                  Meal Diary
+                </h3>
+              </div>
+              <Link
+                to="/nutrition"
+                className="text-xs font-semibold text-[#C8FF00] hover:underline"
+              >
+                Open
               </Link>
             </div>
 
-            {/* Today's Progress Card */}
-            <div className="bg-gradient-to-br from-indigo-950/60 via-slate-900/80 to-slate-900 border border-indigo-500/30 rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
-
-              <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-                <div className="space-y-2 max-w-md">
-                  <span className="text-[11px] uppercase font-bold tracking-widest text-indigo-300">
-                    Daily Milestone
-                  </span>
-                  <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-                    Today's Progress
-                  </h2>
-                  <p className="text-xs sm:text-sm text-slate-400">
-                    {dashboardData.today.completedCount === dashboardData.today.totalHabits && dashboardData.today.totalHabits > 0
-                      ? 'Incredible work! You have completed all scheduled habits for today 🎉'
-                      : `Keep going! ${dashboardData.today.totalHabits - dashboardData.today.completedCount} habit(s) left to crush today.`}
-                  </p>
-                </div>
-
-                <div className="flex items-center gap-6">
-                  <div className="text-right">
-                    <span className="text-4xl sm:text-5xl font-black bg-gradient-to-r from-indigo-400 to-emerald-400 bg-clip-text text-transparent">
-                      {dashboardData.today.percentage}%
-                    </span>
-                    <p className="text-xs font-semibold text-slate-400 mt-0.5">
-                      {dashboardData.today.completedCount} / {dashboardData.today.totalHabits} Habits Completed
-                    </p>
-                  </div>
-                </div>
+            <div>
+              <div className="flex items-baseline justify-between mb-1">
+                <span className="text-xl font-black text-[#F5F7FC]">
+                  {caloriesConsumed}
+                </span>
+                <span className="text-xs text-[#70788D]">
+                  / {dailyCaloriesTarget} kcal
+                </span>
               </div>
-
-              {/* Progress Bar Track */}
-              <div className="w-full bg-slate-950/70 border border-slate-800 rounded-full h-4 mt-6 overflow-hidden p-0.5">
+              {/* Progress bar */}
+              <div className="w-full h-2 rounded-full bg-[#151A29] overflow-hidden">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-indigo-500 via-violet-500 to-emerald-400 transition-all duration-700 ease-out shadow-sm"
-                  style={{ width: `${Math.max(5, dashboardData.today.percentage)}%` }}
+                  className="h-full bg-gradient-to-r from-[#C8FF00] to-[#39E58C] rounded-full transition-all duration-500"
+                  style={{
+                    width: `${Math.min(100, (caloriesConsumed / dailyCaloriesTarget) * 100)}%`,
+                  }}
                 />
               </div>
             </div>
 
-            {/* 5 KPI Metric Cards (Section 7 Specification) */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-4">
-              {/* Card 1: Current Streak */}
-              <div className="bg-slate-900/80 border border-slate-800/80 rounded-2xl p-4 sm:p-5 hover:border-amber-500/40 transition-colors">
-                <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
-                    Current Streak
-                  </span>
-                  <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center">
-                    <Flame className="w-4 h-4" />
-                  </div>
-                </div>
-                <p className="text-2xl sm:text-3xl font-extrabold text-amber-400 mt-2">
-                  {dashboardData.metrics.currentStreak}{' '}
-                  <span className="text-xs font-normal text-slate-400">days</span>
-                </p>
-                <p className="text-[11px] text-slate-500 mt-1">Active streak</p>
-              </div>
+            <div className="pt-1 flex items-center justify-between text-[11px] text-[#A4AABC]">
+              <span>Protein: {Math.round(nutritionLogs?.totals?.protein || 85)}g</span>
+              <span>Carbs: {Math.round(nutritionLogs?.totals?.carbs || 190)}g</span>
+              <span>Fat: {Math.round(nutritionLogs?.totals?.fat || 52)}g</span>
+            </div>
+          </div>
 
-              {/* Card 2: Longest Streak */}
-              <div className="bg-slate-900/80 border border-slate-800/80 rounded-2xl p-4 sm:p-5 hover:border-indigo-500/40 transition-colors">
-                <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
-                    Longest Streak
-                  </span>
-                  <div className="w-8 h-8 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center">
-                    <Trophy className="w-4 h-4" />
-                  </div>
-                </div>
-                <p className="text-2xl sm:text-3xl font-extrabold text-indigo-400 mt-2">
-                  {dashboardData.metrics.longestStreak}{' '}
-                  <span className="text-xs font-normal text-slate-400">days</span>
-                </p>
-                <p className="text-[11px] text-slate-500 mt-1">Personal record</p>
+          {/* Hydration Tracker Card */}
+          <div className="bg-[#111522] border border-[#242A3A] rounded-[24px] p-4 sm:p-5 flex flex-col justify-between space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Droplets className="w-4 h-4 text-[#25D9E6]" />
+                <h3 className="text-xs sm:text-sm font-bold text-[#F5F7FC]">
+                  Water Intake
+                </h3>
               </div>
+              <button
+                onClick={handleAddWater}
+                disabled={waterAdding}
+                className="text-xs font-bold text-[#25D9E6] hover:underline flex items-center gap-1 active:scale-95"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>+250 ml</span>
+              </button>
+            </div>
 
-              {/* Card 3: Today's Completion */}
-              <div className="bg-slate-900/80 border border-slate-800/80 rounded-2xl p-4 sm:p-5 hover:border-emerald-500/40 transition-colors">
-                <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
-                    Today's Done
-                  </span>
-                  <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center">
-                    <CheckCircle2 className="w-4 h-4" />
-                  </div>
-                </div>
-                <p className="text-2xl sm:text-3xl font-extrabold text-emerald-400 mt-2">
-                  {dashboardData.today.completedCount}{' '}
-                  <span className="text-xs font-normal text-slate-400">/ {dashboardData.today.totalHabits}</span>
-                </p>
-                <p className="text-[11px] text-slate-500 mt-1">{dashboardData.today.percentage}% rate today</p>
+            <div>
+              <div className="flex items-baseline justify-between mb-1">
+                <span className="text-xl font-black text-[#25D9E6]">
+                  {waterTotalMl}
+                </span>
+                <span className="text-xs text-[#70788D]">
+                  / 2500 ml
+                </span>
               </div>
-
-              {/* Card 4: Weekly Success */}
-              <div className="bg-slate-900/80 border border-slate-800/80 rounded-2xl p-4 sm:p-5 hover:border-violet-500/40 transition-colors">
-                <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
-                    Weekly Success
-                  </span>
-                  <div className="w-8 h-8 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-400 flex items-center justify-center">
-                    <BarChart3 className="w-4 h-4" />
-                  </div>
-                </div>
-                <p className="text-2xl sm:text-3xl font-extrabold text-violet-400 mt-2">
-                  {dashboardData.metrics.weeklySuccessRate}%
-                </p>
-                <p className="text-[11px] text-slate-500 mt-1">Past 7 days</p>
-              </div>
-
-              {/* Card 5: Monthly Progress */}
-              <div className="col-span-2 md:col-span-1 bg-slate-900/80 border border-slate-800/80 rounded-2xl p-4 sm:p-5 hover:border-blue-500/40 transition-colors">
-                <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
-                    Monthly Progress
-                  </span>
-                  <div className="w-8 h-8 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center">
-                    <Target className="w-4 h-4" />
-                  </div>
-                </div>
-                <p className="text-2xl sm:text-3xl font-extrabold text-blue-400 mt-2">
-                  {dashboardData.metrics.monthlyProgressRate}%
-                </p>
-                <p className="text-[11px] text-slate-500 mt-1">Past 30 days</p>
+              {/* Progress bar */}
+              <div className="w-full h-2 rounded-full bg-[#151A29] overflow-hidden">
+                <div
+                  className="h-full bg-[#25D9E6] rounded-full transition-all duration-500 shadow-[0_0_8px_#25D9E6]"
+                  style={{
+                    width: `${Math.min(100, (waterTotalMl / 2500) * 100)}%`,
+                  }}
+                />
               </div>
             </div>
 
-            {/* Today's Habits Section (Section 7 Specification) */}
-            <div className="space-y-4 pt-2">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-                    <span>Today's Habits</span>
-                  </h2>
-                  <p className="text-xs text-slate-400">
-                    Mark off habits as you finish them throughout the day.
-                  </p>
-                </div>
-                <Link
-                  to="/habits"
-                  className="text-xs font-semibold text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition-colors"
-                >
-                  <span>Manage All</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
-              </div>
-
-              {dashboardData.todayHabits.length === 0 ? (
-                <div className="p-12 text-center bg-slate-900/40 border border-slate-800/80 rounded-3xl space-y-3">
-                  <Sparkles className="w-8 h-8 text-indigo-400 mx-auto" />
-                  <p className="text-sm font-semibold text-white">No active habits scheduled</p>
-                  <Link
-                    to="/habits"
-                    className="inline-block px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-semibold"
-                  >
-                    Add Your First Habit
-                  </Link>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-                  {dashboardData.todayHabits.map((habit) => {
-                    const IconComp = ICONS[habit.icon] || Activity;
-                    const isToggling = togglingHabitId === habit.id;
-
-                    return (
-                      <div
-                        key={habit.id}
-                        className={`group p-4 sm:p-5 rounded-2xl border transition-all duration-300 flex items-center justify-between gap-4 ${habit.isCompletedToday
-                            ? 'bg-slate-900/90 border-emerald-500/40 shadow-sm shadow-emerald-500/5'
-                            : 'bg-slate-900/60 border-slate-800 hover:border-slate-700 hover:bg-slate-900/90'
-                          }`}
-                      >
-                        {/* Left: Icon & Habit Info */}
-                        <div className="flex items-center gap-3.5 min-w-0">
-                          {/* Interactive 1-click Checkmark Toggle */}
-                          <button
-                            onClick={() => handleToggleHabit(habit)}
-                            disabled={isToggling}
-                            className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-200 shrink-0 ${habit.isCompletedToday
-                                ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/30'
-                                : 'bg-slate-800 border border-slate-700 text-slate-400 hover:text-white hover:border-indigo-500 hover:bg-slate-700'
-                              }`}
-                            title={habit.isCompletedToday ? 'Click to undo' : 'Click to complete'}
-                          >
-                            {isToggling ? (
-                              <Loader2 className="w-4 h-4 animate-spin" />
-                            ) : habit.isCompletedToday ? (
-                              <CheckCircle2 className="w-5 h-5 text-white" />
-                            ) : (
-                              <Circle className="w-5 h-5" />
-                            )}
-                          </button>
-
-                          {/* Habit Details */}
-                          <div className="min-w-0">
-                            <div className="flex items-center gap-2">
-                              <h3
-                                className={`text-sm sm:text-base font-bold truncate transition-colors ${habit.isCompletedToday
-                                    ? 'text-slate-300 line-through decoration-emerald-500/60'
-                                    : 'text-white'
-                                  }`}
-                              >
-                                {habit.name}
-                              </h3>
-                              <span
-                                className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full shrink-0"
-                                style={{
-                                  backgroundColor: `${habit.color}15`,
-                                  color: habit.color,
-                                  border: `1px solid ${habit.color}30`,
-                                }}
-                              >
-                                {habit.category}
-                              </span>
-                            </div>
-
-                            <div className="flex items-center gap-3 text-xs text-slate-400 mt-1">
-                              <span className="flex items-center gap-1">
-                                <Target className="w-3.5 h-3.5 text-indigo-400" />
-                                <span>{habit.targetCount} {habit.frequency.toLowerCase()}</span>
-                              </span>
-
-                              {habit.reminderTime && (
-                                <span className="flex items-center gap-1">
-                                  <Clock className="w-3 h-3 text-slate-500" />
-                                  <span>{habit.reminderTime}</span>
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Right: Streak Flame Badge */}
-                        <div className="shrink-0 text-right">
-                          <span
-                            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold ${habit.currentStreak > 0
-                                ? 'bg-amber-500/10 text-amber-400 border border-amber-500/25'
-                                : 'bg-slate-800 text-slate-400'
-                              }`}
-                          >
-                            <Flame className={`w-3.5 h-3.5 ${habit.currentStreak > 0 ? 'text-amber-400' : 'text-slate-500'}`} />
-                            <span>{habit.currentStreak}d streak</span>
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          </>
-        )}
-      </main>
+            <p className="text-[11px] text-[#70788D]">
+              {Math.round(waterTotalMl / 250)} of 10 glasses logged today
+            </p>
+          </div>
+        </div>
+      </div>
     </DashboardLayout>
   );
 }

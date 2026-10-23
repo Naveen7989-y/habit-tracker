@@ -4,8 +4,10 @@ import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import ProfileModal from '../components/ProfileModal';
 import Logo from '../components/Logo';
+import MobileBottomNav from '../components/fitness/MobileBottomNav';
 import {
   LayoutDashboard,
+  Dumbbell,
   ListTodo,
   Calendar,
   TrendingUp,
@@ -17,6 +19,7 @@ import {
   ChevronDown,
   Settings,
   UtensilsCrossed,
+  Bell,
 } from 'lucide-react';
 
 export default function DashboardLayout({ children }) {
@@ -29,23 +32,15 @@ export default function DashboardLayout({ children }) {
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [profileModalOpen, setProfileModalOpen] = useState(false);
 
+  // Desktop navigation items
   const navItems = [
     { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
+    { label: 'Workouts', path: '/workouts', icon: Dumbbell },
     { label: 'All Habits', path: '/habits', icon: ListTodo },
     { label: 'Nutrition', path: '/nutrition', icon: UtensilsCrossed },
     { label: 'Calendar', path: '/calendar', icon: Calendar },
     { label: 'Analytics', path: '/statistics', icon: TrendingUp },
   ];
-
-  const bottomNavItems = [
-    { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
-    { label: 'Habits', path: '/habits', icon: ListTodo },
-    { label: 'Nutrition', path: '/nutrition', icon: UtensilsCrossed },
-    { label: 'Calendar', path: '/calendar', icon: Calendar },
-    { label: 'Analytics', path: '/statistics', icon: TrendingUp },
-    { label: 'Settings', path: '/settings', icon: Settings },
-  ];
-
 
   const handleLogout = async () => {
     await logout();
@@ -60,17 +55,27 @@ export default function DashboardLayout({ children }) {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between selection:bg-indigo-500 selection:text-white transition-colors duration-200">
+    <div className="min-h-screen bg-[#080A12] text-[#F5F7FC] flex flex-col justify-between selection:bg-[#C8FF00] selection:text-[#080A12] transition-colors duration-200">
       {/* Top Navigation Bar */}
-      <header className="border-b border-slate-800/80 bg-slate-900/80 backdrop-blur-md sticky top-0 z-40">
-        <div className="max-w-6xl mx-auto px-3.5 sm:px-6 h-14 sm:h-16 flex items-center justify-between">
-          {/* Logo */}
-          <Link to="/dashboard" className="flex items-center gap-2 shrink-0">
-            <Logo className="h-8 sm:h-9 w-auto object-contain transition-all" />
-          </Link>
+      <header className="border-b border-[#1D2332] bg-[#080A12]/95 backdrop-blur-xl sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between">
+          {/* Logo & Mobile Menu Toggle */}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden p-2 rounded-xl text-[#70788D] hover:text-[#F5F7FC] hover:bg-[#111522] transition-colors"
+              aria-label="Toggle navigation drawer"
+            >
+              {mobileMenuOpen ? <X className="w-5 h-5 text-[#C8FF00]" /> : <Menu className="w-5 h-5" />}
+            </button>
+
+            <Link to="/dashboard" className="flex items-center gap-2 shrink-0">
+              <Logo className="h-7 sm:h-8 w-auto object-contain transition-all" />
+            </Link>
+          </div>
 
           {/* Desktop Nav Items */}
-          <nav className="desktop-navbar-pill hidden md:flex items-center gap-1.5 bg-[#EBFDEA] p-1 rounded-2xl border border-[#C4F7CA]">
+          <nav className="desktop-navbar-pill hidden md:flex items-center gap-1 bg-[#111522] p-1.5 rounded-2xl border border-[#242A3A]">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = isRouteActive(item.path);
@@ -80,8 +85,8 @@ export default function DashboardLayout({ children }) {
                   to={item.path}
                   className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all duration-150 ${
                     isActive
-                      ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
-                      : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                      ? 'bg-[#C8FF00] text-[#080A12] shadow-md shadow-[#C8FF00]/20 font-bold'
+                      : 'text-[#A4AABC] hover:text-[#F5F7FC] hover:bg-[#151A29]'
                   }`}
                 >
                   <Icon className="w-3.5 h-3.5" />
@@ -93,104 +98,104 @@ export default function DashboardLayout({ children }) {
 
           {/* Right Action Icons & User Dropdown */}
           <div className="flex items-center gap-1.5 sm:gap-2.5">
+            {/* Notification Bell */}
+            <div className="relative p-2 rounded-xl text-[#A4AABC] hover:text-[#F5F7FC] hover:bg-[#111522] transition-colors cursor-pointer">
+              <Bell className="w-4 h-4" />
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#C8FF00] shadow-[0_0_6px_#C8FF00]" />
+            </div>
+
             {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/70 transition-colors"
-              title={`Switch theme (Current: ${theme === 'midnight-sea' ? 'Midnight Sea' : (theme === 'warm-horizon' ? 'Warm Horizon' : (theme === 'fresh-sky' ? 'Fresh Sky' : 'Soft Sunrise'))})`}
+              className="p-2 rounded-xl text-[#A4AABC] hover:text-[#F5F7FC] hover:bg-[#111522] transition-colors"
+              title={`Switch theme (Current: ${theme})`}
               aria-label="Toggle visual theme"
             >
-              <Sun className={`w-4 h-4 ${
-                theme === 'midnight-sea' ? 'text-[#068FFF]' : (theme === 'warm-horizon' ? 'text-[#F2765E]' : (theme === 'fresh-sky' ? 'text-sky-400' : 'text-amber-500'))
-              }`} />
+              <Sun className="w-4 h-4 text-[#C8FF00]" />
             </button>
 
             {/* User Dropdown */}
             <div className="relative">
               <button
                 onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-                className="flex items-center gap-1.5 sm:gap-2 p-1 sm:p-1.5 rounded-xl hover:bg-slate-800/80 transition-colors border border-transparent hover:border-slate-800"
-                aria-label="User account menu"
+                className="flex items-center gap-2 p-1.5 rounded-xl hover:bg-[#111522] transition-colors"
+                aria-expanded={profileDropdownOpen}
               >
-                {user?.avatar ? (
-                  <img
-                    src={user.avatar}
-                    alt={user.name}
-                    className="w-7 h-7 rounded-lg object-cover ring-1 ring-indigo-500/40"
-                  />
-                ) : (
-                  <div className="w-7 h-7 rounded-lg bg-indigo-600/20 text-indigo-400 flex items-center justify-center text-xs font-bold ring-1 ring-indigo-500/40">
-                    {user?.name?.[0]?.toUpperCase() || 'U'}
-                  </div>
-                )}
-                <span className="hidden sm:inline text-xs font-medium text-slate-200 max-w-[120px] truncate">
-                  {user?.name}
+                <div className="relative">
+                  {user?.avatar ? (
+                    <img
+                      src={user.avatar}
+                      alt={user.name}
+                      className="w-8 h-8 rounded-full object-cover border border-[#C8FF00]/50"
+                    />
+                  ) : (
+                    <div className="w-8 h-8 rounded-full bg-[#8B5CF6]/20 border border-[#8B5CF6]/50 flex items-center justify-center text-[#F5F7FC] font-bold text-xs shadow-[0_0_10px_rgba(139,92,246,0.3)]">
+                      {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                    </div>
+                  )}
+                  <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-[#39E58C] border-2 border-[#080A12]" />
+                </div>
+
+                <span className="hidden sm:inline-block text-xs font-semibold text-[#F5F7FC] max-w-[100px] truncate">
+                  {user?.name || 'Account'}
                 </span>
-                <ChevronDown className="w-3.5 h-3.5 text-slate-400 hidden sm:block" />
+                <ChevronDown className="hidden sm:inline-block w-3.5 h-3.5 text-[#70788D]" />
               </button>
 
+              {/* Dropdown Menu */}
               {profileDropdownOpen && (
                 <>
                   <div
                     className="fixed inset-0 z-40"
                     onClick={() => setProfileDropdownOpen(false)}
                   />
-                  <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-slate-900 border border-slate-800 shadow-2xl p-2 z-50 text-xs space-y-1 animate-scale-in">
-                    <div className="px-3 py-2 border-b border-slate-800">
-                      <p className="font-semibold text-white truncate">{user?.name}</p>
-                      <p className="text-[11px] text-slate-400 truncate">{user?.email}</p>
+                  <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-[#0D101B] border border-[#242A3A] shadow-2xl py-2 z-50 animate-scale-in text-xs">
+                    <div className="px-4 py-2.5 border-b border-[#1D2332]">
+                      <p className="font-bold text-[#F5F7FC] truncate">{user?.name}</p>
+                      <p className="text-[11px] text-[#70788D] truncate">{user?.email}</p>
                     </div>
-
-                    <button
-                      onClick={() => {
-                        setProfileDropdownOpen(false);
-                        setProfileModalOpen(true);
-                      }}
-                      className="w-full px-3 py-2 rounded-xl text-left text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-2 transition-colors"
-                    >
-                      <User className="w-3.5 h-3.5 text-indigo-400" />
-                      <span>Edit Profile</span>
-                    </button>
 
                     <Link
                       to="/settings"
                       onClick={() => setProfileDropdownOpen(false)}
-                      className="w-full px-3 py-2 rounded-xl text-left text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-2 transition-colors"
+                      className="flex items-center gap-2.5 px-4 py-2 text-[#A4AABC] hover:text-[#F5F7FC] hover:bg-[#151A29] transition-colors"
                     >
-                      <Settings className="w-3.5 h-3.5 text-emerald-400" />
-                      <span>Account Settings</span>
+                      <User className="w-4 h-4 text-[#C8FF00]" />
+                      <span>Profile & Goals</span>
                     </Link>
+
+                    <Link
+                      to="/settings"
+                      onClick={() => setProfileDropdownOpen(false)}
+                      className="flex items-center gap-2.5 px-4 py-2 text-[#A4AABC] hover:text-[#F5F7FC] hover:bg-[#151A29] transition-colors"
+                    >
+                      <Settings className="w-4 h-4 text-[#8B5CF6]" />
+                      <span>Theme & Settings</span>
+                    </Link>
+
+                    <div className="border-t border-[#1D2332] my-1" />
 
                     <button
                       onClick={() => {
                         setProfileDropdownOpen(false);
                         handleLogout();
                       }}
-                      className="w-full px-3 py-2 rounded-xl text-left text-red-400 hover:text-red-300 hover:bg-red-500/10 flex items-center gap-2 transition-colors"
+                      className="w-full flex items-center gap-2.5 px-4 py-2 text-[#FF5C67] hover:bg-[#FF5C67]/10 transition-colors text-left"
                     >
-                      <LogOut className="w-3.5 h-3.5" />
+                      <LogOut className="w-4 h-4" />
                       <span>Sign Out</span>
                     </button>
                   </div>
                 </>
               )}
             </div>
-
-            {/* Mobile menu toggle button */}
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
-              aria-label="Toggle navigation drawer"
-            >
-              {mobileMenuOpen ? <X className="w-5 h-5 text-indigo-400" /> : <Menu className="w-5 h-5" />}
-            </button>
           </div>
         </div>
 
-        {/* Mobile Dropdown Nav Menu */}
+        {/* Mobile Slide-down Drawer */}
         {mobileMenuOpen && (
-          <div className="mobile-nav-dropdown md:hidden border-t border-slate-800/80 px-4 py-3 space-y-1 backdrop-blur-xl animate-fade-in shadow-xl">
-            {bottomNavItems.map((item) => {
+          <div className="md:hidden border-t border-[#1D2332] bg-[#0D101B] px-4 py-3 space-y-1 backdrop-blur-xl animate-fade-in shadow-xl">
+            {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = isRouteActive(item.path);
               return (
@@ -200,8 +205,8 @@ export default function DashboardLayout({ children }) {
                   onClick={() => setMobileMenuOpen(false)}
                   className={`px-3 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-3 transition-colors ${
                     isActive
-                      ? 'bg-indigo-600 text-white shadow-sm'
-                      : 'text-slate-300 hover:text-white hover:bg-slate-800'
+                      ? 'bg-[#C8FF00] text-[#080A12] font-bold'
+                      : 'text-[#A4AABC] hover:text-[#F5F7FC] hover:bg-[#151A29]'
                   }`}
                 >
                   <Icon className="w-4 h-4" />
@@ -210,16 +215,16 @@ export default function DashboardLayout({ children }) {
               );
             })}
 
-            <div className="pt-2 mt-2 border-t border-slate-800/80 flex items-center justify-between">
-              <span className="text-[11px] text-slate-400 truncate max-w-[200px]">
-                Signed in as <strong className="text-white">{user?.name}</strong>
+            <div className="pt-2 mt-2 border-t border-[#1D2332] flex items-center justify-between">
+              <span className="text-[11px] text-[#70788D] truncate max-w-[200px]">
+                Signed in as <strong className="text-[#F5F7FC]">{user?.name}</strong>
               </span>
               <button
                 onClick={() => {
                   setMobileMenuOpen(false);
                   handleLogout();
                 }}
-                className="px-3 py-1.5 rounded-lg bg-red-500/10 text-red-400 text-xs font-semibold hover:bg-red-500/20 transition-colors flex items-center gap-1.5"
+                className="px-3 py-1.5 rounded-lg bg-[#FF5C67]/10 text-[#FF5C67] text-xs font-semibold hover:bg-[#FF5C67]/20 transition-colors flex items-center gap-1.5"
               >
                 <LogOut className="w-3.5 h-3.5" />
                 <span>Logout</span>
@@ -229,38 +234,17 @@ export default function DashboardLayout({ children }) {
         )}
       </header>
 
-      {/* Main Content Area: padded at bottom on mobile to accommodate native bottom nav */}
-      <div className="flex-1 flex flex-col pb-20 md:pb-0">{children}</div>
+      {/* Main Content Area */}
+      <main className="flex-1 flex flex-col pb-24 md:pb-10 max-w-7xl mx-auto w-full px-3.5 sm:px-6">
+        {children}
+      </main>
 
-      {/* Native Mobile Bottom Navigation Bar (Thumb friendly for small screens) */}
-      <nav className="mobile-bottom-nav md:hidden fixed bottom-0 left-0 right-0 z-40 backdrop-blur-xl border-t border-slate-800/80 px-2 py-1 flex items-center justify-around shadow-2xl pb-safe">
-        {bottomNavItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = isRouteActive(item.path);
-          return (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={`flex flex-col items-center justify-center flex-1 py-1.5 px-1 rounded-xl text-[10px] font-semibold transition-all duration-150 ${
-                isActive
-                  ? 'text-indigo-400 font-bold scale-105'
-                  : 'text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              <Icon
-                className={`w-5 h-5 mb-0.5 transition-transform ${
-                  isActive ? 'stroke-[2.5px] scale-110 text-indigo-400' : 'stroke-[1.75px]'
-                }`}
-              />
-              <span className="truncate max-w-[56px] text-center">{item.label}</span>
-            </Link>
-          );
-        })}
-      </nav>
+      {/* 4-Item Mobile Navigation Bar */}
+      <MobileBottomNav />
 
-      {/* Persistent Footer */}
-      <footer className="border-t border-slate-800/80 py-6 text-center text-xs text-slate-400 hidden md:block">
-        HAbyTAT SaaS • Built with React, Vite, Express, Prisma & PostgreSQL
+      {/* Persistent Desktop Footer */}
+      <footer className="border-t border-[#1D2332] py-5 text-center text-xs text-[#70788D] hidden md:block">
+        HAbyTAT • Mobile-First Fitness, Habit & Nutrition Platform
       </footer>
 
       {/* Profile Modal */}

@@ -7,6 +7,7 @@ import statisticsRoutes from './statistics.routes.js';
 import dashboardRoutes from './dashboard.routes.js';
 import calendarRoutes from './calendar.routes.js';
 import nutritionRoutes from './nutrition.routes.js';
+import workoutRoutes from './workout.routes.js';
 
 const router = Router();
 
@@ -33,6 +34,9 @@ router.use('/statistics', statisticsRoutes);
 
 // Nutrition endpoints: /api/nutrition/*
 router.use('/nutrition', nutritionRoutes);
+
+// Workout endpoints: /api/workouts/*
+router.use('/workouts', workoutRoutes);
 
 export default router;
 

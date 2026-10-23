@@ -11,6 +11,7 @@ import CalendarView from './pages/CalendarView';
 import Analytics from './pages/Analytics';
 import Settings from './pages/Settings';
 import Nutrition from './pages/Nutrition';
+import Workouts from './pages/Workouts';
 import Logo from './components/Logo';
 
 import { LogOut, User, ArrowRight } from 'lucide-react';
@@ -137,6 +138,14 @@ export default function App() {
               element={
                 <ProtectedRoute>
                   <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/workouts"
+              element={
+                <ProtectedRoute>
+                  <Workouts />
                 </ProtectedRoute>
               }
             />

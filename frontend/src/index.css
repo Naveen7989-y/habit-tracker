@@ -10,8 +10,34 @@
    Theme 6: Midnight Sea
    ================================================== */
 
+/* ==================================================
+   HAByTAT FITNESS DESIGN TOKENS (MOBILE-FIRST)
+   Exact Reference Palette: #080A12 / #C8FF00 / #8B5CF6 / #25D9E6
+   ================================================== */
+:root {
+  --color-bg: #080A12;
+  --color-bg-secondary: #0D101B;
+  --color-card: #111522;
+  --color-card-elevated: #151A29;
+  --color-input: #0B0E17;
+  --color-primary: #C8FF00;
+  --color-primary-hover: #B4E600;
+  --color-violet: #8B5CF6;
+  --color-violet-dark: #6D3CF5;
+  --color-cyan: #25D9E6;
+  --color-success: #39E58C;
+  --color-warning: #FFBF47;
+  --color-error: #FF5C67;
+  --color-text: #F5F7FC;
+  --color-text-secondary: #A4AABC;
+  --color-text-muted: #70788D;
+  --color-border: #242A3A;
+  --color-divider: #1D2332;
+}
+
 /* --------------------------------------------------
-   THEME: FRESH SKY (DEFAULT)
+   THEME: FRESH SKY
+
    Primary Blue: #30AFFF | Aqua: #92EEFF | Lime: #D8FFC5 | Mint: #C4F7CA
    -------------------------------------------------- */
 :root,
