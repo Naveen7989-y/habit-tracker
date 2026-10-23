@@ -21,7 +21,7 @@ function LandingPage() {
 
   return (
     <div 
-      className="h-screen h-[100dvh] w-full bg-[#021526] text-white selection:bg-white/20 relative overflow-hidden flex flex-col justify-between landing-page"
+      className="h-screen h-[100dvh] w-full bg-[#080A12] text-[#F5F7FC] selection:bg-[#C8FF00] selection:text-[#080A12] relative overflow-hidden flex flex-col justify-between landing-page"
       style={{ fontFamily: "'Inter', sans-serif" }}
     >
       {/* Background Video */}
@@ -36,7 +36,7 @@ function LandingPage() {
           <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260314_131748_f2ca2a28-fed7-44c8-b9a9-bd9acdd5ec31.mp4" type="video/mp4" />
           Your browser does not support the video tag.
         </video>
-        <div className="absolute inset-0 bg-gradient-to-b from-[#021526]/50 via-transparent to-[#021526] pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#080A12]/50 via-transparent to-[#080A12] pointer-events-none" />
       </div>
 
       {/* Navigation Header */}
@@ -56,7 +56,7 @@ function LandingPage() {
                 to="/dashboard"
                 className="liquid-glass rounded-full px-4 sm:px-5 py-2 text-xs sm:text-sm text-white hover:scale-[1.03] transition-transform inline-flex items-center gap-2 cursor-pointer"
               >
-                <User className="w-3.5 h-3.5 text-indigo-400" />
+                <User className="w-3.5 h-3.5 text-[#C8FF00]" />
                 <span>{user?.name || 'Dashboard'}</span>
               </Link>
               <button
@@ -105,7 +105,7 @@ function LandingPage() {
             className="liquid-glass rounded-full px-8 sm:px-12 py-3.5 sm:py-4 text-sm sm:text-base text-white hover:scale-[1.03] cursor-pointer transition-transform shadow-lg inline-flex items-center gap-2"
           >
             <span>{isAuthenticated ? "Enter Dashboard" : "Begin Journey"}</span>
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="w-4 h-4 text-[#C8FF00]" />
           </Link>
           {!isAuthenticated && (
             <Link

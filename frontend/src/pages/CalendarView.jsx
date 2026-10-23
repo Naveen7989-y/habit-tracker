@@ -249,62 +249,19 @@ export default function CalendarView() {
     return weeks;
   }, [heatmapData]);
 
-  // Color classes for GitHub-style heatmap cells
+  // Color classes for GitHub-style heatmap cells (Unified Dark Fitness Neon Lime Palette)
   const getHeatmapColorClass = (level) => {
-    if (theme === 'midnight-sea') {
-      switch (level) {
-        case 1:
-          return 'bg-[#161616] border-[#2A2A2A] text-[#EEEEEE] hover:border-[#068FFF]';
-        case 2:
-          return 'bg-[#1e204a] border-[#4E4FEB] text-[#EEEEEE] hover:border-[#068FFF]';
-        case 3:
-          return 'bg-[#4E4FEB] border-[#4E4FEB] text-white font-semibold hover:brightness-105';
-        case 4:
-          return 'bg-[#068FFF] border-[#068FFF] text-white font-bold shadow-sm shadow-blue-500/30 hover:brightness-105';
-        default:
-          return 'bg-[#111111] border-[#2A2A2A] text-[#888888] hover:border-[#068FFF]';
-      }
-    }
-    if (theme === 'warm-horizon') {
-      switch (level) {
-        case 1:
-          return 'bg-[#FAF5EE] border-[#E4D6C7] text-[#655A55] hover:border-[#F2765E]';
-        case 2:
-          return 'bg-[#EEE2D3] border-[#E4D6C7] text-[#413333] hover:border-[#F2765E]';
-        case 3:
-          return 'bg-[#F2765E] border-[#DE5E46] text-white font-semibold hover:brightness-105';
-        case 4:
-          return 'bg-[#315B8C] border-[#24466F] text-white font-bold shadow-sm shadow-blue-900/20 hover:brightness-105';
-        default:
-          return 'bg-[#FFFFFF] border-[#E4D6C7] text-[#8C7E78] hover:border-[#F2765E]';
-      }
-    }
-    if (theme === 'fresh-sky') {
-      switch (level) {
-        case 1:
-          return 'bg-[#D8FFC5] border-[#bbf2a2] text-[#0f172a] hover:border-[#92EEFF]';
-        case 2:
-          return 'bg-[#C4F7CA] border-[#9feeb0] text-[#0f172a] hover:border-[#30AFFF]';
-        case 3:
-          return 'bg-[#92EEFF] border-[#65dcf2] text-[#0f172a] font-semibold hover:border-[#30AFFF]';
-        case 4:
-          return 'bg-[#30AFFF] border-[#1890df] text-white font-bold shadow-sm shadow-sky-500/30 hover:brightness-105';
-        default:
-          return 'bg-white border-[#C4F7CA] text-slate-400 hover:border-[#92EEFF]';
-      }
-    }
-    // Soft Sunrise (fallback)
     switch (level) {
       case 1:
-        return 'bg-[#FFFCE1] border-[#FFDDB0] text-[#78716c] hover:border-[#FFBE91]';
+        return 'bg-[#C8FF00]/20 border-[#C8FF00]/35 hover:border-[#C8FF00]';
       case 2:
-        return 'bg-[#FFDDB0] border-[#FFBE91] text-[#1c1917] hover:border-[#FFBE91]';
+        return 'bg-[#C8FF00]/45 border-[#C8FF00]/55 hover:border-[#C8FF00]';
       case 3:
-        return 'bg-[#FFBE91] border-[#FFDDB0] text-[#1c1917] font-semibold hover:brightness-105';
+        return 'bg-[#C8FF00]/75 border-[#C8FF00]/85 text-[#080A12] font-bold hover:brightness-105';
       case 4:
-        return 'bg-[#CFEBFF] border-[#b0dcff] text-[#1e293b] font-bold shadow-sm hover:brightness-105';
+        return 'bg-[#C8FF00] border-[#C8FF00] text-[#080A12] font-black shadow-[0_0_8px_rgba(200,255,0,0.35)] hover:brightness-105';
       default:
-        return 'bg-[#FFFFFF] border-[#FFDDB0] text-slate-400 hover:border-[#FFBE91]';
+        return 'bg-[#0D101B] border-[#1D2332] text-[#70788D] hover:border-[#C8FF00]/40';
     }
   };
 
@@ -315,19 +272,19 @@ export default function CalendarView() {
         {/* Title & Description */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-extrabold tracking-tight text-white flex items-center gap-2.5">
-              <CalendarIcon className="w-8 h-8 text-emerald-400" />
+            <h1 className="text-3xl font-extrabold tracking-tight text-[#F5F7FC] flex items-center gap-2.5">
+              <CalendarIcon className="w-8 h-8 text-[#C8FF00]" />
               <span>Habit History & Heatmap</span>
             </h1>
-            <p className="text-xs sm:text-sm text-slate-400 mt-1">
-              Visualize your daily consistency, explore GitHub-style activity trends, and review past achievements.
+            <p className="text-xs sm:text-sm text-[#A4AABC] mt-1">
+              Visualize your daily consistency, explore activity trends, and review past achievements.
             </p>
           </div>
 
           <div className="flex items-center gap-2">
             <button
               onClick={handleTodayMonth}
-              className="px-3.5 py-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-xs font-semibold text-slate-300 transition-colors"
+              className="px-3.5 py-1.5 rounded-xl bg-[#111522] border border-[#242A3A] hover:border-[#C8FF00]/50 text-xs font-semibold text-[#F5F7FC] transition-colors"
             >
               Current Month
             </button>
@@ -335,30 +292,30 @@ export default function CalendarView() {
         </div>
 
         {/* SECTION 1: GitHub-Style Contribution Heatmap */}
-        <div className="bg-slate-900/80 border border-slate-800/90 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-7 shadow-xl space-y-4 sm:space-y-5">
+        <div className="bg-[#111522] border border-[#242A3A] rounded-[24px] p-4 sm:p-6 md:p-7 shadow-xl space-y-4 sm:space-y-5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-400">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-[#C8FF00]">
                   Consistency Matrix
                 </span>
-                <span className="text-xs text-slate-500">•</span>
-                <span className="text-xs text-slate-400">GitHub-Style Activity</span>
+                <span className="text-xs text-[#70788D]">•</span>
+                <span className="text-xs text-[#A4AABC]">Activity Heatmap</span>
               </div>
-              <h2 className="text-lg sm:text-xl font-bold text-white mt-0.5">
+              <h2 className="text-lg sm:text-xl font-bold text-[#F5F7FC] mt-0.5">
                 Contribution Heatmap
               </h2>
             </div>
 
             {/* Range Selector */}
-            <div className="flex items-center gap-1 bg-slate-950/80 border border-slate-800/80 p-1 rounded-xl self-start sm:self-auto">
+            <div className="flex items-center gap-1 bg-[#0D101B] border border-[#242A3A] p-1 rounded-xl self-start sm:self-auto">
               {[30, 90, 180, 365].map((days) => (
                 <button
                   key={days}
                   onClick={() => setHeatmapDaysRange(days)}
                   className={`px-2.5 sm:px-3 py-1 rounded-lg text-xs font-semibold transition-all ${heatmapDaysRange === days
-                      ? 'bg-emerald-500 text-slate-950 shadow-sm'
-                      : 'text-slate-400 hover:text-white'
+                      ? 'bg-[#C8FF00] text-[#080A12] font-bold shadow-sm'
+                      : 'text-[#A4AABC] hover:text-[#F5F7FC]'
                     }`}
                 >
                   {days === 365 ? '1 Year' : `${days}d`}
@@ -369,35 +326,35 @@ export default function CalendarView() {
 
           {/* Heatmap Metrics Bar */}
           {heatmapData && (
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 py-2 border-y border-slate-800/60">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 py-3 border-y border-[#242A3A]">
               <div>
-                <p className="text-[10px] sm:text-[11px] text-slate-400 uppercase font-semibold">Active Days</p>
-                <p className="text-base sm:text-xl font-extrabold text-white mt-0.5">
+                <p className="text-[10px] sm:text-[11px] text-[#A4AABC] uppercase font-semibold">Active Days</p>
+                <p className="text-base sm:text-xl font-extrabold text-[#F5F7FC] mt-0.5">
                   {heatmapData.activeDaysCount}{' '}
-                  <span className="text-xs text-slate-400 font-normal">/ {heatmapData.daysCount}</span>
+                  <span className="text-xs text-[#70788D] font-normal">/ {heatmapData.daysCount}</span>
                 </p>
               </div>
 
               <div>
-                <p className="text-[10px] sm:text-[11px] text-slate-400 uppercase font-semibold">Consistency Rate</p>
-                <p className="text-base sm:text-xl font-extrabold text-emerald-400 mt-0.5">
+                <p className="text-[10px] sm:text-[11px] text-[#A4AABC] uppercase font-semibold">Consistency Rate</p>
+                <p className="text-base sm:text-xl font-extrabold text-[#C8FF00] mt-0.5">
                   {heatmapData.consistencyRate}%
                 </p>
               </div>
 
               <div>
-                <p className="text-[10px] sm:text-[11px] text-slate-400 uppercase font-semibold">Current Streak</p>
-                <p className="text-base sm:text-xl font-extrabold text-amber-400 mt-0.5 flex items-center gap-1">
-                  <Flame className="w-4 h-4 shrink-0" />
+                <p className="text-[10px] sm:text-[11px] text-[#A4AABC] uppercase font-semibold">Current Streak</p>
+                <p className="text-base sm:text-xl font-extrabold text-[#FFBF47] mt-0.5 flex items-center gap-1">
+                  <Flame className="w-4 h-4 shrink-0 text-[#FFBF47]" />
                   <span>{heatmapData.currentStreak} days</span>
                 </p>
               </div>
 
               <div>
-                <p className="text-[10px] sm:text-[11px] text-slate-400 uppercase font-semibold">Total Logged</p>
-                <p className="text-base sm:text-xl font-extrabold text-indigo-400 mt-0.5">
+                <p className="text-[10px] sm:text-[11px] text-[#A4AABC] uppercase font-semibold">Total Logged</p>
+                <p className="text-base sm:text-xl font-extrabold text-[#8B5CF6] mt-0.5">
                   {heatmapData.totalCompletions}{' '}
-                  <span className="text-xs text-slate-400 font-normal">habits</span>
+                  <span className="text-xs text-[#70788D] font-normal">habits</span>
                 </p>
               </div>
             </div>
@@ -406,8 +363,8 @@ export default function CalendarView() {
           {/* Heatmap Grid */}
           {heatmapLoading ? (
             <div className="py-12 flex flex-col items-center justify-center gap-2">
-              <Loader2 className="w-7 h-7 text-emerald-400 animate-spin" />
-              <p className="text-xs text-slate-400">Loading contribution heatmap...</p>
+              <Loader2 className="w-7 h-7 text-[#C8FF00] animate-spin" />
+              <p className="text-xs text-[#A4AABC]">Loading contribution heatmap...</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -433,10 +390,9 @@ export default function CalendarView() {
                             onClick={() => openDayInspector(day.date)}
                             className={`w-4 h-4 sm:w-4.5 sm:h-4.5 rounded-[4px] border transition-all relative group cursor-pointer ${getHeatmapColorClass(
                               day.level
-                            )} ${isCurrentDay ? (theme === 'midnight-sea' ? 'ring-1.5 ring-[#068FFF] ring-offset-1 ring-offset-black' : (theme === 'fresh-sky' ? 'ring-1.5 ring-[#30AFFF] ring-offset-1 ring-offset-white' : 'ring-1.5 ring-[#FFBE91] ring-offset-1 ring-offset-[#FFFCE1]')) : ''}`}
+                            )} ${isCurrentDay ? 'ring-2 ring-[#C8FF00] ring-offset-1 ring-offset-[#080A12]' : ''}`}
                             title={`${day.date}: ${day.count} habit(s) completed (${day.percentage}%)`}
                           >
-                            {/* Hover tooltip for quick preview */}
                             <span className="sr-only">
                               {day.date}: {day.count} completions
                             </span>
@@ -449,28 +405,18 @@ export default function CalendarView() {
               </div>
 
               {/* Heatmap Legend */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-slate-400 pt-2">
-                <span className="text-[11px] text-slate-500">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-[#A4AABC] pt-2">
+                <span className="text-[11px] text-[#70788D]">
                   Tip: Click any cell to inspect or log habit completions for that date.
                 </span>
                 <div className="flex items-center gap-1.5">
-                  <span className="text-[11px] text-slate-400">Less</span>
-                  <div className={`w-3 h-3 rounded-[3px] border ${
-                    theme === 'midnight-sea' ? 'bg-[#111111] border-[#2A2A2A]' : (theme === 'warm-horizon' ? 'bg-[#FFFFFF] border-[#E4D6C7]' : (theme === 'fresh-sky' ? 'bg-white border-[#C4F7CA]' : 'bg-[#FFFFFF] border-[#FFDDB0]'))
-                  }`} />
-                  <div className={`w-3 h-3 rounded-[3px] border ${
-                    theme === 'midnight-sea' ? 'bg-[#161616] border-[#2A2A2A]' : (theme === 'warm-horizon' ? 'bg-[#FAF5EE] border-[#E4D6C7]' : (theme === 'fresh-sky' ? 'bg-[#D8FFC5] border-[#bbf2a2]' : 'bg-[#FFFCE1] border-[#FFDDB0]'))
-                  }`} />
-                  <div className={`w-3 h-3 rounded-[3px] border ${
-                    theme === 'midnight-sea' ? 'bg-[#1e204a] border-[#4E4FEB]' : (theme === 'warm-horizon' ? 'bg-[#EEE2D3] border-[#E4D6C7]' : (theme === 'fresh-sky' ? 'bg-[#C4F7CA] border-[#9feeb0]' : 'bg-[#FFDDB0] border-[#FFBE91]'))
-                  }`} />
-                  <div className={`w-3 h-3 rounded-[3px] border ${
-                    theme === 'midnight-sea' ? 'bg-[#4E4FEB] border-[#4E4FEB]' : (theme === 'warm-horizon' ? 'bg-[#F2765E] border-[#DE5E46]' : (theme === 'fresh-sky' ? 'bg-[#92EEFF] border-[#65dcf2]' : 'bg-[#FFBE91] border-[#FFDDB0]'))
-                  }`} />
-                  <div className={`w-3 h-3 rounded-[3px] border ${
-                    theme === 'midnight-sea' ? 'bg-[#068FFF] border-[#068FFF]' : (theme === 'warm-horizon' ? 'bg-[#315B8C] border-[#24466F]' : (theme === 'fresh-sky' ? 'bg-[#30AFFF] border-[#1890df]' : 'bg-[#CFEBFF] border-[#b0dcff]'))
-                  }`} />
-                  <span className="text-[11px] text-slate-400">More</span>
+                  <span className="text-[11px] text-[#70788D]">Less</span>
+                  <div className="w-3 h-3 rounded-[3px] border bg-[#0D101B] border-[#1D2332]" />
+                  <div className="w-3 h-3 rounded-[3px] border bg-[#C8FF00]/20 border-[#C8FF00]/35" />
+                  <div className="w-3 h-3 rounded-[3px] border bg-[#C8FF00]/45 border-[#C8FF00]/55" />
+                  <div className="w-3 h-3 rounded-[3px] border bg-[#C8FF00]/75 border-[#C8FF00]/85" />
+                  <div className="w-3 h-3 rounded-[3px] border bg-[#C8FF00] border-[#C8FF00]" />
+                  <span className="text-[11px] text-[#70788D]">More</span>
                 </div>
               </div>
             </div>
@@ -478,18 +424,18 @@ export default function CalendarView() {
         </div>
 
         {/* SECTION 2: Monthly Calendar View */}
-        <div className="bg-slate-900/80 border border-slate-800/90 rounded-2xl sm:rounded-3xl p-3.5 sm:p-6 lg:p-7 shadow-xl space-y-5 sm:space-y-6">
+        <div className="bg-[#111522] border border-[#242A3A] rounded-[24px] p-3.5 sm:p-6 lg:p-7 shadow-xl space-y-5 sm:space-y-6">
           {/* Calendar Header with Navigation */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-indigo-400">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-[#C8FF00]">
                   Monthly Grid
                 </span>
-                <span className="text-xs text-slate-500">•</span>
-                <span className="text-xs text-slate-400">Day-by-Day Breakdown</span>
+                <span className="text-xs text-[#70788D]">•</span>
+                <span className="text-xs text-[#A4AABC]">Day-by-Day Breakdown</span>
               </div>
-              <h2 className="text-xl sm:text-2xl font-bold text-white mt-0.5 flex items-center gap-2">
+              <h2 className="text-xl sm:text-2xl font-bold text-[#F5F7FC] mt-0.5 flex items-center gap-2">
                 <span>{calendarData ? `${calendarData.monthName} ${calendarData.year}` : 'Loading...'}</span>
               </h2>
             </div>
@@ -498,14 +444,14 @@ export default function CalendarView() {
             <div className="flex items-center gap-2 self-start sm:self-auto">
               <button
                 onClick={handlePrevMonth}
-                className="p-2 rounded-xl bg-slate-950/80 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white transition-colors"
+                className="p-2 rounded-xl bg-[#0D101B] border border-[#242A3A] hover:border-[#C8FF00]/50 text-[#A4AABC] hover:text-[#F5F7FC] transition-colors"
                 title="Previous Month"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
               <button
                 onClick={handleNextMonth}
-                className="p-2 rounded-xl bg-slate-950/80 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white transition-colors"
+                className="p-2 rounded-xl bg-[#0D101B] border border-[#242A3A] hover:border-[#C8FF00]/50 text-[#A4AABC] hover:text-[#F5F7FC] transition-colors"
                 title="Next Month"
               >
                 <ChevronRight className="w-5 h-5" />
@@ -516,16 +462,16 @@ export default function CalendarView() {
           {/* Calendar Status Summary Tags */}
           {calendarData && (
             <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-[11px] sm:text-xs">
-              <span className="px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">
+              <span className="px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-[#C8FF00]/15 text-[#C8FF00] border border-[#C8FF00]/30 font-medium">
                 {calendarData.fullDaysCount} Full Days (100%)
               </span>
-              <span className="px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 font-medium">
+              <span className="px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-[#8B5CF6]/15 text-[#8B5CF6] border border-[#8B5CF6]/30 font-medium">
                 {calendarData.partialDaysCount} Partial Days
               </span>
-              <span className="px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-slate-800 text-slate-400 font-medium">
+              <span className="px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-[#151A29] text-[#70788D] border border-[#242A3A] font-medium">
                 {calendarData.missedDaysCount} Missed Days
               </span>
-              <span className="px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-slate-800 text-slate-300 font-medium">
+              <span className="px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-[#151A29] text-[#F5F7FC] border border-[#242A3A] font-medium">
                 {calendarData.totalCompletionsInMonth} Completions Logged
               </span>
             </div>
@@ -534,15 +480,15 @@ export default function CalendarView() {
           {/* Calendar Grid Table */}
           {calendarLoading ? (
             <div className="py-20 flex flex-col items-center justify-center gap-2">
-              <Loader2 className="w-8 h-8 text-indigo-400 animate-spin" />
-              <p className="text-xs text-slate-400">Loading month data...</p>
+              <Loader2 className="w-8 h-8 text-[#C8FF00] animate-spin" />
+              <p className="text-xs text-[#A4AABC]">Loading month data...</p>
             </div>
           ) : !calendarData ? (
-            <div className="p-8 text-center text-slate-400">No data available</div>
+            <div className="p-8 text-center text-[#A4AABC]">No data available</div>
           ) : (
             <div className="space-y-2">
               {/* Weekday Labels */}
-              <div className="grid grid-cols-7 gap-1 sm:gap-2 text-center text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider py-1 border-b border-slate-800">
+              <div className="grid grid-cols-7 gap-1 sm:gap-2 text-center text-[10px] sm:text-xs font-bold text-[#70788D] uppercase tracking-wider py-1 border-b border-[#242A3A]">
                 {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((d) => (
                   <div key={d}>{d}</div>
                 ))}
@@ -554,7 +500,7 @@ export default function CalendarView() {
                 {Array.from({ length: calendarData.firstDayOfWeek }).map((_, i) => (
                   <div
                     key={`pad-${i}`}
-                    className="min-h-[50px] sm:min-h-[75px] md:min-h-[90px] rounded-xl sm:rounded-2xl bg-slate-950/30 border border-slate-900/60 opacity-20 pointer-events-none"
+                    className="min-h-[50px] sm:min-h-[75px] md:min-h-[90px] rounded-xl sm:rounded-2xl bg-[#0D101B]/40 border border-[#1D2332] opacity-30 pointer-events-none"
                   />
                 ))}
 
@@ -563,88 +509,58 @@ export default function CalendarView() {
                   const isToday = day.isToday;
                   const isFuture = day.isFuture;
 
-                  let cardBg = theme === 'midnight-sea'
-                    ? 'bg-[#111111] border-[#2A2A2A] hover:border-[#068FFF] text-[#EEEEEE]'
-                    : theme === 'warm-horizon'
-                      ? 'bg-[#FFFFFF] border-[#E4D6C7] hover:border-[#F2765E] text-[#413333]'
-                      : theme === 'fresh-sky'
-                        ? 'bg-white border-[#C4F7CA] hover:border-[#92EEFF] text-[#0f172a]'
-                        : 'bg-[#FFFFFF] border-[#FFDDB0] hover:border-[#FFBE91] text-[#1c1917]';
+                  let cardBg = 'bg-[#0D101B] border-[#242A3A] hover:border-[#C8FF00]/50 text-[#F5F7FC]';
                   let statusBadge = null;
 
                   if (day.status === 'full') {
-                    cardBg = theme === 'midnight-sea'
-                      ? 'bg-[#111111] border-[#068FFF] hover:border-[#068FFF] shadow-sm shadow-blue-500/20 text-[#EEEEEE]'
-                      : theme === 'warm-horizon'
-                        ? 'bg-[#FDECE8] border-[#F2765E] hover:border-[#DE5E46] shadow-sm shadow-orange-500/10 text-[#413333]'
-                        : theme === 'fresh-sky'
-                          ? 'bg-[#C4F7CA] border-[#9feeb0] hover:border-[#30AFFF] shadow-sm shadow-emerald-500/10 text-[#0f172a]'
-                          : 'bg-[#FFDDB0] border-[#FFBE91] hover:border-[#FFBE91] shadow-sm shadow-orange-500/10 text-[#1c1917]';
+                    cardBg = 'bg-[#151A29] border-[#C8FF00] shadow-[0_0_12px_rgba(200,255,0,0.12)] text-[#F5F7FC]';
                     statusBadge = (
-                      <span className={`text-[10px] font-bold flex items-center gap-0.5 ${theme === 'midnight-sea' ? 'text-[#068FFF]' : (theme === 'warm-horizon' ? 'text-[#413333]' : (theme === 'fresh-sky' ? 'text-[#0f172a]' : 'text-[#1c1917]'))}`}>
-                        <CheckCircle2 className={`w-3 h-3 ${theme === 'midnight-sea' ? 'text-[#068FFF]' : (theme === 'warm-horizon' ? 'text-[#F2765E]' : (theme === 'fresh-sky' ? 'text-[#059669]' : 'text-[#d97746]'))}`} />
+                      <span className="text-[10px] font-bold flex items-center gap-0.5 text-[#C8FF00]">
+                        <CheckCircle2 className="w-3 h-3 text-[#C8FF00]" />
                         <span>{day.completedCount}/{day.totalHabits}</span>
                       </span>
                     );
                   } else if (day.status === 'partial') {
-                    cardBg = theme === 'midnight-sea'
-                      ? 'bg-[#161616] border-[#4E4FEB]/60 hover:border-[#068FFF] text-[#EEEEEE]'
-                      : theme === 'warm-horizon'
-                        ? 'bg-[#EBF2FA] border-[#315B8C]/40 hover:border-[#315B8C] text-[#315B8C]'
-                        : theme === 'fresh-sky'
-                          ? 'bg-[#92EEFF]/30 border-[#92EEFF] hover:border-[#30AFFF] text-[#0f172a]'
-                          : 'bg-[#FFFDF5] border-[#FFDDB0] hover:border-[#FFBE91] text-[#1c1917]';
+                    cardBg = 'bg-[#151A29] border-[#8B5CF6]/50 hover:border-[#8B5CF6] text-[#F5F7FC]';
                     statusBadge = (
-                      <span className={`text-[10px] font-semibold ${theme === 'midnight-sea' ? 'text-[#068FFF]' : (theme === 'warm-horizon' ? 'text-[#315B8C]' : (theme === 'fresh-sky' ? 'text-[#0284c7]' : 'text-[#d97746]'))}`}>
+                      <span className="text-[10px] font-semibold text-[#8B5CF6]">
                         {day.completedCount}/{day.totalHabits}
                       </span>
                     );
                   } else if (day.status === 'missed') {
-                    cardBg = theme === 'midnight-sea'
-                      ? 'bg-[#111111] border-[#2A2A2A] text-[#888888]'
-                      : theme === 'warm-horizon'
-                        ? 'bg-[#FAF5EE] border-[#E4D6C7]/60 text-[#8C7E78]'
-                        : theme === 'fresh-sky'
-                          ? 'bg-[#FAFDFF] border-[#C4F7CA]/60 text-slate-400'
-                          : 'bg-[#FFFCE1] border-[#FFDDB0]/70 text-[#57534e]';
+                    cardBg = 'bg-[#0D101B] border-[#242A3A] text-[#70788D]';
                     statusBadge = (
-                      <span className={`text-[10px] font-medium ${theme === 'midnight-sea' ? 'text-[#888888]' : (theme === 'warm-horizon' ? 'text-[#8C7E78]' : (theme === 'fresh-sky' ? 'text-slate-400' : 'text-[#57534e]'))}`}>
+                      <span className="text-[10px] font-medium text-[#70788D]">
                         0/{day.totalHabits}
                       </span>
                     );
                   }
 
                   if (isToday) {
-                    cardBg += theme === 'midnight-sea'
-                      ? ' ring-2 ring-[#068FFF] ring-offset-2 ring-offset-black'
-                      : theme === 'warm-horizon'
-                        ? ' ring-2 ring-[#F2765E] ring-offset-2 ring-offset-[#F5EBDD]'
-                        : theme === 'fresh-sky'
-                          ? ' ring-2 ring-[#30AFFF] ring-offset-2 ring-offset-white'
-                          : ' ring-2 ring-[#FFBE91] ring-offset-2 ring-offset-[#FFFCE1]';
+                    cardBg += ' ring-2 ring-[#C8FF00] ring-offset-2 ring-offset-[#080A12]';
                   }
 
                   return (
                     <button
                       key={day.date}
                       onClick={() => openDayInspector(day.date)}
-                      className={`min-h-[50px] sm:min-h-[75px] md:min-h-[90px] p-1 sm:p-2.5 rounded-xl sm:rounded-2xl border transition-all text-left flex flex-col justify-between group cursor-pointer ${cardBg} ${isFuture ? 'opacity-60 hover:opacity-90' : ''
+                      className={`min-h-[50px] sm:min-h-[75px] md:min-h-[90px] p-1 sm:p-2.5 rounded-xl sm:rounded-2xl border transition-all text-left flex flex-col justify-between group cursor-pointer ${cardBg} ${isFuture ? 'opacity-50 hover:opacity-80' : ''
                         }`}
                     >
                       <div className="flex items-center justify-between w-full">
                         <span
                           className={`text-xs sm:text-base font-extrabold ${isToday
-                              ? (theme === 'midnight-sea' ? 'text-white bg-[#068FFF] px-1.5 py-0.5 rounded-lg font-black' : (theme === 'warm-horizon' ? 'text-white bg-[#F2765E] px-1.5 py-0.5 rounded-lg font-black' : (theme === 'fresh-sky' ? 'text-white bg-[#30AFFF] px-1.5 py-0.5 rounded-lg font-black' : 'text-[#1c1917] bg-[#FFBE91] px-1.5 py-0.5 rounded-lg font-black')))
+                              ? 'text-[#080A12] bg-[#C8FF00] px-1.5 py-0.5 rounded-lg font-black'
                               : isFuture
-                                ? (theme === 'midnight-sea' ? 'text-[#888888]' : (theme === 'warm-horizon' ? 'text-[#8C7E78]' : (theme === 'fresh-sky' ? 'text-slate-400' : 'text-[#78716c]')))
-                                : (theme === 'midnight-sea' ? 'text-[#EEEEEE]' : (theme === 'warm-horizon' ? 'text-[#413333]' : (theme === 'fresh-sky' ? 'text-[#0f172a]' : 'text-[#1c1917]')))
+                                ? 'text-[#70788D]'
+                                : 'text-[#F5F7FC]'
                             }`}
                         >
                           {day.day}
                         </span>
 
                         {isToday && (
-                          <span className={`hidden sm:inline-block text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded-full ${theme === 'midnight-sea' ? 'bg-[#068FFF] text-white font-bold' : (theme === 'warm-horizon' ? 'bg-[#F2765E] text-white font-bold' : (theme === 'fresh-sky' ? 'bg-[#30AFFF] text-white font-bold' : 'bg-[#FFBE91] text-[#1c1917] font-bold'))}`}>
+                          <span className="hidden sm:inline-block text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded-full bg-[#C8FF00] text-[#080A12]">
                             Today
                           </span>
                         )}
@@ -653,7 +569,7 @@ export default function CalendarView() {
                       <div className="w-full flex items-center justify-between mt-2">
                         {statusBadge}
                         {day.completionRate > 0 && (
-                          <span className="text-[10px] font-bold text-slate-400">
+                          <span className="text-[10px] font-bold text-[#A4AABC]">
                             {day.completionRate}%
                           </span>
                         )}
@@ -669,25 +585,25 @@ export default function CalendarView() {
 
       {/* SECTION 3: Day Inspector Modal */}
       {selectedDate && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-lg shadow-2xl p-6 sm:p-7 relative overflow-hidden space-y-6">
-            <div className="absolute top-0 right-0 w-48 h-48 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none"></div>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#080A12]/80 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="bg-[#0D101B] border border-[#242A3A] rounded-[24px] w-full max-w-lg shadow-2xl p-6 sm:p-7 relative overflow-hidden space-y-6">
+            <div className="absolute top-0 right-0 w-48 h-48 bg-[#C8FF00]/10 rounded-full blur-2xl pointer-events-none"></div>
 
             {/* Modal Header */}
             <div className="flex items-start justify-between relative z-10">
               <div>
                 <div className="flex items-center gap-2">
-                  <CalendarIcon className="w-4 h-4 text-emerald-400" />
-                  <span className="text-xs uppercase font-bold text-slate-400 tracking-wider">
+                  <CalendarIcon className="w-4 h-4 text-[#C8FF00]" />
+                  <span className="text-xs uppercase font-bold text-[#A4AABC] tracking-wider">
                     Day Details
                   </span>
                   {dayDetails?.isToday && (
-                    <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
+                    <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-[#C8FF00]/20 text-[#C8FF00] border border-[#C8FF00]/30">
                       Today
                     </span>
                   )}
                 </div>
-                <h3 className="text-xl sm:text-2xl font-black text-white mt-1">
+                <h3 className="text-xl sm:text-2xl font-black text-[#F5F7FC] mt-1">
                   {new Date(selectedDate + 'T00:00:00').toLocaleDateString('en-US', {
                     weekday: 'long',
                     month: 'long',
@@ -699,7 +615,7 @@ export default function CalendarView() {
 
               <button
                 onClick={closeDayInspector}
-                className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                className="p-1.5 rounded-xl text-[#A4AABC] hover:text-[#F5F7FC] hover:bg-[#151A29] transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -708,28 +624,28 @@ export default function CalendarView() {
             {/* Modal Body */}
             {dayLoading ? (
               <div className="py-12 flex flex-col items-center justify-center gap-2">
-                <Loader2 className="w-8 h-8 text-emerald-400 animate-spin" />
-                <p className="text-xs text-slate-400">Loading day completions...</p>
+                <Loader2 className="w-8 h-8 text-[#C8FF00] animate-spin" />
+                <p className="text-xs text-[#A4AABC]">Loading day completions...</p>
               </div>
             ) : !dayDetails ? (
-              <p className="text-sm text-slate-400">Failed to load day details.</p>
+              <p className="text-sm text-[#A4AABC]">Failed to load day details.</p>
             ) : (
               <div className="space-y-5 relative z-10">
                 {/* Day Summary Progress Card */}
-                <div className="bg-slate-950/80 border border-slate-800 rounded-2xl p-4 flex items-center justify-between">
+                <div className="bg-[#151A29] border border-[#242A3A] rounded-2xl p-4 flex items-center justify-between">
                   <div>
-                    <span className="text-xs text-slate-400">Completion Score</span>
-                    <p className="text-2xl font-extrabold text-white mt-0.5">
+                    <span className="text-xs text-[#A4AABC]">Completion Score</span>
+                    <p className="text-2xl font-extrabold text-[#F5F7FC] mt-0.5">
                       {dayDetails.completedCount} / {dayDetails.totalHabits}{' '}
-                      <span className="text-xs text-emerald-400 font-bold">
+                      <span className="text-xs text-[#C8FF00] font-bold">
                         ({dayDetails.percentage}%)
                       </span>
                     </p>
                   </div>
 
-                  <div className="w-28 bg-slate-900 rounded-full h-3.5 overflow-hidden p-0.5 border border-slate-800">
+                  <div className="w-28 bg-[#0D101B] rounded-full h-3.5 overflow-hidden p-0.5 border border-[#242A3A]">
                     <div
-                      className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-emerald-400 transition-all duration-500"
+                      className="h-full rounded-full bg-gradient-to-r from-[#8B5CF6] to-[#C8FF00] transition-all duration-500"
                       style={{ width: `${dayDetails.percentage}%` }}
                     />
                   </div>
@@ -737,12 +653,12 @@ export default function CalendarView() {
 
                 {/* List of Habits for the Day */}
                 <div className="space-y-2.5 max-h-80 overflow-y-auto pr-1 scrollbar-thin">
-                  <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                  <p className="text-xs font-bold uppercase tracking-wider text-[#A4AABC]">
                     Habits Logged on this Date:
                   </p>
 
                   {dayDetails.habits.length === 0 ? (
-                    <p className="text-xs text-slate-500 py-4 text-center">
+                    <p className="text-xs text-[#70788D] py-4 text-center">
                       No active habits found for this period.
                     </p>
                   ) : (
@@ -754,8 +670,8 @@ export default function CalendarView() {
                         <div
                           key={h.id}
                           className={`p-3 sm:p-3.5 rounded-2xl border transition-all flex items-center justify-between gap-3 ${h.isCompleted
-                              ? 'bg-emerald-950/20 border-emerald-500/30'
-                              : 'bg-slate-950/50 border-slate-800/80'
+                              ? 'bg-[#C8FF00]/10 border-[#C8FF00]/30'
+                              : 'bg-[#151A29] border-[#242A3A]'
                             }`}
                         >
                           <div className="flex items-center gap-3 min-w-0">
@@ -765,15 +681,15 @@ export default function CalendarView() {
                                 onClick={() => handleToggleHabitInModal(h)}
                                 disabled={isToggling}
                                 className={`w-8 h-8 rounded-xl flex items-center justify-center transition-all ${h.isCompleted
-                                    ? 'bg-emerald-500 text-white shadow-sm shadow-emerald-500/40'
-                                    : 'bg-slate-800 border border-slate-700 text-slate-400 hover:text-white'
+                                    ? 'bg-[#C8FF00] text-[#080A12] shadow-sm shadow-[#C8FF00]/40 font-bold'
+                                    : 'bg-[#0D101B] border border-[#242A3A] text-[#70788D] hover:text-[#F5F7FC]'
                                   }`}
                                 title={h.isCompleted ? 'Click to undo' : 'Click to complete'}
                               >
                                 {isToggling ? (
-                                  <Loader2 className="w-4 h-4 animate-spin" />
+                                  <Loader2 className="w-4 h-4 animate-spin text-[#080A12]" />
                                 ) : h.isCompleted ? (
-                                  <CheckCircle2 className="w-4.5 h-4.5" />
+                                  <CheckCircle2 className="w-4.5 h-4.5 text-[#080A12]" />
                                 ) : (
                                   <Circle className="w-4.5 h-4.5" />
                                 )}
@@ -781,8 +697,8 @@ export default function CalendarView() {
                             ) : (
                               <div
                                 className={`w-8 h-8 rounded-xl flex items-center justify-center ${h.isCompleted
-                                    ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                                    : 'bg-slate-800/60 text-slate-500 border border-slate-800'
+                                    ? 'bg-[#C8FF00]/20 text-[#C8FF00] border border-[#C8FF00]/30'
+                                    : 'bg-[#0D101B] text-[#70788D] border border-[#242A3A]'
                                   }`}
                               >
                                 {h.isCompleted ? (
@@ -795,12 +711,12 @@ export default function CalendarView() {
 
                             <div className="min-w-0">
                               <p
-                                className={`text-sm font-bold truncate ${h.isCompleted ? 'text-white' : 'text-slate-300'
+                                className={`text-sm font-bold truncate ${h.isCompleted ? 'text-[#F5F7FC]' : 'text-[#A4AABC]'
                                   }`}
                               >
                                 {h.name}
                               </p>
-                              <div className="flex items-center gap-2 text-[11px] text-slate-400">
+                              <div className="flex items-center gap-2 text-[11px] text-[#70788D]">
                                 <span
                                   className="font-semibold uppercase tracking-wider"
                                   style={{ color: h.color }}
@@ -808,7 +724,7 @@ export default function CalendarView() {
                                   {h.category}
                                 </span>
                                 {h.completion?.note && (
-                                  <span className="text-slate-500 italic truncate max-w-[120px]">
+                                  <span className="text-[#70788D] italic truncate max-w-[120px]">
                                     "{h.completion.note}"
                                   </span>
                                 )}
@@ -818,11 +734,11 @@ export default function CalendarView() {
 
                           <div className="text-right shrink-0">
                             {h.isCompleted ? (
-                              <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
+                              <span className="text-[10px] font-bold text-[#C8FF00] bg-[#C8FF00]/15 border border-[#C8FF00]/30 px-2 py-0.5 rounded-full">
                                 Completed
                               </span>
                             ) : (
-                              <span className="text-[10px] text-slate-500 bg-slate-900 border border-slate-800 px-2 py-0.5 rounded-full">
+                              <span className="text-[10px] text-[#70788D] bg-[#0D101B] border border-[#242A3A] px-2 py-0.5 rounded-full">
                                 {dayDetails.isPast ? 'Missed' : 'Pending'}
                               </span>
                             )}
@@ -833,11 +749,11 @@ export default function CalendarView() {
                   )}
                 </div>
 
-                <div className="pt-2 flex items-center justify-between text-xs text-slate-500">
+                <div className="pt-2 flex items-center justify-between text-xs text-[#70788D]">
                   <span>{dayDetails.isToday ? 'Live changes update your streaks instantly.' : 'Past records are archived for historical tracking.'}</span>
                   <button
                     onClick={closeDayInspector}
-                    className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl font-semibold transition-colors"
+                    className="px-4 py-2 bg-[#C8FF00] hover:bg-[#B4E600] text-[#080A12] rounded-xl font-bold transition-colors"
                   >
                     Done
                   </button>

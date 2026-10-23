@@ -303,7 +303,7 @@ export default function Register() {
                           themeVisual.focusRingClass
                         } ${
                           themeVisual.isDark
-                            ? 'bg-slate-950/70 border border-slate-700/80 text-white placeholder-slate-500'
+                            ? 'bg-[#0D101B] border border-[#242A3A] text-[#F5F7FC] placeholder-[#70788D]'
                             : 'bg-white border border-slate-300/80 text-slate-900 placeholder-slate-400 shadow-xs'
                         }`}
                       />
@@ -443,7 +443,7 @@ export default function Register() {
                         transformStyle: 'preserve-3d',
                         transform: 'translateZ(35px)',
                       }}
-                      className={`w-full py-3 px-4 rounded-xl !text-white text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer relative overflow-hidden group shadow-md ${themeVisual.buttonGradientClass}`}
+                      className={`w-full py-3 px-4 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer relative overflow-hidden group shadow-md ${themeVisual.buttonGradientClass}`}
                     >
                       {/* Button ambient shimmer */}
                       <div className="absolute inset-0 w-1/2 h-full bg-white/15 skew-x-12 -translate-x-full group-hover:translate-x-[300%] transition-transform duration-1000 ease-out pointer-events-none" />

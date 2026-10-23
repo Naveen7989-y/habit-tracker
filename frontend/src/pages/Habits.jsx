@@ -77,13 +77,13 @@ const ICONS = {
 };
 
 const COLOR_PALETTE = [
+  '#C8FF00', // Neon Lime
+  '#8B5CF6', // Electric Violet
+  '#25D9E6', // Cyber Cyan
+  '#39E58C', // Emerald Green
+  '#FF5C67', // Coral Red
+  '#FFBF47', // Amber Gold
   '#6366f1', // Indigo
-  '#06b6d4', // Cyan
-  '#ef4444', // Red
-  '#8b5cf6', // Violet
-  '#3b82f6', // Blue
-  '#10b981', // Emerald
-  '#f59e0b', // Amber
   '#ec4899', // Pink
 ];
 
@@ -312,21 +312,21 @@ export default function Habits() {
         {/* Top Header & Metrics */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20 mb-2">
-              <Flame className="w-3.5 h-3.5" />
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-[#C8FF00]/15 text-[#C8FF00] border border-[#C8FF00]/30 mb-2">
+              <Flame className="w-3.5 h-3.5 text-[#C8FF00]" />
               <span>Phase 6 Streak Engine Active</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-[#F5F7FC]">
               Habits & Streak Engine
             </h1>
-            <p className="text-xs sm:text-sm text-slate-400 mt-1">
+            <p className="text-xs sm:text-sm text-[#70788D] mt-1">
               Backend streak calculations tracking current streaks, best streaks, and completion rates.
             </p>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={handleOpenCreateModal}
-              className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold shadow-lg shadow-indigo-600/25 flex items-center gap-2 transition-all duration-200"
+              className="px-4 py-2 rounded-xl bg-[#C8FF00] hover:bg-[#B4E600] text-[#080A12] text-xs sm:text-sm font-bold shadow-[0_0_12px_rgba(200,255,0,0.25)] flex items-center gap-2 transition-all duration-150 active:scale-95"
             >
               <Plus className="w-4 h-4" />
               <span>Create Habit</span>
@@ -337,87 +337,87 @@ export default function Habits() {
         {/* High-Impact Streak Summary Cards */}
         {streakSummary && (
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
-            <div className="bg-slate-900/70 border border-slate-800 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5 relative overflow-hidden">
+            <div className="bg-[#111522] border border-[#242A3A] rounded-[22px] p-3.5 sm:p-4 md:p-5 relative overflow-hidden">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                <span className="text-[10px] sm:text-xs font-semibold text-[#70788D] uppercase tracking-wider">
                   Current Best
                 </span>
-                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 shrink-0">
+                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-[#C8FF00]/15 border border-[#C8FF00]/30 flex items-center justify-center text-[#C8FF00] shrink-0">
                   <Flame className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </div>
               </div>
-              <p className="text-xl sm:text-2xl md:text-3xl font-extrabold text-amber-400 mt-1.5 sm:mt-2">
+              <p className="text-xl sm:text-2xl md:text-3xl font-black text-[#C8FF00] mt-1.5 sm:mt-2">
                 {streakSummary.bestCurrentStreak}{' '}
-                <span className="text-[10px] sm:text-xs font-normal text-slate-400">days</span>
+                <span className="text-[10px] sm:text-xs font-normal text-[#70788D]">days</span>
               </p>
-              <p className="text-[10px] sm:text-[11px] text-slate-500 mt-0.5 sm:mt-1 truncate">Active momentum</p>
+              <p className="text-[10px] sm:text-[11px] text-[#70788D] mt-0.5 sm:mt-1 truncate">Active momentum</p>
             </div>
 
-            <div className="bg-slate-900/70 border border-slate-800 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5 relative overflow-hidden">
+            <div className="bg-[#111522] border border-[#242A3A] rounded-[22px] p-3.5 sm:p-4 md:p-5 relative overflow-hidden">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                <span className="text-[10px] sm:text-xs font-semibold text-[#70788D] uppercase tracking-wider">
                   Longest Ever
                 </span>
-                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 shrink-0">
+                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-[#8B5CF6]/15 border border-[#8B5CF6]/30 flex items-center justify-center text-[#8B5CF6] shrink-0">
                   <Trophy className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </div>
               </div>
-              <p className="text-xl sm:text-2xl md:text-3xl font-extrabold text-indigo-400 mt-1.5 sm:mt-2">
+              <p className="text-xl sm:text-2xl md:text-3xl font-black text-[#8B5CF6] mt-1.5 sm:mt-2">
                 {streakSummary.bestEverStreak}{' '}
-                <span className="text-[10px] sm:text-xs font-normal text-slate-400">days</span>
+                <span className="text-[10px] sm:text-xs font-normal text-[#70788D]">days</span>
               </p>
-              <p className="text-[10px] sm:text-[11px] text-slate-500 mt-0.5 sm:mt-1 truncate">All-time record</p>
+              <p className="text-[10px] sm:text-[11px] text-[#70788D] mt-0.5 sm:mt-1 truncate">All-time record</p>
             </div>
 
-            <div className="bg-slate-900/70 border border-slate-800 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5 relative overflow-hidden">
+            <div className="bg-[#111522] border border-[#242A3A] rounded-[22px] p-3.5 sm:p-4 md:p-5 relative overflow-hidden">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                <span className="text-[10px] sm:text-xs font-semibold text-[#70788D] uppercase tracking-wider">
                   Success Rate
                 </span>
-                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
+                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-[#39E58C]/15 border border-[#39E58C]/30 flex items-center justify-center text-[#39E58C] shrink-0">
                   <Percent className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </div>
               </div>
-              <p className="text-xl sm:text-2xl md:text-3xl font-extrabold text-emerald-400 mt-1.5 sm:mt-2">
+              <p className="text-xl sm:text-2xl md:text-3xl font-black text-[#39E58C] mt-1.5 sm:mt-2">
                 {streakSummary.averageCompletionRate}%
               </p>
-              <p className="text-[10px] sm:text-[11px] text-slate-500 mt-0.5 sm:mt-1 truncate">Avg consistency</p>
+              <p className="text-[10px] sm:text-[11px] text-[#70788D] mt-0.5 sm:mt-1 truncate">Avg consistency</p>
             </div>
 
-            <div className="bg-slate-900/70 border border-slate-800 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5 relative overflow-hidden">
+            <div className="bg-[#111522] border border-[#242A3A] rounded-[22px] p-3.5 sm:p-4 md:p-5 relative overflow-hidden">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                <span className="text-[10px] sm:text-xs font-semibold text-[#70788D] uppercase tracking-wider">
                   Total Completed
                 </span>
-                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center text-violet-400 shrink-0">
+                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-[#25D9E6]/15 border border-[#25D9E6]/30 flex items-center justify-center text-[#25D9E6] shrink-0">
                   <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </div>
               </div>
-              <p className="text-xl sm:text-2xl md:text-3xl font-extrabold text-violet-400 mt-1.5 sm:mt-2">
+              <p className="text-xl sm:text-2xl md:text-3xl font-black text-[#25D9E6] mt-1.5 sm:mt-2">
                 {streakSummary.totalCompletions}
               </p>
-              <p className="text-[10px] sm:text-[11px] text-slate-500 mt-0.5 sm:mt-1 truncate">Logged check-ins</p>
+              <p className="text-[10px] sm:text-[11px] text-[#70788D] mt-0.5 sm:mt-1 truncate">Logged check-ins</p>
             </div>
           </div>
         )}
 
         {/* Search, Filter & Sort Controls */}
-        <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-4 space-y-4">
+        <div className="bg-[#111522] border border-[#242A3A] rounded-[22px] p-4 space-y-3.5">
           <div className="flex flex-col md:flex-row items-center gap-3">
             {/* Search Input */}
             <div className="relative flex-1 w-full">
-              <Search className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <Search className="w-4 h-4 text-[#70788D] absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search habits by name or description..."
-                className="w-full pl-10 pr-4 py-2 bg-slate-950/70 border border-slate-700/80 rounded-xl text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                className="w-full pl-10 pr-4 py-2 bg-[#0D101B] border border-[#1D2332] rounded-xl text-[#F5F7FC] placeholder-[#70788D] text-xs sm:text-sm focus:outline-none focus:border-[#C8FF00] focus:ring-1 focus:ring-[#C8FF00]/50 transition-all"
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#70788D] hover:text-[#F5F7FC]"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -425,15 +425,16 @@ export default function Habits() {
             </div>
 
             {/* Status Tabs */}
-            <div className="flex items-center bg-slate-950/80 border border-slate-800 rounded-xl p-1 shrink-0 w-full md:w-auto">
+            <div className="flex items-center bg-[#0D101B] border border-[#1D2332] rounded-xl p-1 shrink-0 w-full md:w-auto">
               {['active', 'archived', 'all'].map((status) => (
                 <button
                   key={status}
                   onClick={() => setSelectedStatus(status)}
-                  className={`flex-1 md:flex-none px-3.5 py-1.5 rounded-lg text-xs font-semibold capitalize transition-all ${selectedStatus === status
-                      ? 'bg-indigo-600 text-white shadow'
-                      : 'text-slate-400 hover:text-white'
-                    }`}
+                  className={`flex-1 md:flex-none px-3.5 py-1.5 rounded-lg text-xs font-semibold capitalize transition-all ${
+                    selectedStatus === status
+                      ? 'bg-[#C8FF00] text-[#080A12] font-bold shadow'
+                      : 'text-[#A4AABC] hover:text-[#F5F7FC]'
+                  }`}
                 >
                   {status}
                 </button>
@@ -445,28 +446,29 @@ export default function Habits() {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="w-full md:w-auto px-3.5 py-2 bg-slate-950/70 border border-slate-700/80 rounded-xl text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all appearance-none pr-8 cursor-pointer"
+                className="w-full md:w-auto px-3.5 py-2 bg-[#0D101B] border border-[#1D2332] rounded-xl text-[#F5F7FC] text-xs font-semibold focus:outline-none focus:border-[#C8FF00] transition-all appearance-none pr-8 cursor-pointer"
               >
-                <option value="newest">Sort: Newest</option>
-                <option value="oldest">Sort: Oldest</option>
-                <option value="name_asc">Sort: Name (A-Z)</option>
-                <option value="name_desc">Sort: Name (Z-A)</option>
-                <option value="targetCount">Sort: Target Count</option>
+                <option value="newest" className="bg-[#0D101B] text-[#F5F7FC]">Sort: Newest</option>
+                <option value="oldest" className="bg-[#0D101B] text-[#F5F7FC]">Sort: Oldest</option>
+                <option value="name_asc" className="bg-[#0D101B] text-[#F5F7FC]">Sort: Name (A-Z)</option>
+                <option value="name_desc" className="bg-[#0D101B] text-[#F5F7FC]">Sort: Name (Z-A)</option>
+                <option value="targetCount" className="bg-[#0D101B] text-[#F5F7FC]">Sort: Target Count</option>
               </select>
-              <ArrowUpDown className="w-3.5 h-3.5 text-slate-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <ArrowUpDown className="w-3.5 h-3.5 text-[#70788D] absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
           </div>
 
           {/* Category Filter Pills */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 pt-1 no-scrollbar">
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 pt-1 scrollbar-none">
             {CATEGORIES.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                className={`px-3 py-1 rounded-lg text-xs font-medium shrink-0 transition-all ${selectedCategory === cat
-                    ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 font-semibold'
-                    : 'bg-slate-950/50 text-slate-400 border border-slate-800/80 hover:text-white hover:border-slate-700'
-                  }`}
+                className={`px-3 py-1 rounded-xl text-xs font-semibold shrink-0 transition-all ${
+                  selectedCategory === cat
+                    ? 'bg-[#C8FF00]/15 text-[#C8FF00] border border-[#C8FF00]/40 font-bold'
+                    : 'bg-[#0D101B] text-[#A4AABC] border border-[#1D2332] hover:text-[#F5F7FC] hover:border-[#242A3A]'
+                }`}
               >
                 {cat}
               </button>
@@ -477,28 +479,28 @@ export default function Habits() {
         {/* Habit Card Grid */}
         {loading ? (
           <div className="py-20 flex flex-col items-center justify-center gap-3">
-            <Loader2 className="w-8 h-8 text-indigo-500 animate-spin" />
-            <p className="text-sm text-slate-400">Loading habits...</p>
+            <Loader2 className="w-8 h-8 text-[#C8FF00] animate-spin" />
+            <p className="text-xs font-semibold text-[#70788D]">Loading habits...</p>
           </div>
         ) : error ? (
-          <div className="p-8 text-center bg-red-500/10 border border-red-500/20 rounded-2xl text-red-400">
+          <div className="p-8 text-center bg-[#FF5C67]/10 border border-[#FF5C67]/20 rounded-2xl text-[#FF5C67]">
             <AlertCircle className="w-6 h-6 mx-auto mb-2" />
-            <p className="font-semibold">{error}</p>
+            <p className="font-semibold text-xs sm:text-sm">{error}</p>
             <button
               onClick={fetchHabitsAndStreaks}
-              className="mt-3 px-3 py-1.5 bg-red-600/30 hover:bg-red-600/50 text-white rounded-lg text-xs font-semibold transition-colors"
+              className="mt-3 px-3 py-1.5 bg-[#FF5C67]/20 hover:bg-[#FF5C67]/30 text-white rounded-xl text-xs font-semibold transition-colors"
             >
               Retry
             </button>
           </div>
         ) : habits.length === 0 ? (
-          <div className="py-20 text-center bg-slate-900/40 border border-slate-800/80 rounded-3xl p-8 space-y-4">
-            <div className="w-16 h-16 rounded-3xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 mx-auto">
+          <div className="py-16 text-center bg-[#111522] border border-[#242A3A] rounded-[24px] p-8 space-y-4">
+            <div className="w-16 h-16 rounded-3xl bg-[#C8FF00]/15 border border-[#C8FF00]/30 flex items-center justify-center text-[#C8FF00] mx-auto">
               <Sparkles className="w-8 h-8" />
             </div>
             <div className="space-y-1">
-              <h3 className="text-lg font-bold text-white">No habits found</h3>
-              <p className="text-sm text-slate-400 max-w-sm mx-auto">
+              <h3 className="text-base sm:text-lg font-bold text-[#F5F7FC]">No habits found</h3>
+              <p className="text-xs text-[#70788D] max-w-sm mx-auto">
                 {searchQuery || selectedCategory !== 'All'
                   ? 'No habits match your active search or category filters.'
                   : 'Start your journey by creating your first daily or weekly habit.'}
@@ -506,7 +508,7 @@ export default function Habits() {
             </div>
             <button
               onClick={handleOpenCreateModal}
-              className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold shadow-lg shadow-indigo-600/25 transition-all"
+              className="px-4 py-2 rounded-xl bg-[#C8FF00] hover:bg-[#B4E600] text-[#080A12] text-xs sm:text-sm font-bold shadow-[0_0_12px_rgba(200,255,0,0.25)] transition-all"
             >
               Create Your First Habit
             </button>
@@ -520,12 +522,13 @@ export default function Habits() {
               return (
                 <div
                   key={habit.id}
-                  className={`relative bg-slate-900/80 border rounded-3xl p-5 transition-all duration-300 hover:shadow-xl hover:shadow-slate-950/50 flex flex-col justify-between ${habit.isArchived
-                      ? 'border-slate-800/60 opacity-60'
+                  className={`relative bg-[#111522] border rounded-[24px] p-5 transition-all duration-300 hover:shadow-xl hover:shadow-black/50 flex flex-col justify-between ${
+                    habit.isArchived
+                      ? 'border-[#242A3A]/60 opacity-60'
                       : habit.isCompletedToday
-                        ? 'border-emerald-500/40 bg-emerald-500/5 habit-card-completed'
-                        : 'border-slate-800 hover:border-slate-700'
-                    }`}
+                        ? 'border-[#39E58C]/40 bg-[#111522] shadow-[0_0_15px_rgba(57,229,140,0.1)]'
+                        : 'border-[#242A3A] hover:border-[#C8FF00]/40'
+                  }`}
                 >
                   {/* Top Bar: Icon, Category & Actions */}
                   <div>
@@ -554,12 +557,12 @@ export default function Habits() {
                               {habit.category}
                             </span>
                             {/* Streak Badge */}
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                              <Flame className="w-3 h-3 text-amber-400" />
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#C8FF00]/15 text-[#C8FF00] border border-[#C8FF00]/30">
+                              <Flame className="w-3 h-3 text-[#C8FF00]" />
                               <span>{habit.currentStreak}d streak</span>
                             </span>
                           </div>
-                          <h3 className="font-bold text-white text-base mt-1 line-clamp-1">
+                          <h3 className="font-bold text-[#F5F7FC] text-base mt-1 line-clamp-1">
                             {habit.name}
                           </h3>
                         </div>
@@ -571,50 +574,50 @@ export default function Habits() {
                           onClick={() =>
                             setActiveMenuId(activeMenuId === habit.id ? null : habit.id)
                           }
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                          className="p-1.5 rounded-lg text-[#70788D] hover:text-[#F5F7FC] hover:bg-[#151A29] transition-colors"
                         >
                           <MoreVertical className="w-4 h-4" />
                         </button>
 
                         {activeMenuId === habit.id && (
-                          <div className="absolute right-0 mt-1 w-44 bg-slate-900 border border-slate-700/80 rounded-xl shadow-2xl py-1 z-20 text-xs animate-scale-in">
+                          <div className="absolute right-0 mt-1 w-44 bg-[#0D101B] border border-[#242A3A] rounded-xl shadow-2xl py-1 z-20 text-xs animate-scale-in">
                             <button
                               onClick={() => handleOpenHistory(habit)}
-                              className="w-full px-3 py-2 text-left text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-2"
+                              className="w-full px-3 py-2 text-left text-[#A4AABC] hover:text-[#F5F7FC] hover:bg-[#151A29] flex items-center gap-2"
                             >
-                              <HistoryIcon className="w-3.5 h-3.5 text-indigo-400" />
+                              <HistoryIcon className="w-3.5 h-3.5 text-[#C8FF00]" />
                               <span>View History</span>
                             </button>
                             <button
                               onClick={() => handleOpenEditModal(habit)}
-                              className="w-full px-3 py-2 text-left text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-2"
+                              className="w-full px-3 py-2 text-left text-[#A4AABC] hover:text-[#F5F7FC] hover:bg-[#151A29] flex items-center gap-2"
                             >
-                              <Edit2 className="w-3.5 h-3.5 text-slate-400" />
+                              <Edit2 className="w-3.5 h-3.5 text-[#70788D]" />
                               <span>Edit Habit</span>
                             </button>
                             <button
                               onClick={() => handleToggleArchive(habit.id)}
-                              className="w-full px-3 py-2 text-left text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-2"
+                              className="w-full px-3 py-2 text-left text-[#A4AABC] hover:text-[#F5F7FC] hover:bg-[#151A29] flex items-center gap-2"
                             >
                               {habit.isArchived ? (
                                 <>
-                                  <ArchiveRestore className="w-3.5 h-3.5 text-amber-400" />
+                                  <ArchiveRestore className="w-3.5 h-3.5 text-[#FFBF47]" />
                                   <span>Unarchive</span>
                                 </>
                               ) : (
                                 <>
-                                  <Archive className="w-3.5 h-3.5 text-amber-400" />
+                                  <Archive className="w-3.5 h-3.5 text-[#FFBF47]" />
                                   <span>Archive</span>
                                 </>
                               )}
                             </button>
-                            <div className="border-t border-slate-800 my-1"></div>
+                            <div className="border-t border-[#1D2332] my-1"></div>
                             <button
                               onClick={() => {
                                 setDeleteConfirmId(habit.id);
                                 setActiveMenuId(null);
                               }}
-                              className="w-full px-3 py-2 text-left text-red-400 hover:bg-red-500/10 flex items-center gap-2"
+                              className="w-full px-3 py-2 text-left text-[#FF5C67] hover:bg-[#FF5C67]/10 flex items-center gap-2"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
                               <span>Delete</span>
@@ -626,33 +629,33 @@ export default function Habits() {
 
                     {/* Description */}
                     {habit.description && (
-                      <p className="text-xs text-slate-400 line-clamp-2 mb-3">
+                      <p className="text-xs text-[#70788D] line-clamp-2 mb-3">
                         {habit.description}
                       </p>
                     )}
 
                     {/* Streak & Consistency Bar */}
-                    <div className="bg-slate-950/60 border border-slate-800/80 rounded-xl p-2.5 mb-3 flex items-center justify-between text-xs">
-                      <div className="flex items-center gap-1.5 text-slate-400">
-                        <Trophy className="w-3.5 h-3.5 text-amber-400" />
-                        <span>Best: <strong className="text-white">{habit.longestStreak}d</strong></span>
+                    <div className="bg-[#0D101B] border border-[#1D2332] rounded-xl p-2.5 mb-3 flex items-center justify-between text-xs">
+                      <div className="flex items-center gap-1.5 text-[#70788D]">
+                        <Trophy className="w-3.5 h-3.5 text-[#FFBF47]" />
+                        <span>Best: <strong className="text-[#F5F7FC]">{habit.longestStreak}d</strong></span>
                       </div>
-                      <div className="flex items-center gap-1.5 text-slate-400">
-                        <Percent className="w-3.5 h-3.5 text-indigo-400" />
-                        <span>Rate: <strong className="text-white">{habit.completionRate}%</strong></span>
+                      <div className="flex items-center gap-1.5 text-[#70788D]">
+                        <Percent className="w-3.5 h-3.5 text-[#C8FF00]" />
+                        <span>Rate: <strong className="text-[#F5F7FC]">{habit.completionRate}%</strong></span>
                       </div>
                     </div>
                   </div>
 
                   {/* Bottom Stats & Completion Toggle Button */}
-                  <div className="pt-3 border-t border-slate-800/80 space-y-3">
-                    <div className="flex items-center justify-between text-xs text-slate-400">
+                  <div className="pt-3 border-t border-[#1D2332] space-y-3">
+                    <div className="flex items-center justify-between text-xs text-[#70788D]">
                       <div className="flex items-center gap-1.5">
-                        <Clock className="w-3.5 h-3.5 text-slate-500" />
+                        <Clock className="w-3.5 h-3.5 text-[#70788D]" />
                         <span>{habit.reminderTime || 'Anytime'}</span>
                       </div>
                       <div className="flex items-center gap-1.5 font-medium">
-                        <Target className="w-3.5 h-3.5 text-indigo-400" />
+                        <Target className="w-3.5 h-3.5 text-[#C8FF00]" />
                         <span>{habit.targetCount} {habit.frequency.toLowerCase()}</span>
                       </div>
                     </div>
@@ -661,10 +664,10 @@ export default function Habits() {
                     <div className="flex items-center justify-between pt-1">
                       <button
                         onClick={() => handleOpenHistory(habit)}
-                        className="text-xs font-semibold text-slate-400 hover:text-indigo-300 flex items-center gap-1 transition-colors"
+                        className="text-xs font-semibold text-[#70788D] hover:text-[#F5F7FC] flex items-center gap-1 transition-colors"
                         title="Click to view full completion history"
                       >
-                        <HistoryIcon className="w-3.5 h-3.5" />
+                        <HistoryIcon className="w-3.5 h-3.5 text-[#C8FF00]" />
                         <span>{habit.totalCompletions} logs</span>
                       </button>
 
@@ -672,22 +675,23 @@ export default function Habits() {
                       <button
                         onClick={() => handleToggleCompletion(habit)}
                         disabled={isToggling || habit.isArchived}
-                        className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all duration-200 ${habit.isCompletedToday
-                            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30'
-                            : 'bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white border border-slate-700/60'
-                          }`}
-                        title={habit.isCompletedToday ? 'Click to undo today\'s completion' : 'Click to complete for today'}
+                        className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all duration-200 active:scale-95 ${
+                          habit.isCompletedToday
+                            ? 'bg-[#39E58C]/20 text-[#39E58C] border border-[#39E58C]/40 hover:bg-[#39E58C]/30'
+                            : 'bg-[#151A29] text-[#A4AABC] hover:text-[#080A12] hover:bg-[#C8FF00] hover:border-[#C8FF00] border border-[#242A3A]'
+                        }`}
+                        title={habit.isCompletedToday ? "Click to undo today's completion" : "Click to complete for today"}
                       >
                         {isToggling ? (
                           <Loader2 className="w-3.5 h-3.5 animate-spin" />
                         ) : habit.isCompletedToday ? (
                           <>
-                            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                            <CheckCircle2 className="w-4 h-4 text-[#39E58C]" />
                             <span>Done Today</span>
                           </>
                         ) : (
                           <>
-                            <Circle className="w-4 h-4 text-slate-400" />
+                            <Circle className="w-4 h-4 text-[#70788D]" />
                             <span>Mark Done</span>
                           </>
                         )}
@@ -703,20 +707,20 @@ export default function Habits() {
 
       {/* Completion History Modal */}
       {historyHabit && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-sm animate-fade-in">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl sm:rounded-3xl max-w-lg w-full p-4 sm:p-6 shadow-2xl space-y-4 sm:space-y-5 max-h-[85vh] flex flex-col">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md animate-fade-in">
+          <div className="bg-[#0D101B] border border-[#242A3A] rounded-[24px] max-w-lg w-full p-4 sm:p-6 shadow-2xl space-y-4 sm:space-y-5 max-h-[85vh] flex flex-col">
+            <div className="flex items-center justify-between border-b border-[#1D2332] pb-3">
               <div>
-                <span className="text-[10px] uppercase font-bold text-indigo-400 tracking-wider">
+                <span className="text-[10px] uppercase font-bold text-[#C8FF00] tracking-wider">
                   Completion History
                 </span>
-                <h2 className="text-lg font-bold text-white mt-0.5">
+                <h2 className="text-base sm:text-lg font-bold text-[#F5F7FC] mt-0.5">
                   {historyHabit.name}
                 </h2>
               </div>
               <button
                 onClick={() => setHistoryHabit(null)}
-                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                className="p-1 rounded-lg text-[#70788D] hover:text-[#F5F7FC] hover:bg-[#151A29] transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -725,35 +729,35 @@ export default function Habits() {
             <div className="flex-1 overflow-y-auto space-y-2.5 pr-1">
               {historyLoading ? (
                 <div className="py-12 flex flex-col items-center justify-center gap-2">
-                  <Loader2 className="w-6 h-6 text-indigo-500 animate-spin" />
-                  <p className="text-xs text-slate-400">Loading history records...</p>
+                  <Loader2 className="w-6 h-6 text-[#C8FF00] animate-spin" />
+                  <p className="text-xs text-[#70788D]">Loading history records...</p>
                 </div>
               ) : historyData.length === 0 ? (
-                <div className="py-12 text-center text-slate-400 text-xs">
+                <div className="py-12 text-center text-[#70788D] text-xs">
                   No completions recorded yet for this habit.
                 </div>
               ) : (
                 historyData.map((c) => (
                   <div
                     key={c.id}
-                    className="p-3 bg-slate-950/60 border border-slate-800/80 rounded-xl flex items-center justify-between gap-3 text-xs"
+                    className="p-3 bg-[#111522] border border-[#1D2332] rounded-xl flex items-center justify-between gap-3 text-xs"
                   >
                     <div className="flex items-center gap-2.5">
-                      <div className="w-7 h-7 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                      <div className="w-7 h-7 rounded-lg bg-[#39E58C]/15 border border-[#39E58C]/30 text-[#39E58C] flex items-center justify-center shrink-0">
                         <CheckCircle2 className="w-4 h-4" />
                       </div>
                       <div>
-                        <p className="font-semibold text-white">{c.completedDate}</p>
+                        <p className="font-semibold text-[#F5F7FC]">{c.completedDate}</p>
                         {c.note ? (
-                          <p className="text-[11px] text-slate-400 italic">"{c.note}"</p>
+                          <p className="text-[11px] text-[#A4AABC] italic">"{c.note}"</p>
                         ) : (
-                          <p className="text-[10px] text-slate-500">
+                          <p className="text-[10px] text-[#70788D]">
                             Logged at {new Date(c.completedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </p>
                         )}
                       </div>
                     </div>
-                    <span className="text-[10px] font-medium text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20 shrink-0">
+                    <span className="text-[10px] font-semibold text-[#39E58C] bg-[#39E58C]/15 px-2.5 py-0.5 rounded-full border border-[#39E58C]/30 shrink-0">
                       Completed
                     </span>
                   </div>
@@ -761,10 +765,10 @@ export default function Habits() {
               )}
             </div>
 
-            <div className="border-t border-slate-800 pt-3 flex justify-end">
+            <div className="border-t border-[#1D2332] pt-3 flex justify-end">
               <button
                 onClick={() => setHistoryHabit(null)}
-                className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold transition-colors"
+                className="px-4 py-2 rounded-xl bg-[#151A29] hover:bg-[#1D2332] text-[#F5F7FC] text-xs font-semibold transition-colors"
               >
                 Close
               </button>
@@ -775,22 +779,22 @@ export default function Habits() {
 
       {/* Create / Edit Habit Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-sm animate-fade-in">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl sm:rounded-3xl max-w-lg w-full p-4 sm:p-6 md:p-8 shadow-2xl space-y-5 sm:space-y-6 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-4">
-              <h2 className="text-lg font-bold text-white">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md animate-fade-in">
+          <div className="bg-[#0D101B] border border-[#242A3A] rounded-[24px] max-w-lg w-full p-4 sm:p-6 md:p-8 shadow-2xl space-y-5 sm:space-y-6 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-[#1D2332] pb-4">
+              <h2 className="text-base sm:text-lg font-bold text-[#F5F7FC]">
                 {editingHabit ? 'Edit Habit' : 'Create New Habit'}
               </h2>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                className="p-1 rounded-lg text-[#70788D] hover:text-[#F5F7FC] hover:bg-[#151A29] transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {formError && (
-              <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-xs flex items-center gap-2">
+              <div className="p-3 bg-[#FF5C67]/10 border border-[#FF5C67]/20 rounded-xl text-[#FF5C67] text-xs flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 shrink-0" />
                 <span>{formError}</span>
               </div>
@@ -798,7 +802,7 @@ export default function Habits() {
 
             <form onSubmit={handleFormSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-semibold text-[#A4AABC] uppercase tracking-wider mb-1.5">
                   Habit Name *
                 </label>
                 <input
@@ -807,12 +811,12 @@ export default function Habits() {
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   placeholder="e.g., Read Books, Drink Water, Yoga"
                   required
-                  className="w-full px-3.5 py-2.5 bg-slate-950/70 border border-slate-700/80 rounded-xl text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                  className="w-full px-3.5 py-2.5 bg-[#151A29] border border-[#242A3A] rounded-xl text-[#F5F7FC] placeholder-[#70788D] text-sm focus:outline-none focus:border-[#C8FF00] focus:ring-1 focus:ring-[#C8FF00]/50 transition-all"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-semibold text-[#A4AABC] uppercase tracking-wider mb-1.5">
                   Description (Optional)
                 </label>
                 <textarea
@@ -820,22 +824,22 @@ export default function Habits() {
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   placeholder="Describe your motivation or specifics..."
                   rows={2}
-                  className="w-full px-3.5 py-2.5 bg-slate-950/70 border border-slate-700/80 rounded-xl text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all resize-none"
+                  className="w-full px-3.5 py-2.5 bg-[#151A29] border border-[#242A3A] rounded-xl text-[#F5F7FC] placeholder-[#70788D] text-sm focus:outline-none focus:border-[#C8FF00] focus:ring-1 focus:ring-[#C8FF00]/50 transition-all resize-none"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-semibold text-[#A4AABC] uppercase tracking-wider mb-1.5">
                     Category
                   </label>
                   <select
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-slate-950/70 border border-slate-700/80 rounded-xl text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all cursor-pointer"
+                    className="w-full px-3.5 py-2.5 bg-[#151A29] border border-[#242A3A] rounded-xl text-[#F5F7FC] text-sm focus:outline-none focus:border-[#C8FF00] transition-all cursor-pointer"
                   >
                     {CATEGORIES.filter((c) => c !== 'All').map((cat) => (
-                      <option key={cat} value={cat}>
+                      <option key={cat} value={cat} className="bg-[#0D101B] text-[#F5F7FC]">
                         {cat}
                       </option>
                     ))}
@@ -843,25 +847,25 @@ export default function Habits() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-semibold text-[#A4AABC] uppercase tracking-wider mb-1.5">
                     Frequency
                   </label>
                   <select
                     value={formData.frequency}
                     onChange={(e) => setFormData({ ...formData, frequency: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-slate-950/70 border border-slate-700/80 rounded-xl text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all cursor-pointer"
+                    className="w-full px-3.5 py-2.5 bg-[#151A29] border border-[#242A3A] rounded-xl text-[#F5F7FC] text-sm focus:outline-none focus:border-[#C8FF00] transition-all cursor-pointer"
                   >
-                    <option value="Daily">Daily</option>
-                    <option value="Weekly">Weekly</option>
-                    <option value="Specific Days">Specific Days</option>
-                    <option value="Custom">Custom</option>
+                    <option value="Daily" className="bg-[#0D101B] text-[#F5F7FC]">Daily</option>
+                    <option value="Weekly" className="bg-[#0D101B] text-[#F5F7FC]">Weekly</option>
+                    <option value="Specific Days" className="bg-[#0D101B] text-[#F5F7FC]">Specific Days</option>
+                    <option value="Custom" className="bg-[#0D101B] text-[#F5F7FC]">Custom</option>
                   </select>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-semibold text-[#A4AABC] uppercase tracking-wider mb-1.5">
                     Target Count
                   </label>
                   <input
@@ -870,26 +874,26 @@ export default function Habits() {
                     max="1000"
                     value={formData.targetCount}
                     onChange={(e) => setFormData({ ...formData, targetCount: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-slate-950/70 border border-slate-700/80 rounded-xl text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                    className="w-full px-3.5 py-2.5 bg-[#151A29] border border-[#242A3A] rounded-xl text-[#F5F7FC] text-sm focus:outline-none focus:border-[#C8FF00] transition-all"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-semibold text-[#A4AABC] uppercase tracking-wider mb-1.5">
                     Reminder Time (Optional)
                   </label>
                   <input
                     type="time"
                     value={formData.reminderTime || ''}
                     onChange={(e) => setFormData({ ...formData, reminderTime: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-slate-950/70 border border-slate-700/80 rounded-xl text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                    className="w-full px-3.5 py-2.5 bg-[#151A29] border border-[#242A3A] rounded-xl text-[#F5F7FC] text-sm focus:outline-none focus:border-[#C8FF00] transition-all"
                   />
                 </div>
               </div>
 
               {/* Color Picker */}
               <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                <label className="block text-xs font-semibold text-[#A4AABC] uppercase tracking-wider mb-2">
                   Theme Color
                 </label>
                 <div className="flex flex-wrap items-center gap-2">
@@ -898,10 +902,11 @@ export default function Habits() {
                       key={color}
                       type="button"
                       onClick={() => setFormData({ ...formData, color })}
-                      className={`w-7 h-7 rounded-xl transition-all duration-200 ${formData.color === color
-                          ? 'ring-2 ring-white ring-offset-2 ring-offset-slate-900 scale-110'
+                      className={`w-7 h-7 rounded-xl transition-all duration-200 ${
+                        formData.color === color
+                          ? 'ring-2 ring-white ring-offset-2 ring-offset-[#080A12] scale-110'
                           : 'opacity-70 hover:opacity-100'
-                        }`}
+                      }`}
                       style={{ backgroundColor: color }}
                     />
                   ))}
@@ -910,7 +915,7 @@ export default function Habits() {
 
               {/* Icon Picker */}
               <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                <label className="block text-xs font-semibold text-[#A4AABC] uppercase tracking-wider mb-2">
                   Icon
                 </label>
                 <div className="grid grid-cols-5 sm:grid-cols-7 gap-2">
@@ -919,10 +924,11 @@ export default function Habits() {
                       key={name}
                       type="button"
                       onClick={() => setFormData({ ...formData, icon: name })}
-                      className={`p-2 rounded-xl border flex items-center justify-center transition-all ${formData.icon === name
-                          ? 'bg-indigo-600/20 border-indigo-500 text-indigo-400'
-                          : 'border-slate-800 text-slate-400 hover:text-white hover:bg-slate-800'
-                        }`}
+                      className={`p-2 rounded-xl border flex items-center justify-center transition-all ${
+                        formData.icon === name
+                          ? 'bg-[#C8FF00]/20 border-[#C8FF00] text-[#C8FF00]'
+                          : 'border-[#242A3A] text-[#70788D] hover:text-[#F5F7FC] hover:bg-[#151A29]'
+                      }`}
                     >
                       <IconComp className="w-4 h-4" />
                     </button>
@@ -930,18 +936,18 @@ export default function Habits() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#1D2332]">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 rounded-xl text-slate-400 hover:text-white text-xs font-semibold transition-colors"
+                  className="px-4 py-2 rounded-xl text-[#A4AABC] hover:text-[#F5F7FC] text-xs font-semibold transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={formSubmitting}
-                  className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-lg shadow-indigo-600/30 flex items-center gap-2 transition-all disabled:opacity-50"
+                  className="px-5 py-2.5 rounded-xl bg-[#C8FF00] hover:bg-[#B4E600] text-[#080A12] text-xs font-bold shadow-[0_0_12px_rgba(200,255,0,0.25)] flex items-center gap-2 transition-all disabled:opacity-50 active:scale-95"
                 >
                   {formSubmitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                   <span>{editingHabit ? 'Save Changes' : 'Create Habit'}</span>
@@ -954,27 +960,27 @@ export default function Habits() {
 
       {/* Delete Confirmation Modal */}
       {deleteConfirmId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-fade-in">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-2xl">
-            <div className="w-12 h-12 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 mx-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
+          <div className="bg-[#0D101B] border border-[#242A3A] rounded-[24px] max-w-sm w-full p-6 space-y-4 shadow-2xl">
+            <div className="w-12 h-12 rounded-xl bg-[#FF5C67]/15 border border-[#FF5C67]/30 flex items-center justify-center text-[#FF5C67] mx-auto">
               <Trash2 className="w-6 h-6" />
             </div>
             <div className="text-center space-y-1">
-              <h3 className="text-base font-bold text-white">Delete this habit?</h3>
-              <p className="text-xs text-slate-400">
+              <h3 className="text-base font-bold text-[#F5F7FC]">Delete this habit?</h3>
+              <p className="text-xs text-[#70788D]">
                 This will permanently remove the habit and all of its logged completions. This action cannot be undone.
               </p>
             </div>
             <div className="flex items-center justify-center gap-3 pt-2">
               <button
                 onClick={() => setDeleteConfirmId(null)}
-                className="px-4 py-2 rounded-xl text-slate-400 hover:text-white text-xs font-semibold transition-colors"
+                className="px-4 py-2 rounded-xl text-[#A4AABC] hover:text-[#F5F7FC] text-xs font-semibold transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={() => handleDeleteHabit(deleteConfirmId)}
-                className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-semibold shadow-lg shadow-red-600/30 transition-all"
+                className="px-4 py-2 rounded-xl bg-[#FF5C67] hover:bg-[#FF5C67]/90 text-white text-xs font-bold shadow-lg shadow-[#FF5C67]/30 transition-all"
               >
                 Delete Habit
               </button>

@@ -79,7 +79,7 @@ export default function Card3D({ children, className = '' }) {
         }}
         className={`relative w-full rounded-3xl backdrop-blur-2xl transition-all duration-500 ${
           themeVisual.isDark
-            ? `bg-slate-900/80 border border-slate-700/60 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.7)] ${
+            ? `bg-[#111522]/90 border border-[#242A3A] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.7)] ${
                 isHovered ? 'shadow-[0_25px_70px_-10px_rgba(0,0,0,0.5)]' : ''
               }`
             : `bg-white/95 border border-slate-200/90 shadow-[0_25px_60px_-15px_rgba(15,23,42,0.1)] ${
