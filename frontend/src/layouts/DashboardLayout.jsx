@@ -114,8 +114,8 @@ export default function DashboardLayout({ children }) {
               <Sun className="w-4 h-4 text-[#C8FF00]" />
             </button>
 
-            {/* User Dropdown */}
-            <div className="relative">
+            {/* User Dropdown (Hidden on Mobile View) */}
+            <div className="relative hidden md:block">
               <button
                 onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
                 className="flex items-center gap-2 p-1.5 rounded-xl hover:bg-[#111522] transition-colors"
