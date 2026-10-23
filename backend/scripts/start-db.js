@@ -1,3 +1,4 @@
+import fs from 'fs';
 import EmbeddedPostgres from 'embedded-postgres';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -6,6 +7,16 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const dbDir = path.resolve(__dirname, '../.pgdata');
+
+const pidFile = path.join(dbDir, 'postmaster.pid');
+if (fs.existsSync(pidFile)) {
+  try {
+    fs.unlinkSync(pidFile);
+    console.log('🧹 Cleaned up stale postmaster.pid file.');
+  } catch (e) {
+    // ignore
+  }
+}
 
 const pg = new EmbeddedPostgres({
   databaseDir: dbDir,
