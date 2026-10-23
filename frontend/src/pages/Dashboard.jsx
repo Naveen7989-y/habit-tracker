@@ -35,6 +35,7 @@ import {
   Loader2,
   AlertCircle,
   TrendingUp,
+  Menu,
 } from 'lucide-react';
 
 const ICONS = {
@@ -228,32 +229,49 @@ export default function Dashboard() {
       <div className="max-w-2xl mx-auto w-full pt-2 sm:pt-4 space-y-5 sm:space-y-6">
         {/* A. Screen 1 Header */}
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-xl sm:text-2xl font-black text-[#F5F7FC] tracking-tight">
-              {getGreeting()}, {user?.name ? user.name.split(' ')[0] : 'Athlete'}! 👋
-            </h1>
-            <p className="text-xs sm:text-sm font-medium text-[#70788D] mt-0.5">
-              Let's crush your goals today.
-            </p>
+          <div className="flex items-center gap-3">
+            {/* Mobile Menu Icon (Matching Screen 1 Reference) */}
+            <Link
+              to="/settings"
+              className="md:hidden w-10 h-10 rounded-xl bg-[#111522] border border-[#242A3A] text-[#F5F7FC] flex items-center justify-center hover:bg-[#151A29] transition-colors"
+              title="Menu & Settings"
+            >
+              <Menu className="w-5 h-5 text-[#F5F7FC]" />
+            </Link>
+
+            <div>
+              <h1 className="text-xl sm:text-2xl font-black text-[#F5F7FC] tracking-tight">
+                {getGreeting()}, {user?.name ? user.name.split(' ')[0] : 'Athlete'}! 👋
+              </h1>
+              <p className="text-xs sm:text-sm font-medium text-[#70788D] mt-0.5">
+                Let's crush your goals today.
+              </p>
+            </div>
           </div>
 
           {/* User Avatar with Violet Glow & Notification Icon */}
-          <div className="flex items-center gap-3">
-            <div className="relative">
+          <div className="flex items-center gap-2.5">
+            {/* Notification Bell (Matching Screen 1 Reference) */}
+            <div className="relative w-10 h-10 rounded-xl bg-[#111522] border border-[#242A3A] flex items-center justify-center text-[#A4AABC] hover:text-[#F5F7FC] transition-colors cursor-pointer">
+              <Bell className="w-4 h-4" />
+              <span className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-[#C8FF00] shadow-[0_0_6px_#C8FF00]" />
+            </div>
+
+            <Link to="/settings" className="relative block">
               {user?.avatar ? (
                 <img
                   src={user.avatar}
                   alt={user.name}
-                  className="w-11 h-11 rounded-full object-cover border-2 border-[#C8FF00]/80 shadow-[0_0_16px_rgba(200,255,0,0.3)]"
+                  className="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover border-2 border-[#C8FF00]/80 shadow-[0_0_16px_rgba(200,255,0,0.3)]"
                 />
               ) : (
-                <div className="w-11 h-11 rounded-full bg-[#151A29] border-2 border-[#8B5CF6]/80 flex items-center justify-center text-sm font-bold text-[#F5F7FC] shadow-[0_0_16px_rgba(139,92,246,0.35)]">
+                <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#151A29] border-2 border-[#8B5CF6]/80 flex items-center justify-center text-sm font-bold text-[#F5F7FC] shadow-[0_0_16px_rgba(139,92,246,0.35)]">
                   {user?.name ? user.name.charAt(0).toUpperCase() : 'M'}
                 </div>
               )}
               {/* Active Online status ring */}
-              <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-[#39E58C] border-2 border-[#080A12]" />
-            </div>
+              <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-[#39E58C] border-2 border-[#080A12]" />
+            </Link>
           </div>
         </div>
 

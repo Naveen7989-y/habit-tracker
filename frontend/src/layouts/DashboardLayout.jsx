@@ -56,8 +56,8 @@ export default function DashboardLayout({ children }) {
 
   return (
     <div className="min-h-screen bg-[#080A12] text-[#F5F7FC] flex flex-col justify-between selection:bg-[#C8FF00] selection:text-[#080A12] transition-colors duration-200">
-      {/* Top Navigation Bar */}
-      <header className="border-b border-[#1D2332] bg-[#080A12]/95 backdrop-blur-xl sticky top-0 z-40">
+      {/* Top Navigation Bar (Hidden on Mobile, Visible on Desktop/Tablet) */}
+      <header className="hidden md:block border-b border-[#1D2332] bg-[#080A12]/95 backdrop-blur-xl sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between">
           {/* Logo & Mobile Menu Toggle */}
           <div className="flex items-center gap-3">
