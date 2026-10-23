@@ -229,8 +229,16 @@ export default function Dashboard() {
         {/* A. Screen 1 Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-base sm:text-lg font-semibold text-[#C8FF00] tracking-tight">
-              {getGreeting()}, {user?.name ? user.name.split(' ')[0] : 'Athlete'}! 👋
+            <h1
+              style={{ color: '#C8FF00' }}
+              className="text-base sm:text-lg font-semibold text-[#C8FF00] tracking-tight"
+            >
+              <span style={{ color: '#C8FF00' }}>{getGreeting()}</span>
+              {', '}
+              <span style={{ color: '#C8FF00' }}>
+                {user?.name ? user.name.split(' ')[0] : 'Athlete'}!
+              </span>{' '}
+              👋
             </h1>
             <p className="text-xs text-[#70788D] font-normal mt-0.5">
               Let's crush your goals today.
