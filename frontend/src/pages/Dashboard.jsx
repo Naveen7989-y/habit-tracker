@@ -60,7 +60,7 @@ export default function Dashboard() {
   const [nutritionLogs, setNutritionLogs] = useState(null);
   const [nutritionGoals, setNutritionGoals] = useState(null);
   const [workoutStats, setWorkoutStats] = useState(null);
-  const [waterTotalMl, setWaterTotalMl] = useState(1500);
+  const [waterTotalMl, setWaterTotalMl] = useState(0);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -209,17 +209,17 @@ export default function Dashboard() {
   }
 
   // Derive Real Metrics
-  const dailyCaloriesTarget = nutritionGoals?.dailyCalories || 2200;
-  const caloriesConsumed = Math.round(nutritionLogs?.totals?.calories || 1850);
+  const dailyCaloriesTarget = nutritionGoals?.dailyCalories || 2000;
+  const caloriesConsumed = Math.round(nutritionLogs?.totals?.calories || 0);
 
   const stepsGoal = 10000;
-  const stepsLogged = 8420; // Default active step telemetry
+  const stepsLogged = workoutStats?.today?.steps || 0;
 
   const activeTimeGoal = 60;
-  const activeTimeMinutes = workoutStats?.today?.activeMinutes || 45;
+  const activeTimeMinutes = workoutStats?.today?.activeMinutes || 0;
 
-  const todayDistanceKm = workoutStats?.today?.distanceKm || 2.4;
-  const todayActiveCalories = workoutStats?.today?.caloriesBurned || 310;
+  const todayDistanceKm = workoutStats?.today?.distanceKm || 0;
+  const todayActiveCalories = workoutStats?.today?.caloriesBurned || 0;
 
   const todayHabits = dashboardData?.todayHabits || [];
   const completedHabitsCount = dashboardData?.today?.completedCount || 0;
@@ -350,13 +350,13 @@ export default function Dashboard() {
             </div>
 
             {/* Heart Rate Card */}
-            <HeartRateCard currentBpm={78} />
+            <HeartRateCard currentBpm={workoutStats?.today?.avgHeartRate || 0} />
 
             {/* Activity Summary Card */}
             <ActivitySummaryCard
               distanceKm={todayDistanceKm}
               activeCalories={todayActiveCalories}
-              sleepHours="7 h 32 m"
+              sleepHours="--"
             />
           </div>
 
@@ -499,9 +499,9 @@ export default function Dashboard() {
               </div>
 
               <div className="pt-1 flex items-center justify-between text-[11px] text-[#A4AABC]">
-                <span>Protein: {Math.round(nutritionLogs?.totals?.protein || 85)}g</span>
-                <span>Carbs: {Math.round(nutritionLogs?.totals?.carbs || 190)}g</span>
-                <span>Fat: {Math.round(nutritionLogs?.totals?.fat || 52)}g</span>
+                <span>Protein: {Math.round(nutritionLogs?.totals?.protein || 0)}g</span>
+                <span>Carbs: {Math.round(nutritionLogs?.totals?.carbs || 0)}g</span>
+                <span>Fat: {Math.round(nutritionLogs?.totals?.fat || 0)}g</span>
               </div>
             </div>
 

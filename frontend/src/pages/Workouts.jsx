@@ -35,11 +35,11 @@ export default function Workouts() {
   const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState('Running');
   const [workoutState, setWorkoutState] = useState('Ready'); // 'Ready' | 'Recording' | 'Paused' | 'Completed'
-  const [elapsedSeconds, setElapsedSeconds] = useState(1935); // Defaults to 00:32:15 for fidelity
-  const [distanceKm, setDistanceKm] = useState(5.2);
-  const [caloriesBurned, setCaloriesBurned] = useState(412);
-  const [avgHeartRate, setAvgHeartRate] = useState(143);
-  const [avgPace, setAvgPace] = useState(`6'11" /km`);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [distanceKm, setDistanceKm] = useState(0);
+  const [caloriesBurned, setCaloriesBurned] = useState(0);
+  const [avgHeartRate, setAvgHeartRate] = useState(0);
+  const [avgPace, setAvgPace] = useState('--');
 
   const [recentWorkouts, setRecentWorkouts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -70,14 +70,41 @@ export default function Workouts() {
   // Timer logic for Recording state
   useEffect(() => {
     if (workoutState === 'Recording') {
+      // Set active heart rate immediately on session start
+      setAvgHeartRate((prev) => (prev > 0 ? prev : 138));
+
       timerRef.current = setInterval(() => {
         setElapsedSeconds((prev) => {
           const nextSec = prev + 1;
-          // Dynamically increment distance & calories based on activity
-          if (nextSec % 10 === 0) {
-            setDistanceKm((d) => parseFloat((d + 0.03).toFixed(2)));
-            setCaloriesBurned((c) => c + 2);
+
+          // Increment distance based on activity category
+          setDistanceKm((prevDist) => {
+            let increment = 0;
+            if (selectedCategory === 'Cycling') increment = 0.0055;
+            else if (selectedCategory === 'Running') increment = 0.003;
+            else if (selectedCategory === 'Walking') increment = 0.0014;
+
+            const newDist = parseFloat((prevDist + increment).toFixed(2));
+            if (newDist > 0) {
+              const paceSecPerKm = Math.round(nextSec / newDist);
+              const pMin = Math.floor(paceSecPerKm / 60);
+              const pSec = paceSecPerKm % 60;
+              setAvgPace(`${pMin}'${pSec.toString().padStart(2, '0')}" /km`);
+            }
+            return newDist;
+          });
+
+          // Increment calories burned
+          setCaloriesBurned((prevCal) => {
+            const calPerSec = selectedCategory === 'Yoga' ? 0.07 : 0.16;
+            return Math.round((prevCal + calPerSec) * 10) / 10;
+          });
+
+          // Subtle natural heart rate variance
+          if (nextSec % 4 === 0) {
+            setAvgHeartRate(135 + Math.floor(Math.random() * 12));
           }
+
           return nextSec;
         });
       }, 1000);
@@ -88,7 +115,7 @@ export default function Workouts() {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [workoutState]);
+  }, [workoutState, selectedCategory]);
 
   // Format seconds to HH:MM:SS
   const formatTime = (totalSeconds) => {
@@ -152,6 +179,8 @@ export default function Workouts() {
     setElapsedSeconds(0);
     setDistanceKm(0);
     setCaloriesBurned(0);
+    setAvgHeartRate(0);
+    setAvgPace('--');
     setConfirmStopModal(false);
   };
 

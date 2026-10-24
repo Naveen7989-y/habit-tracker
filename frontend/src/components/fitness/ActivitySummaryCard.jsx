@@ -12,7 +12,7 @@ import { Link } from 'react-router-dom';
 export default function ActivitySummaryCard({
   distanceKm = 0,
   activeCalories = 0,
-  sleepHours = '7 h 32 m',
+  sleepHours = '--',
 }) {
   return (
     <div className="bg-[#111522] border border-[#242A3A] rounded-[22px] p-4 sm:p-5 relative overflow-hidden transition-all duration-200 hover:border-[#242A3A]/80">

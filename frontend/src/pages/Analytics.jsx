@@ -29,23 +29,22 @@ import {
   PieChart as PieIcon,
 } from 'lucide-react';
 
-// Weekly Grouped Data matching Screen 3 visual reference:
-// Mon, Tue, Wed, Thu, Fri, Sat, Sun with Steps (Lime), Calories (Violet), Time (Cyan)
-const DEFAULT_WEEKLY_SERIES = [
-  { day: 'Mon', steps: 11000, calories: 4800, time: 45 },
-  { day: 'Tue', steps: 8500, calories: 3600, time: 35 },
-  { day: 'Wed', steps: 12000, calories: 5200, time: 50 },
-  { day: 'Thu', steps: 13500, calories: 6100, time: 60 },
-  { day: 'Fri', steps: 9500, calories: 4200, time: 40 },
-  { day: 'Sat', steps: 11500, calories: 5000, time: 55 },
-  { day: 'Sun', steps: 12500, calories: 5400, time: 45 },
+// Zero-Initialized Weekly & Monthly fallback series for brand-new users
+const ZERO_WEEKLY_SERIES = [
+  { day: 'Mon', steps: 0, calories: 0, time: 0 },
+  { day: 'Tue', steps: 0, calories: 0, time: 0 },
+  { day: 'Wed', steps: 0, calories: 0, time: 0 },
+  { day: 'Thu', steps: 0, calories: 0, time: 0 },
+  { day: 'Fri', steps: 0, calories: 0, time: 0 },
+  { day: 'Sat', steps: 0, calories: 0, time: 0 },
+  { day: 'Sun', steps: 0, calories: 0, time: 0 },
 ];
 
-const DEFAULT_MONTHLY_SERIES = [
-  { day: 'W1', steps: 72000, calories: 32000, time: 310 },
-  { day: 'W2', steps: 84000, calories: 38000, time: 350 },
-  { day: 'W3', steps: 79000, calories: 35000, time: 320 },
-  { day: 'W4', steps: 91000, calories: 42000, time: 390 },
+const ZERO_MONTHLY_SERIES = [
+  { day: 'W1', steps: 0, calories: 0, time: 0 },
+  { day: 'W2', steps: 0, calories: 0, time: 0 },
+  { day: 'W3', steps: 0, calories: 0, time: 0 },
+  { day: 'W4', steps: 0, calories: 0, time: 0 },
 ];
 
 export default function Analytics() {
@@ -80,17 +79,43 @@ export default function Analytics() {
     fetchData();
   }, []);
 
-  const chartData = period === 'Week' ? DEFAULT_WEEKLY_SERIES : DEFAULT_MONTHLY_SERIES;
+  const chartData = period === 'Week'
+    ? (workoutStats?.weeklySeries && workoutStats.weeklySeries.length > 0
+        ? workoutStats.weeklySeries
+        : ZERO_WEEKLY_SERIES)
+    : (workoutStats?.monthlySeries && workoutStats.monthlySeries.length > 0
+        ? workoutStats.monthlySeries
+        : ZERO_MONTHLY_SERIES);
+
+  // Dynamic Date Range Display
+  const getPeriodDisplay = () => {
+    const now = new Date();
+    if (period === 'Week') {
+      const currentDay = now.getDay();
+      const mondayOffset = currentDay === 0 ? -6 : 1 - currentDay;
+      const monday = new Date(now);
+      monday.setDate(now.getDate() + mondayOffset);
+      const sunday = new Date(monday);
+      sunday.setDate(monday.getDate() + 6);
+      const mStr = monday.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      const sStr = sunday.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      return `${mStr} – ${sStr}`;
+    }
+    return now.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+  };
 
   // Real values for achievements
-  const bestStreak = analyticsData?.streaks?.bestCurrentStreak || 7;
-  const totalCaloriesBurned = workoutStats?.totalCaloriesBurned || 10450;
+  const bestStreak = analyticsData?.streaks?.bestCurrentStreak || 0;
+  const totalCaloriesBurned = workoutStats?.totalCaloriesBurned || 0;
+  const totalDistanceKm = workoutStats?.totalDistanceKm || 0;
 
   // Real values for personal records
-  const longestRunRec = workoutStats?.personalRecords?.longestRun?.value || '7.8 km';
-  const longestRunDate = workoutStats?.personalRecords?.longestRun?.date || 'May 19, 2024';
-  const mostCaloriesRec = workoutStats?.personalRecords?.mostCalories?.value || '845 Kcal';
-  const mostCaloriesDate = workoutStats?.personalRecords?.mostCalories?.date || 'May 22, 2024';
+  const mostStepsRec = workoutStats?.personalRecords?.mostSteps?.value || (workoutStats?.today?.steps ? `${workoutStats.today.steps}` : '0');
+  const mostStepsDate = workoutStats?.personalRecords?.mostSteps?.date || '--';
+  const longestRunRec = workoutStats?.personalRecords?.longestRun?.value || '0 km';
+  const longestRunDate = workoutStats?.personalRecords?.longestRun?.date || '--';
+  const mostCaloriesRec = workoutStats?.personalRecords?.mostCalories?.value || '0 Kcal';
+  const mostCaloriesDate = workoutStats?.personalRecords?.mostCalories?.date || '--';
 
   return (
     <DashboardLayout>
@@ -142,7 +167,7 @@ export default function Analytics() {
 
             <div className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#111522] border border-[#242A3A] text-xs font-semibold text-[#A4AABC]">
               <CalendarIcon className="w-3.5 h-3.5 text-[#C8FF00]" />
-              <span>{period === 'Week' ? 'May 18 – May 24' : 'May 2026'}</span>
+              <span>{getPeriodDisplay()}</span>
             </div>
           </div>
         </div>
@@ -164,7 +189,7 @@ export default function Analytics() {
                 </div>
 
                 <div className="flex sm:hidden items-center gap-1.5 px-3 py-1 rounded-full bg-[#0D101B] border border-[#1D2332] text-xs font-medium text-[#A4AABC]">
-                  <span>{period === 'Week' ? 'May 18 – 24' : 'May'}</span>
+                  <span>{getPeriodDisplay()}</span>
                   <ChevronDown className="w-3.5 h-3.5 text-[#70788D]" />
                 </div>
               </div>
@@ -317,12 +342,13 @@ export default function Analytics() {
             <AchievementsSection
               currentStreak={bestStreak}
               totalCaloriesBurned={totalCaloriesBurned}
+              totalDistanceKm={totalDistanceKm}
             />
 
             {/* Personal Records Cards */}
             <PersonalRecordsCard
-              mostSteps="12,842"
-              mostStepsDate="May 20, 2024"
+              mostSteps={mostStepsRec}
+              mostStepsDate={mostStepsDate}
               longestRun={longestRunRec}
               longestRunDate={longestRunDate}
               mostCalories={mostCaloriesRec}

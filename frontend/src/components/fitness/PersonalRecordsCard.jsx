@@ -9,12 +9,12 @@ import { Trophy, Footprints, Navigation, Flame } from 'lucide-react';
  * - Most Calories (e.g. 845 Kcal / May 22, 2024)
  */
 export default function PersonalRecordsCard({
-  mostSteps = '12,842',
-  mostStepsDate = 'May 20, 2024',
-  longestRun = '7.8 km',
-  longestRunDate = 'May 19, 2024',
-  mostCalories = '845 Kcal',
-  mostCaloriesDate = 'May 22, 2024',
+  mostSteps = '0',
+  mostStepsDate = '--',
+  longestRun = '0 km',
+  longestRunDate = '--',
+  mostCalories = '0 Kcal',
+  mostCaloriesDate = '--',
 }) {
   const records = [
     {

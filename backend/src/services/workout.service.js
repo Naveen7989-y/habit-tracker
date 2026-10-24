@@ -132,6 +132,62 @@ class WorkoutService {
     const todayDurationSeconds = todayWorkouts.reduce((acc, w) => acc + (w.durationSeconds || 0), 0);
     const todayDistanceKm = todayWorkouts.reduce((acc, w) => acc + (w.distanceKm || 0), 0);
     const todayCaloriesBurned = todayWorkouts.reduce((acc, w) => acc + (w.caloriesBurned || 0), 0);
+    const todaySteps = Math.round(todayDistanceKm * 1350);
+
+    // Compute weekly breakdown (Mon - Sun of current week)
+    const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const now = new Date();
+    const currentDay = now.getDay();
+    const mondayOffset = currentDay === 0 ? -6 : 1 - currentDay;
+    const monday = new Date(now);
+    monday.setDate(now.getDate() + mondayOffset);
+
+    const weeklySeries = dayLabels.map((day, idx) => {
+      const d = new Date(monday);
+      d.setDate(monday.getDate() + idx);
+      const dStr = d.toISOString().split('T')[0];
+      const dayWorkouts = workouts.filter((w) => w.loggedDate === dStr);
+      const cals = dayWorkouts.reduce((acc, w) => acc + (w.caloriesBurned || 0), 0);
+      const timeMin = Math.round(dayWorkouts.reduce((acc, w) => acc + (w.durationSeconds || 0), 0) / 60);
+      const dist = dayWorkouts.reduce((acc, w) => acc + (w.distanceKm || 0), 0);
+      const steps = Math.round(dist * 1350);
+
+      return {
+        day,
+        date: dStr,
+        steps,
+        calories: Math.round(cals),
+        time: timeMin,
+      };
+    });
+
+    // Compute monthly breakdown (4 weeks)
+    const monthlySeries = ['W1', 'W2', 'W3', 'W4'].map((wLabel, wIdx) => {
+      const daysBackStart = 28 - (wIdx * 7);
+      const daysBackEnd = daysBackStart - 7;
+      const startD = new Date(now);
+      startD.setDate(now.getDate() - daysBackStart);
+      const endD = new Date(now);
+      endD.setDate(now.getDate() - daysBackEnd);
+
+      const weekWorkouts = workouts.filter((w) => {
+        if (!w.loggedDate) return false;
+        const wDate = new Date(w.loggedDate);
+        return wDate >= startD && wDate <= endD;
+      });
+
+      const cals = weekWorkouts.reduce((acc, w) => acc + (w.caloriesBurned || 0), 0);
+      const timeMin = Math.round(weekWorkouts.reduce((acc, w) => acc + (w.durationSeconds || 0), 0) / 60);
+      const dist = weekWorkouts.reduce((acc, w) => acc + (w.distanceKm || 0), 0);
+      const steps = Math.round(dist * 1350);
+
+      return {
+        day: wLabel,
+        steps,
+        calories: Math.round(cals),
+        time: timeMin,
+      };
+    });
 
     return {
       totalWorkouts,
@@ -142,18 +198,25 @@ class WorkoutService {
         activeMinutes: Math.round(todayDurationSeconds / 60),
         distanceKm: Math.round(todayDistanceKm * 10) / 10,
         caloriesBurned: Math.round(todayCaloriesBurned),
+        steps: todaySteps,
         count: todayWorkouts.length,
       },
       personalRecords: {
+        mostSteps: {
+          value: longestRunKm > 0 ? `${Math.round(longestRunKm * 1350)}` : '0',
+          date: longestRunKm > 0 ? longestRunDate : '--',
+        },
         longestRun: {
           value: longestRunKm > 0 ? `${longestRunKm} km` : '0 km',
-          date: longestRunDate || todayStr,
+          date: longestRunKm > 0 ? longestRunDate : '--',
         },
         mostCalories: {
           value: mostCaloriesWorkout > 0 ? `${Math.round(mostCaloriesWorkout)} Kcal` : '0 Kcal',
-          date: mostCaloriesDate || todayStr,
+          date: mostCaloriesWorkout > 0 ? mostCaloriesDate : '--',
         },
       },
+      weeklySeries,
+      monthlySeries,
       recentWorkouts: workouts.slice(0, 5),
     };
   }
