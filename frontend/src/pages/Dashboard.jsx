@@ -11,6 +11,7 @@ import DashboardLayout from '../layouts/DashboardLayout';
 import CircularProgressRing from '../components/fitness/CircularProgressRing';
 import HeartRateCard from '../components/fitness/HeartRateCard';
 import ActivitySummaryCard from '../components/fitness/ActivitySummaryCard';
+import StepTrackerCard from '../components/fitness/StepTrackerCard';
 import {
   Flame,
   Footprints,
@@ -20,6 +21,9 @@ import {
   CheckCircle2,
   Circle,
   Plus,
+  Minus,
+  RotateCcw,
+  Undo2,
   ArrowRight,
   Sparkles,
   Droplets,
@@ -61,6 +65,9 @@ export default function Dashboard() {
   const [nutritionGoals, setNutritionGoals] = useState(null);
   const [workoutStats, setWorkoutStats] = useState(null);
   const [waterTotalMl, setWaterTotalMl] = useState(0);
+  const [waterEntries, setWaterEntries] = useState([]);
+  const [extraSteps, setExtraSteps] = useState(0);
+  const [stepLoading, setStepLoading] = useState(false);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -103,6 +110,7 @@ export default function Dashboard() {
       if (wStats.status === 'fulfilled') setWorkoutStats(wStats.value);
       if (water.status === 'fulfilled' && water.value?.totalMl !== undefined) {
         setWaterTotalMl(water.value.totalMl);
+        setWaterEntries(water.value.entries || []);
       }
     } catch (err) {
       setError(err.message || 'Failed to load dashboard data');
@@ -115,20 +123,154 @@ export default function Dashboard() {
     fetchAllData();
   }, []);
 
-  // Quick Log Water (+250ml per glass)
-  const handleAddWater = async () => {
+  // Quick Log Water (flexible ml amount)
+  const handleAddWater = async (amount = 250) => {
     if (waterAdding) return;
     try {
       setWaterAdding(true);
-      setWaterTotalMl((prev) => prev + 250);
-      await nutritionService.logWater({
-        amountMl: 250,
+      const prevTotal = waterTotalMl;
+      const newTotal = prevTotal + amount;
+      setWaterTotalMl(newTotal);
+      const entry = await nutritionService.logWater({
+        amountMl: amount,
         logDate: todayStr,
       });
+      if (entry) {
+        setWaterEntries((prev) => [...prev, entry]);
+      }
+      if (newTotal >= 2500 && prevTotal < 2500) {
+        confetti({
+          particleCount: 50,
+          spread: 70,
+          origin: { y: 0.8 },
+          colors: ['#25D9E6', '#60A5FA', '#C8FF00'],
+        });
+      }
     } catch (e) {
       console.warn('Could not save water log:', e);
     } finally {
       setWaterAdding(false);
+    }
+  };
+
+  // Withdraw Water Intake Changes (-amount ml)
+  const handleWithdrawWater = async (amountToWithdraw = 250) => {
+    if (waterAdding || waterTotalMl <= 0) return;
+    try {
+      setWaterAdding(true);
+      let entries = [...waterEntries];
+      if (entries.length === 0) {
+        const res = await nutritionService.getWaterLogs(todayStr);
+        entries = res?.entries || [];
+      }
+
+      if (entries.length > 0) {
+        const lastEntry = entries[entries.length - 1];
+        await nutritionService.deleteWaterLog(lastEntry.id);
+        setWaterEntries(entries.slice(0, -1));
+        setWaterTotalMl((prev) => Math.max(0, prev - (lastEntry.amountMl || amountToWithdraw)));
+      } else {
+        setWaterTotalMl((prev) => Math.max(0, prev - amountToWithdraw));
+      }
+    } catch (e) {
+      console.warn('Could not withdraw water log:', e);
+      setWaterTotalMl((prev) => Math.max(0, prev - amountToWithdraw));
+    } finally {
+      setWaterAdding(false);
+    }
+  };
+
+  // Clear/Reset all water logs for today
+  const handleResetWater = async () => {
+    if (waterAdding || waterTotalMl <= 0) return;
+    try {
+      setWaterAdding(true);
+      const res = await nutritionService.getWaterLogs(todayStr);
+      const entries = res?.entries || [];
+      for (const entry of entries) {
+        try {
+          await nutritionService.deleteWaterLog(entry.id);
+        } catch (err) {
+          console.warn('Error clearing water entry:', err);
+        }
+      }
+      setWaterEntries([]);
+      setWaterTotalMl(0);
+    } catch (e) {
+      console.warn('Could not reset water:', e);
+      setWaterTotalMl(0);
+    } finally {
+      setWaterAdding(false);
+    }
+  };
+
+  // Handle adding steps with persistent walking activity
+  const handleAddSteps = async (amount = 500) => {
+    if (stepLoading) return;
+    try {
+      setStepLoading(true);
+      setExtraSteps((prev) => prev + amount);
+
+      const distKm = Math.round((amount / 1350) * 100) / 100;
+      const durationMin = Math.max(5, Math.round(amount / 100));
+      const calories = Math.round(amount * 0.04);
+      await workoutService.logWorkout({
+        workoutType: 'WALKING',
+        distanceKm: distKm,
+        durationMinutes: durationMin,
+        caloriesBurned: calories,
+        loggedDate: todayStr,
+      });
+
+      const updatedStats = await workoutService.getStats();
+      if (updatedStats) {
+        setWorkoutStats(updatedStats);
+        setExtraSteps(0);
+      }
+
+      if (stepsLogged + amount >= 10000 && stepsLogged < 10000) {
+        confetti({
+          particleCount: 50,
+          spread: 70,
+          origin: { y: 0.8 },
+          colors: ['#25D9E6', '#39E58C', '#C8FF00'],
+        });
+      }
+    } catch (e) {
+      console.warn('Could not log steps:', e);
+    } finally {
+      setStepLoading(false);
+    }
+  };
+
+  // Handle withdrawing steps
+  const handleWithdrawSteps = async (amount = 500) => {
+    if (stepLoading || stepsLogged <= 0) return;
+    try {
+      setStepLoading(true);
+      if (extraSteps >= amount) {
+        setExtraSteps((prev) => Math.max(0, prev - amount));
+      } else {
+        try {
+          const userWorkouts = await workoutService.getWorkouts({ limit: 10 });
+          const todayWalk = userWorkouts?.find(
+            (w) => w.loggedDate === todayStr && w.workoutType === 'WALKING'
+          );
+          if (todayWalk) {
+            await workoutService.deleteWorkout(todayWalk.id);
+            const updatedStats = await workoutService.getStats();
+            if (updatedStats) setWorkoutStats(updatedStats);
+          } else {
+            setExtraSteps((prev) => Math.max(0, prev - amount));
+          }
+        } catch {
+          setExtraSteps((prev) => Math.max(0, prev - amount));
+        }
+      }
+    } catch (e) {
+      console.warn('Could not withdraw steps:', e);
+    } finally {
+      setStepLoading(false);
     }
   };
 
@@ -213,7 +355,7 @@ export default function Dashboard() {
   const caloriesConsumed = Math.round(nutritionLogs?.totals?.calories || 0);
 
   const stepsGoal = 10000;
-  const stepsLogged = workoutStats?.today?.steps || 0;
+  const stepsLogged = (workoutStats?.today?.steps || 0) + extraSteps;
 
   const activeTimeGoal = 60;
   const activeTimeMinutes = workoutStats?.today?.activeMinutes || 0;
@@ -235,30 +377,24 @@ export default function Dashboard() {
   // Motivational Quote
   const motivationalQuote = "Every rep, every step, every healthy choice builds your peak vitality.";
 
-  // Quick Direct Glass Water Log
+  // Quick Interactive Glass Click (Supports both filling and withdrawing)
   const handleSetWaterGlass = async (glassNumber) => {
-    const targetMl = glassNumber * 250;
-    const diff = targetMl - waterTotalMl;
-    if (diff === 0 || waterAdding) return;
-    try {
-      setWaterAdding(true);
-      setWaterTotalMl(targetMl);
-      await nutritionService.logWater({
-        amountMl: diff,
-        logDate: todayStr,
-      });
-      if (targetMl >= 2500) {
-        confetti({
-          particleCount: 40,
-          spread: 60,
-          origin: { y: 0.8 },
-          colors: ['#25D9E6', '#60A5FA', '#C8FF00'],
-        });
+    if (waterAdding) return;
+    const currentFilledGlasses = Math.round(waterTotalMl / 250);
+
+    if (glassNumber === currentFilledGlasses) {
+      // Toggling the last filled glass off (withdraw 1 glass)
+      await handleWithdrawWater(250);
+    } else if (glassNumber < currentFilledGlasses) {
+      // Withdrawing down to this glass
+      const glassesToWithdraw = currentFilledGlasses - glassNumber;
+      for (let i = 0; i < glassesToWithdraw; i++) {
+        await handleWithdrawWater(250);
       }
-    } catch (e) {
-      console.warn('Could not update water log:', e);
-    } finally {
-      setWaterAdding(false);
+    } else {
+      // Adding difference up to this glass
+      const diffMl = (glassNumber - currentFilledGlasses) * 250;
+      await handleAddWater(diffMl);
     }
   };
 
@@ -655,28 +791,38 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1 sm:gap-1.5">
+                  {/* Withdraw 250 ml button */}
                   <button
-                    onClick={handleAddWater}
+                    type="button"
+                    onClick={() => handleWithdrawWater(250)}
+                    disabled={waterAdding || waterTotalMl <= 0}
+                    className="px-2 py-1 rounded-lg bg-[#FF453A]/15 border border-[#FF453A]/30 text-[#FF453A] hover:bg-[#FF453A]/25 disabled:opacity-40 disabled:cursor-not-allowed text-xs font-bold flex items-center gap-1 active:scale-95 cursor-pointer transition-all"
+                    title="Withdraw 250 ml (Undo)"
+                  >
+                    <Minus className="w-3 h-3" />
+                    <span>250 ml</span>
+                  </button>
+
+                  {/* Add 250 ml button */}
+                  <button
+                    type="button"
+                    onClick={() => handleAddWater(250)}
                     disabled={waterAdding}
                     className="px-2.5 py-1 rounded-lg bg-[#25D9E6]/15 border border-[#25D9E6]/30 text-[#25D9E6] hover:bg-[#25D9E6]/25 text-xs font-bold flex items-center gap-1 active:scale-95 cursor-pointer transition-all"
+                    title="Add 250 ml"
                   >
                     <Plus className="w-3 h-3" />
                     <span>250 ml</span>
                   </button>
+
+                  {/* Add 500 ml button */}
                   <button
-                    onClick={async () => {
-                      if (waterAdding) return;
-                      setWaterAdding(true);
-                      setWaterTotalMl((prev) => prev + 500);
-                      try {
-                        await nutritionService.logWater({ amountMl: 500, logDate: todayStr });
-                      } finally {
-                        setWaterAdding(false);
-                      }
-                    }}
+                    type="button"
+                    onClick={() => handleAddWater(500)}
                     disabled={waterAdding}
                     className="px-2.5 py-1 rounded-lg bg-[#151A29] border border-[#242A3A] hover:border-[#25D9E6]/40 text-[#A4AABC] hover:text-[#25D9E6] text-xs font-bold flex items-center gap-1 active:scale-95 cursor-pointer transition-all"
+                    title="Add 500 ml"
                   >
                     <Plus className="w-3 h-3" />
                     <span>500 ml</span>
@@ -711,10 +857,25 @@ export default function Dashboard() {
 
               {/* 10 Interactive Water Glasses Grid */}
               <div className="space-y-1.5 pt-1">
-                <p className="text-[10px] text-[#70788D] font-medium flex items-center justify-between">
-                  <span>Interactive Glass Tracker (Click any glass to fill)</span>
-                  <span>{waterTotalMl >= 2500 ? '🎉 Goal Reached!' : `${Math.max(0, 10 - Math.round(waterTotalMl / 250))} left`}</span>
-                </p>
+                <div className="text-[10px] text-[#70788D] font-medium flex items-center justify-between">
+                  <span>Interactive Glass Tracker (Click any glass to fill or withdraw)</span>
+                  <div className="flex items-center gap-2">
+                    <span>{waterTotalMl >= 2500 ? '🎉 Goal Reached!' : `${Math.max(0, 10 - Math.round(waterTotalMl / 250))} left`}</span>
+                    {waterTotalMl > 0 && (
+                      <button
+                        type="button"
+                        onClick={handleResetWater}
+                        disabled={waterAdding}
+                        className="text-[10px] text-[#FF453A] hover:underline flex items-center gap-0.5 cursor-pointer"
+                        title="Reset all water for today"
+                      >
+                        <RotateCcw className="w-2.5 h-2.5" />
+                        <span>Reset</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+
                 <div className="grid grid-cols-10 gap-1 sm:gap-1.5">
                   {[...Array(10)].map((_, i) => {
                     const isFilled = i < Math.round(waterTotalMl / 250);
@@ -728,7 +889,7 @@ export default function Dashboard() {
                             ? 'bg-[#25D9E6]/20 border border-[#25D9E6]/50 text-[#25D9E6] shadow-[0_0_6px_rgba(37,217,230,0.3)]'
                             : 'bg-[#0D101B]/80 border border-[#1D2332] text-[#70788D] hover:border-[#25D9E6]/40 hover:text-[#25D9E6]'
                         }`}
-                        title={`Log ${ (i + 1) * 250 } ml (${i + 1} glasses)`}
+                        title={isFilled ? `Glass ${i + 1} filled (Click to withdraw)` : `Log ${ (i + 1) * 250 } ml (${i + 1} glasses)`}
                       >
                         <Droplets className={`w-3.5 h-3.5 ${isFilled ? 'fill-current' : ''}`} />
                         <span className="text-[8px] font-bold mt-0.5">{i + 1}</span>
@@ -738,6 +899,15 @@ export default function Dashboard() {
                 </div>
               </div>
             </div>
+
+            {/* Step Counter & Cadence Card (Balances Column Alignment & Pedometer Telemetry) */}
+            <StepTrackerCard
+              steps={stepsLogged}
+              target={stepsGoal}
+              onAddSteps={handleAddSteps}
+              onWithdrawSteps={handleWithdrawSteps}
+              isLoading={stepLoading}
+            />
           </div>
         </div>
       </div>
