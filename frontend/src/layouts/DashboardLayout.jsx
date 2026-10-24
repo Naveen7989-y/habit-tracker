@@ -244,7 +244,7 @@ export default function DashboardLayout({ children }) {
 
       {/* Persistent Desktop Footer */}
       <footer className="border-t border-[#1D2332] py-5 text-center text-xs text-[#70788D] hidden md:block">
-        HAbyTAT • Mobile-First Fitness, Habit & Nutrition Platform
+        HAbyTAT • Intelligent Fitness, Habit & Nutrition Platform
       </footer>
 
       {/* Profile Modal */}

@@ -94,211 +94,242 @@ export default function Analytics() {
 
   return (
     <DashboardLayout>
-      <div className="max-w-2xl mx-auto w-full pt-2 sm:pt-4 space-y-4 sm:space-y-5">
+      <div className="max-w-7xl mx-auto w-full pt-2 sm:pt-4 pb-6 space-y-5 sm:space-y-6">
         {/* A. Analytics Header */}
-        <div className="flex items-center justify-between">
-          <button
-            onClick={() => navigate(-1)}
-            className="w-10 h-10 rounded-xl bg-[#111522] border border-[#242A3A] text-[#F5F7FC] flex items-center justify-center hover:bg-[#151A29] transition-colors"
-            title="Go back"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-
-          <h1 className="text-base sm:text-lg font-bold text-[#F5F7FC] tracking-tight">
-            Analytics
-          </h1>
-
-          <div className="w-10 h-10 rounded-xl bg-[#111522] border border-[#242A3A] text-[#C8FF00] flex items-center justify-center">
-            <CalendarIcon className="w-4 h-4" />
-          </div>
-        </div>
-
-        {/* B. Week / Month Segmented Control */}
-        <div className="bg-[#0D101B] border border-[#1D2332] p-1 rounded-2xl flex items-center justify-between max-w-xs mx-auto w-full">
-          <button
-            onClick={() => setPeriod('Week')}
-            className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all ${
-              period === 'Week'
-                ? 'bg-[#151A29] text-[#C8FF00] border border-[#C8FF00]/40 shadow-[0_0_10px_rgba(200,255,0,0.15)]'
-                : 'text-[#70788D] hover:text-[#A4AABC]'
-            }`}
-          >
-            Week
-          </button>
-          <button
-            onClick={() => setPeriod('Month')}
-            className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all ${
-              period === 'Month'
-                ? 'bg-[#151A29] text-[#C8FF00] border border-[#C8FF00]/40 shadow-[0_0_10px_rgba(200,255,0,0.15)]'
-                : 'text-[#70788D] hover:text-[#A4AABC]'
-            }`}
-          >
-            Month
-          </button>
-        </div>
-
-        {/* C. Period Overview & Grouped Bar Chart Card */}
-        <div className="bg-[#111522] border border-[#242A3A] rounded-[24px] p-4 sm:p-5 space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-bold text-[#F5F7FC]">
-              This {period} Overview
-            </h3>
-
-            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0D101B] border border-[#1D2332] text-xs font-medium text-[#A4AABC]">
-              <span>{period === 'Week' ? 'May 18 – May 24' : 'May 2026'}</span>
-              <ChevronDown className="w-3.5 h-3.5 text-[#70788D]" />
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => navigate(-1)}
+              className="w-10 h-10 rounded-xl bg-[#111522] border border-[#242A3A] text-[#F5F7FC] flex items-center justify-center hover:bg-[#151A29] transition-colors"
+              title="Go back"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <div>
+              <h1 className="text-base sm:text-xl font-bold text-[#F5F7FC] tracking-tight">
+                Analytics & Performance Hub
+              </h1>
+              <p className="text-xs text-[#70788D] hidden sm:block">
+                Aggregated biometric trends, weekly consistency, and milestone achievements
+              </p>
             </div>
           </div>
 
-          {/* Grouped Bar Chart */}
-          <div className="h-56 sm:h-64 w-full -ml-3">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                data={chartData}
-                margin={{ top: 10, right: 10, left: -15, bottom: 0 }}
-                barGap={3}
+          {/* Week / Month Segmented Control & Date Indicator */}
+          <div className="flex items-center gap-2 self-start sm:self-auto">
+            <div className="bg-[#0D101B] border border-[#1D2332] p-1 rounded-2xl flex items-center">
+              <button
+                onClick={() => setPeriod('Week')}
+                className={`py-1.5 px-4 rounded-xl text-xs font-bold transition-all ${
+                  period === 'Week'
+                    ? 'bg-[#151A29] text-[#C8FF00] border border-[#C8FF00]/40 shadow-[0_0_10px_rgba(200,255,0,0.15)]'
+                    : 'text-[#70788D] hover:text-[#A4AABC]'
+                }`}
               >
-                <CartesianGrid
-                  stroke="#1D2332"
-                  strokeDasharray="3 3"
-                  vertical={false}
-                />
-
-                <XAxis
-                  dataKey="day"
-                  stroke="#70788D"
-                  fontSize={11}
-                  tickLine={false}
-                  axisLine={{ stroke: '#1D2332' }}
-                />
-
-                <YAxis
-                  stroke="#70788D"
-                  fontSize={10}
-                  tickLine={false}
-                  axisLine={false}
-                  tickFormatter={(val) => (val >= 1000 ? `${val / 1000}K` : val)}
-                />
-
-                <Tooltip
-                  content={({ active, payload, label }) => {
-                    if (active && payload && payload.length) {
-                      return (
-                        <div className="bg-[#0D101B] border border-[#242A3A] p-2.5 rounded-xl shadow-2xl text-xs space-y-1">
-                          <p className="font-bold text-[#F5F7FC] border-b border-[#1D2332] pb-1">
-                            {label}
-                          </p>
-                          {payload.map((entry, idx) => (
-                            <p key={idx} className="flex items-center gap-2">
-                              <span
-                                className="w-2 h-2 rounded-full"
-                                style={{ backgroundColor: entry.color }}
-                              />
-                              <span className="text-[#A4AABC]">{entry.name}:</span>
-                              <span className="font-bold text-white">
-                                {entry.value.toLocaleString()}
-                              </span>
-                            </p>
-                          ))}
-                        </div>
-                      );
-                    }
-                    return null;
-                  }}
-                />
-
-                {/* 3 Series Bars Matching Reference Colors */}
-                {/* 1. Steps (Neon Lime #C8FF00) */}
-                <Bar
-                  dataKey="steps"
-                  name="Steps"
-                  fill="#C8FF00"
-                  radius={[4, 4, 0, 0]}
-                  maxBarSize={14}
-                />
-
-                {/* 2. Active Calories (Electric Violet #8B5CF6) */}
-                <Bar
-                  dataKey="calories"
-                  name="Active Calories (Kcal)"
-                  fill="#8B5CF6"
-                  radius={[4, 4, 0, 0]}
-                  maxBarSize={14}
-                />
-
-                {/* 3. Active Time (Cyan #25D9E6) */}
-                <Bar
-                  dataKey="time"
-                  name="Active Time (min)"
-                  fill="#25D9E6"
-                  radius={[4, 4, 0, 0]}
-                  maxBarSize={14}
-                />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-
-          {/* Legend Matching Reference Image */}
-          <div className="flex flex-wrap items-center justify-center gap-4 pt-1 text-[11px] text-[#A4AABC]">
-            <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-sm bg-[#C8FF00]" />
-              <span>Steps</span>
+                Week
+              </button>
+              <button
+                onClick={() => setPeriod('Month')}
+                className={`py-1.5 px-4 rounded-xl text-xs font-bold transition-all ${
+                  period === 'Month'
+                    ? 'bg-[#151A29] text-[#C8FF00] border border-[#C8FF00]/40 shadow-[0_0_10px_rgba(200,255,0,0.15)]'
+                    : 'text-[#70788D] hover:text-[#A4AABC]'
+                }`}
+              >
+                Month
+              </button>
             </div>
-            <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-sm bg-[#8B5CF6]" />
-              <span>Active Calories (Kcal)</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-sm bg-[#25D9E6]" />
-              <span>Active Time (min)</span>
+
+            <div className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#111522] border border-[#242A3A] text-xs font-semibold text-[#A4AABC]">
+              <CalendarIcon className="w-3.5 h-3.5 text-[#C8FF00]" />
+              <span>{period === 'Week' ? 'May 18 – May 24' : 'May 2026'}</span>
             </div>
           </div>
         </div>
 
-        {/* D. Achievements Section (Screen 3 Reference) */}
-        <AchievementsSection
-          currentStreak={bestStreak}
-          totalCaloriesBurned={totalCaloriesBurned}
-        />
+        {/* Responsive Grid: 2-Columns on Desktop (8/4), 1-Column on Mobile */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-start">
+          {/* Left Column: Interactive Telemetry Charts & Habit Breakdown */}
+          <div className="lg:col-span-7 xl:col-span-8 space-y-5 sm:space-y-6">
+            {/* Period Overview & Grouped Bar Chart Card */}
+            <div className="bg-[#111522] border border-[#242A3A] rounded-[24px] p-4 sm:p-6 space-y-4 shadow-lg">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-sm sm:text-base font-bold text-[#F5F7FC]">
+                    This {period} Overview
+                  </h3>
+                  <p className="text-xs text-[#70788D] mt-0.5">
+                    Multi-metric comparative telemetry (Steps, Calories & Duration)
+                  </p>
+                </div>
 
-        {/* E. Personal Records Cards (Screen 3 Reference) */}
-        <PersonalRecordsCard
-          mostSteps="12,842"
-          mostStepsDate="May 20, 2024"
-          longestRun={longestRunRec}
-          longestRunDate={longestRunDate}
-          mostCalories={mostCaloriesRec}
-          mostCaloriesDate={mostCaloriesDate}
-        />
+                <div className="flex sm:hidden items-center gap-1.5 px-3 py-1 rounded-full bg-[#0D101B] border border-[#1D2332] text-xs font-medium text-[#A4AABC]">
+                  <span>{period === 'Week' ? 'May 18 – 24' : 'May'}</span>
+                  <ChevronDown className="w-3.5 h-3.5 text-[#70788D]" />
+                </div>
+              </div>
 
-        {/* F. Deep Habit Breakdown Section (Preserves existing analytics!) */}
-        {analyticsData?.categories && analyticsData.categories.length > 0 && (
-          <div className="bg-[#111522] border border-[#242A3A] rounded-[24px] p-4 sm:p-5 space-y-3">
-            <h3 className="text-xs font-bold text-[#A4AABC] uppercase tracking-wider">
-              Habits by Category
-            </h3>
-            <div className="space-y-2">
-              {analyticsData.categories.map((cat, idx) => (
-                <div key={idx} className="space-y-1">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-[#F5F7FC] font-semibold">{cat.name}</span>
-                    <span className="text-[#70788D]">{cat.completions} completions ({cat.percentage}%)</span>
-                  </div>
-                  <div className="w-full h-1.5 rounded-full bg-[#151A29] overflow-hidden">
-                    <div
-                      className="h-full rounded-full transition-all duration-500"
-                      style={{
-                        width: `${cat.percentage}%`,
-                        backgroundColor: cat.color || '#C8FF00',
+              {/* Grouped Bar Chart */}
+              <div className="h-64 sm:h-72 w-full -ml-3 pt-2">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={chartData}
+                    margin={{ top: 10, right: 10, left: -15, bottom: 0 }}
+                    barGap={4}
+                  >
+                    <CartesianGrid
+                      stroke="#1D2332"
+                      strokeDasharray="3 3"
+                      vertical={false}
+                    />
+
+                    <XAxis
+                      dataKey="day"
+                      stroke="#70788D"
+                      fontSize={11}
+                      tickLine={false}
+                      axisLine={{ stroke: '#1D2332' }}
+                    />
+
+                    <YAxis
+                      stroke="#70788D"
+                      fontSize={10}
+                      tickLine={false}
+                      axisLine={false}
+                      tickFormatter={(val) => (val >= 1000 ? `${val / 1000}K` : val)}
+                    />
+
+                    <Tooltip
+                      content={({ active, payload, label }) => {
+                        if (active && payload && payload.length) {
+                          return (
+                            <div className="bg-[#0D101B] border border-[#242A3A] p-3 rounded-xl shadow-2xl text-xs space-y-1.5">
+                              <p className="font-bold text-[#F5F7FC] border-b border-[#1D2332] pb-1">
+                                {label}
+                              </p>
+                              {payload.map((entry, idx) => (
+                                <p key={idx} className="flex items-center gap-2">
+                                  <span
+                                    className="w-2.5 h-2.5 rounded-full"
+                                    style={{ backgroundColor: entry.color }}
+                                  />
+                                  <span className="text-[#A4AABC]">{entry.name}:</span>
+                                  <span className="font-bold text-white">
+                                    {entry.value.toLocaleString()}
+                                  </span>
+                                </p>
+                              ))}
+                            </div>
+                          );
+                        }
+                        return null;
                       }}
                     />
-                  </div>
+
+                    {/* 3 Series Bars Matching Reference Colors */}
+                    <Bar
+                      dataKey="steps"
+                      name="Steps"
+                      fill="#C8FF00"
+                      radius={[4, 4, 0, 0]}
+                      maxBarSize={14}
+                    />
+
+                    <Bar
+                      dataKey="calories"
+                      name="Active Calories (Kcal)"
+                      fill="#8B5CF6"
+                      radius={[4, 4, 0, 0]}
+                      maxBarSize={14}
+                    />
+
+                    <Bar
+                      dataKey="time"
+                      name="Active Time (min)"
+                      fill="#25D9E6"
+                      radius={[4, 4, 0, 0]}
+                      maxBarSize={14}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+
+              {/* Legend */}
+              <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 pt-2 text-xs text-[#A4AABC] border-t border-[#1D2332]">
+                <div className="flex items-center gap-2">
+                  <span className="w-3 h-3 rounded-sm bg-[#C8FF00] shadow-[0_0_6px_#C8FF00]" />
+                  <span className="font-semibold">Steps</span>
                 </div>
-              ))}
+                <div className="flex items-center gap-2">
+                  <span className="w-3 h-3 rounded-sm bg-[#8B5CF6] shadow-[0_0_6px_#8B5CF6]" />
+                  <span className="font-semibold">Active Calories</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="w-3 h-3 rounded-sm bg-[#25D9E6] shadow-[0_0_6px_#25D9E6]" />
+                  <span className="font-semibold">Active Time</span>
+                </div>
+              </div>
             </div>
+
+            {/* Deep Habit Breakdown Section */}
+            {analyticsData?.categories && analyticsData.categories.length > 0 && (
+              <div className="bg-[#111522] border border-[#242A3A] rounded-[24px] p-4 sm:p-6 space-y-4 shadow-lg">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-sm sm:text-base font-bold text-[#F5F7FC]">
+                      Habits by Discipline & Category
+                    </h3>
+                    <p className="text-xs text-[#70788D] mt-0.5">
+                      Distribution of completed habits by category classification
+                    </p>
+                  </div>
+                  <span className="text-xs font-bold text-[#C8FF00] bg-[#C8FF00]/10 px-2.5 py-1 rounded-full border border-[#C8FF00]/20">
+                    {analyticsData.categories.length} Categories
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
+                  {analyticsData.categories.map((cat, idx) => (
+                    <div key={idx} className="bg-[#0D101B] border border-[#1D2332] p-3 rounded-2xl space-y-2">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-[#F5F7FC] font-semibold">{cat.name}</span>
+                        <span className="text-[#70788D] font-mono">{cat.completions} hits ({cat.percentage}%)</span>
+                      </div>
+                      <div className="w-full h-2 rounded-full bg-[#151A29] overflow-hidden">
+                        <div
+                          className="h-full rounded-full transition-all duration-500"
+                          style={{
+                            width: `${cat.percentage}%`,
+                            backgroundColor: cat.color || '#C8FF00',
+                          }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
-        )}
+
+          {/* Right Column: Achievements & Personal Bests */}
+          <div className="lg:col-span-5 xl:col-span-4 space-y-5 sm:space-y-6">
+            {/* Achievements Section */}
+            <AchievementsSection
+              currentStreak={bestStreak}
+              totalCaloriesBurned={totalCaloriesBurned}
+            />
+
+            {/* Personal Records Cards */}
+            <PersonalRecordsCard
+              mostSteps="12,842"
+              mostStepsDate="May 20, 2024"
+              longestRun={longestRunRec}
+              longestRunDate={longestRunDate}
+              mostCalories={mostCaloriesRec}
+              mostCaloriesDate={mostCaloriesDate}
+            />
+          </div>
+        </div>
       </div>
     </DashboardLayout>
   );

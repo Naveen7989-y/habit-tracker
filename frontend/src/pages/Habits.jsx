@@ -308,7 +308,7 @@ export default function Habits() {
   return (
     <DashboardLayout>
       {/* Main Content Area */}
-      <main className="flex-1 max-w-6xl mx-auto px-3.5 sm:px-6 py-6 sm:py-8 w-full space-y-6">
+      <div className="w-full pt-2 sm:pt-4 pb-6 space-y-6">
         {/* Top Header & Metrics */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
@@ -703,7 +703,7 @@ export default function Habits() {
             })}
           </div>
         )}
-      </main>
+      </div>
 
       {/* Completion History Modal */}
       {historyHabit && (
