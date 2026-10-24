@@ -23,6 +23,16 @@ export const login = async (req, res, next) => {
   }
 };
 
+export const adminLogin = async (req, res, next) => {
+  try {
+    const { user, token } = await authService.adminLogin(req.body);
+    setAuthCookie(res, token);
+    return successResponse(res, 200, 'Admin authenticated successfully', { user, token });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const logout = async (req, res) => {
   let token = null;
   const authHeader = req.headers.authorization;

@@ -36,6 +36,7 @@ class AuthService {
         name: true,
         email: true,
         avatar: true,
+        role: true,
         timezone: true,
         createdAt: true,
         updatedAt: true,
@@ -90,12 +91,27 @@ class AuthService {
       name: user.name,
       email: user.email,
       avatar: user.avatar,
+      role: user.role,
       timezone: user.timezone,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     };
 
     return { user: sanitizedUser, token };
+  }
+
+  /**
+   * Authenticate an Administrator specifically
+   */
+  async adminLogin({ email, password }) {
+    const { user, token } = await this.login({ email, password });
+    if (user.role !== 'ADMIN') {
+      const error = new Error('Access denied. You do not have administrator permissions.');
+      error.statusCode = 403;
+      error.errorCode = 'ADMIN_ACCESS_REQUIRED';
+      throw error;
+    }
+    return { user, token };
   }
 
   /**
@@ -109,6 +125,7 @@ class AuthService {
         name: true,
         email: true,
         avatar: true,
+        role: true,
         timezone: true,
         createdAt: true,
         updatedAt: true,

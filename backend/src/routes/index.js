@@ -8,6 +8,7 @@ import dashboardRoutes from './dashboard.routes.js';
 import calendarRoutes from './calendar.routes.js';
 import nutritionRoutes from './nutrition.routes.js';
 import workoutRoutes from './workout.routes.js';
+import adminRoutes from './admin.routes.js';
 
 const router = Router();
 
@@ -37,6 +38,9 @@ router.use('/nutrition', nutritionRoutes);
 
 // Workout endpoints: /api/workouts/*
 router.use('/workouts', workoutRoutes);
+
+// Admin & CMS endpoints: /api/admin/*
+router.use('/admin', adminRoutes);
 
 export default router;
 

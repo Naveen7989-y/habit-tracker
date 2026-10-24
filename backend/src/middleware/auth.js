@@ -47,6 +47,7 @@ export const authenticate = async (req, res, next) => {
         name: true,
         email: true,
         avatar: true,
+        role: true,
         timezone: true,
         createdAt: true,
       },
@@ -62,4 +63,19 @@ export const authenticate = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+};
+
+/**
+ * Middleware to restrict endpoints exclusively to Administrators
+ */
+export const requireAdmin = (req, res, next) => {
+  if (!req.user || req.user.role !== 'ADMIN') {
+    return errorResponse(
+      res,
+      403,
+      'Access denied. Administrator privileges are required to perform this action.',
+      'FORBIDDEN'
+    );
+  }
+  next();
 };

@@ -16,6 +16,7 @@ model User {
   email          String            @unique
   password       String
   avatar         String?
+  role           String            @default("USER") // USER, ADMIN
   timezone       String            @default("UTC")
   createdAt      DateTime          @default(now())
   updatedAt      DateTime          @updatedAt
@@ -305,6 +306,22 @@ model Workout {
   @@index([userId, loggedDate])
   @@index([activityType])
   @@map("workouts")
+}
+
+model SiteContent {
+  id                 String   @id @default("default")
+  heroTitle          String   @default("Where dreams rise through the silence.")
+  heroSubtitle       String   @default("We're designing tools for deep thinkers, bold creators, and quiet rebels. Amid the chaos, we build digital spaces for sharp focus and inspired work.")
+  heroCtaText        String   @default("Start Journey")
+  heroCtaLink        String   @default("/register")
+  announcementText   String?  @default("")
+  announcementActive Boolean  @default(false)
+  announcementType   String?  @default("info") // info, promo, alert, warning
+  adsJson            String?  @default("[]") // JSON array of promotional ad banners
+  settingsJson       String?  @default("{}") // JSON object of site feature flags
+  updatedAt          DateTime @updatedAt
+
+  @@map("site_content")
 }
 
 
