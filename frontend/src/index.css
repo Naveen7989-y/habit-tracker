@@ -90,20 +90,33 @@ html:not(.dark) .bg-\[\#080A12\]\/95 {
   box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04) !important;
 }
 
-html:not(.dark) .bg-\[\#111522\] {
+html:not(.dark) .bg-\[\#111522\],
+html:not(.dark) .bg-\[\#111522\]\/90,
+html:not(.dark) [class*="bg-[#111522]"] {
   background-color: #FFFFFF !important;
   border-color: #E2E8F0 !important;
   box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.04), 0 1px 3px 0 rgba(15, 23, 42, 0.02) !important;
 }
 
-html:not(.dark) .bg-\[\#0D101B\] {
+html:not(.dark) .bg-\[\#0D101B\],
+html:not(.dark) .bg-\[\#0D101B\]\/80,
+html:not(.dark) [class*="bg-[#0D101B]"] {
   background-color: #F8FAFC !important;
   border-color: #E2E8F0 !important;
 }
 
-html:not(.dark) .bg-\[\#151A29\] {
+html:not(.dark) .bg-\[\#151A29\],
+html:not(.dark) .bg-\[\#151A29\]\/80,
+html:not(.dark) [class*="bg-[#151A29]"] {
   background-color: #F1F5F9 !important;
   border-color: #E2E8F0 !important;
+}
+
+/* Gradients in light mode */
+html:not(.dark) [class*="from-[#111522]"] {
+  background-image: linear-gradient(to right, #FFFFFF, #F8FAFC, #FFFFFF) !important;
+  border-color: #E2E8F0 !important;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05) !important;
 }
 
 /* Text adaptations in Light Mode */
@@ -131,7 +144,9 @@ html:not(.dark) [style*="color: #C8FF00"] {
 
 /* Border & Divider adaptations in Light Mode */
 html:not(.dark) .border-\[\#242A3A\],
-html:not(.dark) .border-\[\#1D2332\] {
+html:not(.dark) .border-\[\#1D2332\],
+html:not(.dark) [class*="border-[#242A3A]"],
+html:not(.dark) [class*="border-[#1D2332]"] {
   border-color: #E2E8F0 !important;
 }
 

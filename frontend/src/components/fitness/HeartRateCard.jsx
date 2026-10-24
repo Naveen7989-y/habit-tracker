@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   ResponsiveContainer,
   AreaChart,
@@ -8,13 +8,15 @@ import {
   Tooltip,
   CartesianGrid,
 } from 'recharts';
-import { Heart, MoreVertical, Info, Activity, Watch } from 'lucide-react';
+import { Heart, MoreVertical, Info, Radio } from 'lucide-react';
 
-const IDLE_HEART_RATE_SERIES = [
+const RESTING_ECG_SERIES = [
   { time: '00:00', bpm: 0 },
-  { time: '06:00', bpm: 0 },
+  { time: '04:00', bpm: 0 },
+  { time: '08:00', bpm: 0 },
   { time: '12:00', bpm: 0 },
-  { time: '18:00', bpm: 0 },
+  { time: '16:00', bpm: 0 },
+  { time: '20:00', bpm: 0 },
   { time: '24:00', bpm: 0 },
 ];
 
@@ -25,34 +27,146 @@ export default function HeartRateCard({
   onOpenSourceModal,
 }) {
   const [showInfo, setShowInfo] = useState(false);
-  const chartData = data && data.length > 0 ? data : IDLE_HEART_RATE_SERIES;
-  const hasActiveReading = currentBpm > 0;
+  const [simulating, setSimulating] = useState(false);
+  const [simulatedBpm, setSimulatedBpm] = useState(74);
+  const [simulatedSeries, setSimulatedSeries] = useState([]);
+
+  // Live simulation effect when toggled on
+  useEffect(() => {
+    let interval = null;
+    if (simulating) {
+      interval = setInterval(() => {
+        setSimulatedBpm((prev) => {
+          const delta = (Math.random() - 0.48) * 4;
+          const nextBpm = Math.min(138, Math.max(68, Math.round(prev + delta)));
+          setSimulatedSeries((s) => {
+            const timeLabel = new Date().toLocaleTimeString('en-US', { hour12: false, minute: '2-digit', second: '2-digit' });
+            const nextList = [...s, { time: timeLabel, bpm: nextBpm }];
+            return nextList.slice(-10);
+          });
+          return nextBpm;
+        });
+      }, 1200);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [simulating]);
+
+  const effectiveBpm = simulating ? simulatedBpm : currentBpm;
+  const hasActiveReading = effectiveBpm > 0;
+
+  // Chart data to display
+  let chartData = RESTING_ECG_SERIES;
+  if (simulating && simulatedSeries.length > 0) {
+    chartData = simulatedSeries;
+  } else if (data && data.length > 0) {
+    chartData = data;
+  }
+
+  // Determine current heart zone
+  const getZone = (bpm) => {
+    if (!bpm || bpm <= 0) return { label: 'Standby', color: '#70788D' };
+    if (bpm < 60) return { label: 'Resting', color: '#25D9E6' };
+    if (bpm < 100) return { label: 'Warmup', color: '#39E58C' };
+    if (bpm < 135) return { label: 'Fat Burn', color: '#C8FF00' };
+    if (bpm < 160) return { label: 'Cardio', color: '#FFB020' };
+    return { label: 'Peak Zone', color: '#FF5C67' };
+  };
+
+  const zone = getZone(effectiveBpm);
 
   return (
-    <div className="bg-[#111522] border border-[#242A3A] rounded-[22px] p-4 sm:p-5 relative overflow-hidden transition-all duration-200 hover:border-[#242A3A]/80">
+    <div className="bg-[#111522]/90 backdrop-blur-xl border border-[#242A3A] hover:border-[#C8FF00]/40 rounded-[24px] p-4 sm:p-5 relative overflow-hidden transition-all duration-300 shadow-xl group">
+      {/* Ambient background glow */}
+      <div
+        className="absolute -top-12 -right-12 w-36 h-36 rounded-full blur-3xl pointer-events-none transition-opacity duration-700"
+        style={{
+          backgroundColor: hasActiveReading ? `${zone.color}20` : 'rgba(255, 92, 103, 0.08)',
+        }}
+      />
+
       {/* Top Header */}
-      <div className="flex items-center justify-between mb-3">
+      <div className="flex items-center justify-between mb-3 relative z-10">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-[#FF5C67]/15 border border-[#FF5C67]/30 flex items-center justify-center shrink-0">
-            <Heart className={`w-4 h-4 text-[#FF5C67] fill-[#FF5C67]/40 ${hasActiveReading ? 'animate-pulse' : ''}`} />
+          <div
+            className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border transition-all duration-300 shadow-md"
+            style={{
+              backgroundColor: hasActiveReading ? `${zone.color}20` : '#FF5C6715',
+              borderColor: hasActiveReading ? `${zone.color}45` : '#FF5C6730',
+            }}
+          >
+            <Heart
+              className={`w-4 h-4 transition-all duration-300 ${
+                hasActiveReading ? 'animate-pulse scale-110' : ''
+              }`}
+              style={{
+                color: hasActiveReading ? zone.color : '#FF5C67',
+                fill: hasActiveReading ? `${zone.color}40` : '#FF5C6740',
+              }}
+            />
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-[#F5F7FC] tracking-tight">
-              Heart Rate
-            </h3>
+            <div className="flex items-center gap-2">
+              <h3 className="text-sm font-bold text-[#F5F7FC] tracking-tight">
+                Heart Rate Telemetry
+              </h3>
+              {hasActiveReading && (
+                <span
+                  className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full border tracking-wider animate-fade-in"
+                  style={{
+                    backgroundColor: `${zone.color}18`,
+                    borderColor: `${zone.color}40`,
+                    color: zone.color,
+                  }}
+                >
+                  {zone.label}
+                </span>
+              )}
+            </div>
             <p className="text-[11px] text-[#70788D]">
-              {isConnected ? 'Live Sensor Sync' : hasActiveReading ? 'Session Pulse' : 'No Sensor Connected'}
+              {simulating
+                ? 'Live Sensor Simulation Active'
+                : hasActiveReading
+                ? 'Session Pulse Recorded'
+                : 'Sensor Ready • Bluetooth / Wearable'}
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
+          {/* Quick Simulation Trigger Button */}
+          <button
+            onClick={() => setSimulating((prev) => !prev)}
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border transition-all active:scale-95 cursor-pointer ${
+              simulating
+                ? 'bg-[#FF5C67]/15 border-[#FF5C67]/40 text-[#FF5C67] shadow-[0_0_10px_rgba(255,92,103,0.25)]'
+                : 'bg-[#151A29] border-[#242A3A] text-[#A4AABC] hover:text-[#C8FF00] hover:border-[#C8FF00]/40'
+            }`}
+            title="Toggle Live Biometric Pulse Test"
+          >
+            <Radio className={`w-3.5 h-3.5 ${simulating ? 'animate-spin' : ''}`} />
+            <span>{simulating ? 'Live Test' : 'Test Pulse'}</span>
+          </button>
+
           {/* Latest Reading Highlight Badge */}
           {hasActiveReading ? (
-            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#C8FF00]/10 border border-[#C8FF00]/30 shadow-[0_0_12px_rgba(200,255,0,0.15)]">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#C8FF00] animate-ping" />
-              <span className="text-xs font-bold text-[#C8FF00] tracking-tight">
-                {currentBpm} BPM
+            <div
+              className="flex items-center gap-1.5 px-3 py-1 rounded-full border shadow-lg transition-all"
+              style={{
+                backgroundColor: `${zone.color}15`,
+                borderColor: `${zone.color}40`,
+              }}
+            >
+              <span
+                className="w-2 h-2 rounded-full animate-ping"
+                style={{ backgroundColor: zone.color }}
+              />
+              <span
+                className="text-xs font-black tracking-tight"
+                style={{ color: zone.color }}
+              >
+                {effectiveBpm} BPM
               </span>
             </div>
           ) : (
@@ -76,12 +190,12 @@ export default function HeartRateCard({
 
       {/* Sensor Info Drawer / Alert */}
       {showInfo && (
-        <div className="mb-3 p-2.5 bg-[#151A29] border border-[#242A3A] rounded-xl text-xs text-[#A4AABC] flex items-start gap-2 animate-fade-in">
+        <div className="mb-3 p-3 bg-[#151A29] border border-[#242A3A] rounded-xl text-xs text-[#A4AABC] flex items-start gap-2.5 animate-fade-in relative z-10">
           <Info className="w-4 h-4 text-[#C8FF00] shrink-0 mt-0.5" />
           <div className="flex-1 text-[11px] leading-relaxed">
-            <p className="text-[#F5F7FC] font-semibold mb-0.5">Device Integration Status</p>
+            <p className="text-[#F5F7FC] font-semibold mb-0.5">Device Integration & ECG Sync</p>
             <p>
-              Connect your Bluetooth heart rate monitor, Wear OS, or Apple Health to view live real-time biometric telemetry.
+              Connect your Bluetooth chest strap, Apple Health, or Wear OS to stream continuous cardiac telemetry. Click <strong>Test Pulse</strong> above to simulate a live optical sensor feed.
             </p>
           </div>
         </div>
@@ -89,13 +203,13 @@ export default function HeartRateCard({
 
       {/* Chart Area */}
       <div className="h-32 sm:h-36 w-full -ml-2 relative">
-        {!hasActiveReading && (
+        {!hasActiveReading && !simulating && (
           <div className="absolute inset-0 flex flex-col items-center justify-center z-10 pointer-events-none px-4 text-center">
-            <p className="text-xs font-medium text-[#70788D]">
-              Wearable sensor inactive.
+            <p className="text-xs font-semibold text-[#F5F7FC]">
+              Wearable Sensor Standby
             </p>
-            <p className="text-[10px] text-[#70788D]/80">
-              Start a workout session or sync a device to stream live BPM.
+            <p className="text-[11px] text-[#70788D] mt-0.5 max-w-sm">
+              Start an activity session or click <strong>Test Pulse</strong> to preview live dynamic biometric waves.
             </p>
           </div>
         )}
@@ -105,9 +219,9 @@ export default function HeartRateCard({
             margin={{ top: 12, right: 10, left: -20, bottom: 0 }}
           >
             <defs>
-              <linearGradient id="heartRateLimeGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#C8FF00" stopOpacity={hasActiveReading ? 0.35 : 0.05} />
-                <stop offset="90%" stopColor="#C8FF00" stopOpacity={0.0} />
+              <linearGradient id="heartRateGlowGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor={hasActiveReading ? zone.color : '#C8FF00'} stopOpacity={hasActiveReading ? 0.35 : 0.05} />
+                <stop offset="90%" stopColor={hasActiveReading ? zone.color : '#C8FF00'} stopOpacity={0.0} />
               </linearGradient>
             </defs>
 
@@ -123,16 +237,15 @@ export default function HeartRateCard({
               fontSize={10}
               tickLine={false}
               axisLine={{ stroke: '#1D2332' }}
-              ticks={['00:00', '06:00', '12:00', '18:00', '24:00']}
             />
 
             <YAxis
               stroke="#70788D"
               fontSize={10}
-              domain={[0, 140]}
+              domain={[hasActiveReading ? 50 : 0, hasActiveReading ? 160 : 120]}
               tickLine={false}
               axisLine={false}
-              ticks={[0, 40, 80, 120]}
+              ticks={hasActiveReading ? [60, 90, 120, 150] : [0, 40, 80, 120]}
             />
 
             {hasActiveReading && (
@@ -142,7 +255,7 @@ export default function HeartRateCard({
                     return (
                       <div className="bg-[#0D101B] border border-[#242A3A] px-2.5 py-1.5 rounded-lg shadow-xl text-xs">
                         <p className="text-[#70788D] text-[10px]">{label}</p>
-                        <p className="text-[#C8FF00] font-bold">
+                        <p className="font-bold" style={{ color: zone.color }}>
                           {payload[0].value} <span className="text-[10px] text-[#A4AABC]">BPM</span>
                         </p>
                       </div>
@@ -156,20 +269,61 @@ export default function HeartRateCard({
             <Area
               type="monotone"
               dataKey="bpm"
-              stroke={hasActiveReading ? '#C8FF00' : '#242A3A'}
-              strokeWidth={hasActiveReading ? 2.2 : 1}
+              stroke={hasActiveReading ? zone.color : '#242A3A'}
+              strokeWidth={hasActiveReading ? 2.4 : 1}
               fillOpacity={1}
-              fill="url(#heartRateLimeGradient)"
+              fill="url(#heartRateGlowGrad)"
               activeDot={hasActiveReading ? {
-                r: 4.5,
-                fill: '#C8FF00',
+                r: 5,
+                fill: zone.color,
                 stroke: '#080A12',
-                strokeWidth: 2,
-                filter: 'drop-shadow(0 0 6px #C8FF00)',
+                strokeWidth: 2.5,
+                filter: `drop-shadow(0 0 8px ${zone.color})`,
               } : false}
             />
           </AreaChart>
         </ResponsiveContainer>
+      </div>
+
+      {/* 4 Biometric Heart Rate Zone Badges */}
+      <div className="pt-3 mt-2 border-t border-[#1D2332] grid grid-cols-4 gap-2 text-center select-none">
+        {[
+          { label: 'Resting', range: '<60', color: '#25D9E6' },
+          { label: 'Fat Burn', range: '95-125', color: '#C8FF00' },
+          { label: 'Cardio', range: '125-155', color: '#FFB020' },
+          { label: 'Peak', range: '155+', color: '#FF5C67' },
+        ].map((z, idx) => {
+          const isCurrent = hasActiveReading && zone.label.includes(z.label);
+          return (
+            <div
+              key={idx}
+              className={`p-1.5 rounded-xl border transition-all ${
+                isCurrent
+                  ? 'bg-[#151A29] shadow-md'
+                  : 'bg-[#0D101B]/60 border-[#1D2332] opacity-75'
+              }`}
+              style={{
+                borderColor: isCurrent ? `${z.color}60` : undefined,
+              }}
+            >
+              <div className="flex items-center justify-center gap-1">
+                <span
+                  className="w-1.5 h-1.5 rounded-full"
+                  style={{ backgroundColor: z.color }}
+                />
+                <span
+                  className="text-[10px] font-bold truncate"
+                  style={{ color: isCurrent ? z.color : '#F5F7FC' }}
+                >
+                  {z.label}
+                </span>
+              </div>
+              <p className="text-[9px] text-[#70788D] font-mono mt-0.5">
+                {z.range} BPM
+              </p>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
