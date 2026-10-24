@@ -29,6 +29,10 @@ import {
   UserCheck,
   UserX,
   RefreshCw,
+  Bell,
+  Lightbulb,
+  Trophy,
+  AlertTriangle,
 } from 'lucide-react';
 import Logo from '../components/Logo';
 
@@ -36,11 +40,32 @@ export default function AdminDashboard() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  const [activeTab, setActiveTab] = useState('cms'); // 'cms' | 'users' | 'foods' | 'telemetry'
+  const [activeTab, setActiveTab] = useState(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('tab') || 'cms';
+    } catch {
+      return 'cms';
+    }
+  }); // 'cms' | 'notifications' | 'users' | 'foods' | 'telemetry'
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [successBanner, setSuccessBanner] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
+
+  // Broadcast Notifications State
+  const [notificationsList, setNotificationsList] = useState([]);
+  const [notificationsLoading, setNotificationsLoading] = useState(false);
+  const [newNotifModal, setNewNotifModal] = useState(false);
+  const [notifForm, setNotifForm] = useState({
+    title: '',
+    message: '',
+    type: 'announcement',
+    priority: 'normal',
+    actionLink: '',
+    actionText: '',
+    active: true,
+  });
 
   // Platform Telemetry State
   const [overview, setOverview] = useState(null);
@@ -106,12 +131,14 @@ export default function AdminDashboard() {
   const loadAllData = async () => {
     setLoading(true);
     try {
-      const [telemetry, siteContent] = await Promise.all([
+      const [telemetry, siteContent, notifications] = await Promise.all([
         adminService.getOverview().catch(() => null),
         adminService.getContent().catch(() => null),
+        adminService.getNotifications().catch(() => []),
       ]);
 
       if (telemetry) setOverview(telemetry);
+      if (Array.isArray(notifications)) setNotificationsList(notifications);
       if (siteContent) {
         setContentForm({
           heroTitle: siteContent.heroTitle || '',
@@ -133,6 +160,61 @@ export default function AdminDashboard() {
       setErrorMessage('Failed to initialize administrator control data.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleCreateNotification = async (e) => {
+    e.preventDefault();
+    if (!notifForm.title.trim()) return;
+    try {
+      setSaving(true);
+      const created = await adminService.createNotification(notifForm);
+      if (created) {
+        setNotificationsList((prev) => [created, ...prev]);
+      }
+      setNewNotifModal(false);
+      setNotifForm({
+        title: '',
+        message: '',
+        type: 'announcement',
+        priority: 'normal',
+        actionLink: '',
+        actionText: '',
+        active: true,
+      });
+      setSuccessBanner('Broadcast notification published to all platform members!');
+      setTimeout(() => setSuccessBanner(null), 3000);
+    } catch (err) {
+      setErrorMessage(err.message || 'Failed to publish broadcast notification');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleToggleNotification = async (notif) => {
+    try {
+      const updated = await adminService.updateNotification(notif.id, {
+        active: !notif.active,
+      });
+      setNotificationsList((prev) =>
+        prev.map((n) => (n.id === notif.id ? updated : n))
+      );
+      setSuccessBanner(`Notification "${notif.title}" is now ${updated.active ? 'Active' : 'Deactivated'}`);
+      setTimeout(() => setSuccessBanner(null), 2500);
+    } catch (err) {
+      setErrorMessage(err.message || 'Failed to update notification state');
+    }
+  };
+
+  const handleDeleteNotification = async (notifId) => {
+    if (!window.confirm('Delete this broadcast notification permanently?')) return;
+    try {
+      await adminService.deleteNotification(notifId);
+      setNotificationsList((prev) => prev.filter((n) => n.id !== notifId));
+      setSuccessBanner('Broadcast notification removed from user feeds');
+      setTimeout(() => setSuccessBanner(null), 2500);
+    } catch (err) {
+      setErrorMessage(err.message || 'Failed to delete notification');
     }
   };
 
@@ -385,6 +467,7 @@ export default function AdminDashboard() {
         <div className="flex items-center gap-2 border-b border-[#242A3A] pb-3 overflow-x-auto scrollbar-none">
           {[
             { id: 'cms', label: 'Pages & Content CMS', icon: LayoutTemplate },
+            { id: 'notifications', label: 'Broadcast Notifications', icon: Bell },
             { id: 'users', label: 'User Directory', icon: Users },
             { id: 'foods', label: 'Food Catalogue CMS', icon: Utensils },
             { id: 'telemetry', label: 'Platform Telemetry', icon: BarChart3 },
@@ -978,6 +1061,126 @@ export default function AdminDashboard() {
             </div>
           </div>
         )}
+
+        {/* TAB 5: BROADCAST NOTIFICATIONS MANAGEMENT */}
+        {activeTab === 'notifications' && (
+          <div className="space-y-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div>
+                <h2 className="text-lg sm:text-xl font-bold text-[#F5F7FC] flex items-center gap-2">
+                  <Bell className="w-5 h-5 text-[#C8FF00]" />
+                  <span>Broadcast Notifications & Community Alerts</span>
+                </h2>
+                <p className="text-xs text-[#70788D] mt-0.5">
+                  Publish real-time announcements, challenges, wellness tips, and system alerts to all users' notification centers.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setNewNotifModal(true)}
+                className="py-2.5 px-5 rounded-xl bg-[#C8FF00] hover:bg-[#B4E600] text-[#080A12] text-xs font-black flex items-center gap-2 shadow-[0_0_15px_rgba(200,255,0,0.25)] transition-all cursor-pointer"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Publish New Broadcast</span>
+              </button>
+            </div>
+
+            {/* Notifications Grid / List */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {notificationsList.length === 0 ? (
+                <div className="col-span-full py-16 text-center text-xs text-[#70788D] bg-[#111522] border border-[#242A3A] rounded-3xl">
+                  <Bell className="w-8 h-8 text-[#70788D]/40 mx-auto mb-2" />
+                  <p className="font-bold text-[#F5F7FC]">No broadcast notifications active</p>
+                  <p className="text-[11px] text-[#70788D] mt-1">
+                    Click "Publish New Broadcast" to send an alert to all registered users.
+                  </p>
+                </div>
+              ) : (
+                notificationsList.map((notif) => {
+                  const typeColors = {
+                    tip: 'text-[#C8FF00] bg-[#C8FF00]/15 border-[#C8FF00]/30',
+                    challenge: 'text-[#FFB020] bg-[#FFB020]/15 border-[#FFB020]/30',
+                    alert: 'text-[#FF5C67] bg-[#FF5C67]/15 border-[#FF5C67]/30',
+                    announcement: 'text-[#25D9E6] bg-[#25D9E6]/15 border-[#25D9E6]/30',
+                  };
+                  const badgeClass = typeColors[notif.type] || typeColors.announcement;
+
+                  return (
+                    <div
+                      key={notif.id}
+                      className={`bg-[#111522] border rounded-3xl p-5 flex flex-col justify-between transition-all ${
+                        notif.active
+                          ? 'border-[#242A3A] shadow-lg'
+                          : 'border-[#1D2332] opacity-60'
+                      }`}
+                    >
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span
+                            className={`text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${badgeClass}`}
+                          >
+                            {notif.type}
+                          </span>
+                          <span className="text-[10px] text-[#70788D]">
+                            {notif.priority.toUpperCase()} PRIORITY
+                          </span>
+                        </div>
+
+                        <div>
+                          <h3 className="text-sm font-bold text-[#F5F7FC]">{notif.title}</h3>
+                          <p className="text-xs text-[#70788D] mt-1 leading-relaxed">
+                            {notif.message}
+                          </p>
+                        </div>
+
+                        {notif.actionLink && (
+                          <div className="p-2 rounded-xl bg-[#0D101B] border border-[#1D2332] text-[11px] text-[#A4AABC] flex items-center justify-between">
+                            <span className="truncate">Action: {notif.actionText || notif.actionLink}</span>
+                            <span className="text-[#C8FF00] font-semibold">{notif.actionLink}</span>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="pt-4 mt-4 border-t border-[#1D2332] flex items-center justify-between">
+                        <button
+                          type="button"
+                          onClick={() => handleToggleNotification(notif)}
+                          className={`flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-lg transition-colors cursor-pointer ${
+                            notif.active
+                              ? 'bg-[#39E58C]/15 text-[#39E58C] hover:bg-[#39E58C]/25'
+                              : 'bg-[#70788D]/15 text-[#70788D] hover:bg-[#70788D]/25'
+                          }`}
+                        >
+                          {notif.active ? (
+                            <>
+                              <CheckCircle2 className="w-3.5 h-3.5" />
+                              <span>Active</span>
+                            </>
+                          ) : (
+                            <>
+                              <XCircle className="w-3.5 h-3.5" />
+                              <span>Inactive</span>
+                            </>
+                          )}
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteNotification(notif.id)}
+                          className="p-1.5 rounded-lg text-[#70788D] hover:text-[#FF5C67] hover:bg-[#FF5C67]/10 transition-colors cursor-pointer"
+                          title="Delete notification"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* CREATE AD CARD MODAL */}
@@ -1080,7 +1283,134 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* CREATE / EDIT FOOD MODAL */}
+      {/* CREATE BROADCAST NOTIFICATION MODAL (ADMIN ONLY) */}
+      {newNotifModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+          <form
+            onSubmit={handleCreateNotification}
+            className="bg-[#0D101B] border border-[#242A3A] rounded-3xl p-6 max-w-md w-full space-y-4 shadow-2xl"
+          >
+            <div className="flex items-center justify-between border-b border-[#242A3A] pb-3">
+              <div className="flex items-center gap-2">
+                <Bell className="w-4 h-4 text-[#C8FF00]" />
+                <h3 className="text-sm font-bold text-[#F5F7FC]">Publish Broadcast Notification</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setNewNotifModal(false)}
+                className="text-[#70788D] hover:text-white"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <label className="text-xs font-semibold text-[#A4AABC] block mb-1">
+                  Notification Title
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={notifForm.title}
+                  onChange={(e) => setNotifForm({ ...notifForm, title: e.target.value })}
+                  placeholder="e.g. Weekend Hydration Challenge 💧"
+                  className="w-full bg-[#111522] border border-[#242A3A] rounded-xl px-3 py-2 text-xs text-[#F5F7FC] outline-none focus:border-[#C8FF00]"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-[#A4AABC] block mb-1">
+                  Message Description
+                </label>
+                <textarea
+                  rows={3}
+                  required
+                  value={notifForm.message}
+                  onChange={(e) => setNotifForm({ ...notifForm, message: e.target.value })}
+                  placeholder="Write clear biological guidance, platform update, or community challenge details..."
+                  className="w-full bg-[#111522] border border-[#242A3A] rounded-xl px-3 py-2 text-xs text-[#F5F7FC] outline-none focus:border-[#C8FF00] leading-relaxed"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-semibold text-[#A4AABC] block mb-1">Category</label>
+                  <select
+                    value={notifForm.type}
+                    onChange={(e) => setNotifForm({ ...notifForm, type: e.target.value })}
+                    className="w-full bg-[#111522] border border-[#242A3A] rounded-xl px-3 py-2 text-xs text-[#F5F7FC] outline-none cursor-pointer"
+                  >
+                    <option value="announcement">Announcement 📢</option>
+                    <option value="tip">Vitality Tip 💡</option>
+                    <option value="challenge">Challenge 🏆</option>
+                    <option value="alert">System Alert ⚠️</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-[#A4AABC] block mb-1">Priority</label>
+                  <select
+                    value={notifForm.priority}
+                    onChange={(e) => setNotifForm({ ...notifForm, priority: e.target.value })}
+                    className="w-full bg-[#111522] border border-[#242A3A] rounded-xl px-3 py-2 text-xs text-[#F5F7FC] outline-none cursor-pointer"
+                  >
+                    <option value="normal">Normal</option>
+                    <option value="high">High</option>
+                    <option value="urgent">Urgent</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-semibold text-[#A4AABC] block mb-1">
+                    Action Link (Optional)
+                  </label>
+                  <input
+                    type="text"
+                    value={notifForm.actionLink}
+                    onChange={(e) => setNotifForm({ ...notifForm, actionLink: e.target.value })}
+                    placeholder="/profile or /workouts"
+                    className="w-full bg-[#111522] border border-[#242A3A] rounded-xl px-3 py-2 text-xs text-[#F5F7FC] outline-none focus:border-[#C8FF00]"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-[#A4AABC] block mb-1">
+                    Button Label
+                  </label>
+                  <input
+                    type="text"
+                    value={notifForm.actionText}
+                    onChange={(e) => setNotifForm({ ...notifForm, actionText: e.target.value })}
+                    placeholder="e.g. Set Goals"
+                    className="w-full bg-[#111522] border border-[#242A3A] rounded-xl px-3 py-2 text-xs text-[#F5F7FC] outline-none focus:border-[#C8FF00]"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#1D2332]">
+              <button
+                type="button"
+                onClick={() => setNewNotifModal(false)}
+                className="py-2 px-4 rounded-xl bg-[#151A29] text-xs font-semibold text-[#A4AABC] hover:text-[#F5F7FC]"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={saving}
+                className="py-2 px-5 rounded-xl bg-[#C8FF00] text-xs font-black text-[#080A12] hover:bg-[#B4E600] disabled:opacity-50 flex items-center gap-1.5 shadow-[0_0_12px_rgba(200,255,0,0.2)] cursor-pointer"
+              >
+                {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Bell className="w-3.5 h-3.5" />}
+                <span>Publish Broadcast</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
       {foodModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
           <form

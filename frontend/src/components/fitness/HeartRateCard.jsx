@@ -300,7 +300,7 @@ export default function HeartRateCard({
               className={`p-1.5 rounded-xl border transition-all ${
                 isCurrent
                   ? 'bg-[#151A29] shadow-md'
-                  : 'bg-[#0D101B]/60 border-[#1D2332] opacity-75'
+                  : 'bg-[#0D101B]/60 border-[#1D2332] opacity-85'
               }`}
               style={{
                 borderColor: isCurrent ? `${z.color}60` : undefined,
@@ -308,12 +308,12 @@ export default function HeartRateCard({
             >
               <div className="flex items-center justify-center gap-1">
                 <span
-                  className="w-1.5 h-1.5 rounded-full"
+                  className="w-1.5 h-1.5 rounded-full shrink-0"
                   style={{ backgroundColor: z.color }}
                 />
                 <span
-                  className="text-[10px] font-bold truncate"
-                  style={{ color: isCurrent ? z.color : '#F5F7FC' }}
+                  className="text-[10px] font-bold truncate text-[#F5F7FC]"
+                  style={{ color: isCurrent ? z.color : undefined }}
                 >
                   {z.label}
                 </span>

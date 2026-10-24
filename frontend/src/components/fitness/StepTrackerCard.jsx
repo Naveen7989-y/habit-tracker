@@ -73,7 +73,7 @@ export default function StepTrackerCard({
             type="button"
             onClick={() => onWithdrawSteps && onWithdrawSteps(500)}
             disabled={isLoading || steps <= 0}
-            className="px-2 py-1 rounded-lg bg-[#FF453A]/15 border border-[#FF453A]/30 text-[#FF453A] hover:bg-[#FF453A]/25 disabled:opacity-40 disabled:cursor-not-allowed text-xs font-bold flex items-center gap-1 active:scale-95 cursor-pointer transition-all"
+            className="h-7 px-2.5 rounded-lg bg-[#FF453A]/15 border border-[#FF453A]/30 text-[#FF453A] hover:bg-[#FF453A]/25 disabled:opacity-40 disabled:cursor-not-allowed text-xs font-bold flex items-center gap-1 active:scale-95 cursor-pointer transition-all"
             title="Withdraw 500 Steps (Undo)"
           >
             <Minus className="w-3 h-3" />
@@ -85,7 +85,7 @@ export default function StepTrackerCard({
             type="button"
             onClick={() => onAddSteps && onAddSteps(500)}
             disabled={isLoading}
-            className="px-2 py-1 rounded-lg bg-[#25D9E6]/15 border border-[#25D9E6]/30 text-[#25D9E6] hover:bg-[#25D9E6]/25 disabled:opacity-50 text-xs font-bold flex items-center gap-1 active:scale-95 cursor-pointer transition-all"
+            className="h-7 px-2.5 rounded-lg bg-[#25D9E6]/15 border border-[#25D9E6]/30 text-[#25D9E6] hover:bg-[#25D9E6]/25 disabled:opacity-50 text-xs font-bold flex items-center gap-1 active:scale-95 cursor-pointer transition-all"
             title="Log +500 Steps"
           >
             <Plus className="w-3 h-3" />
@@ -97,7 +97,7 @@ export default function StepTrackerCard({
             type="button"
             onClick={() => onAddSteps && onAddSteps(1000)}
             disabled={isLoading}
-            className="px-2 py-1 rounded-lg bg-[#C8FF00]/15 border border-[#C8FF00]/30 text-[#C8FF00] hover:bg-[#C8FF00]/25 disabled:opacity-50 text-xs font-bold flex items-center gap-1 active:scale-95 cursor-pointer transition-all"
+            className="h-7 px-2.5 rounded-lg bg-[#C8FF00]/15 border border-[#C8FF00]/30 text-[#C8FF00] hover:bg-[#C8FF00]/25 disabled:opacity-50 text-xs font-bold flex items-center gap-1 active:scale-95 cursor-pointer transition-all"
             title="Log +1,000 Steps"
           >
             <Plus className="w-3 h-3" />
@@ -134,48 +134,39 @@ export default function StepTrackerCard({
         </div>
       </div>
 
-      {/* Micro Metrics Row */}
-      <div className="grid grid-cols-3 gap-2 pt-0.5">
-        <div className="bg-[#0D101B]/80 p-2 rounded-xl border border-[#1D2332]">
-          <span className="text-[10px] text-[#A4AABC] font-medium block">Distance</span>
-          <span className="text-xs font-bold text-[#F5F7FC]">{distanceKm} km</span>
+      {/* Cadence & Distance Micro-Bar */}
+      <div className="flex items-center justify-between text-xs font-semibold px-3 py-1.5 rounded-xl bg-[#0D101B]/80 border border-[#1D2332]">
+        <div className="flex items-center gap-1.5">
+          <span className={`w-2 h-2 rounded-full ${steps > 0 ? 'bg-[#39E58C] animate-pulse' : 'bg-[#70788D]'}`} />
+          <span className={`${cadenceStatus.color} font-bold`}>{cadenceStatus.label}</span>
         </div>
-
-        <div className="bg-[#0D101B]/80 p-2 rounded-xl border border-[#1D2332]">
-          <span className="text-[10px] text-[#A4AABC] font-medium block">Active Burn</span>
-          <span className="text-xs font-bold text-[#39E58C]">{caloriesBurned} kcal</span>
-        </div>
-
-        <div className="bg-[#0D101B]/80 p-2 rounded-xl border border-[#1D2332]">
-          <span className="text-[10px] text-[#A4AABC] font-medium block">Cadence</span>
-          <span className={`text-xs font-bold ${cadenceStatus.color}`}>{cadenceStatus.label}</span>
+        <div className="text-[11px] text-[#A4AABC]">
+          <span className="text-[#F5F7FC] font-bold">{distanceKm} km</span>
+          <span className="mx-1.5 text-[#70788D]">•</span>
+          <span className="text-[#39E58C] font-bold">{caloriesBurned} kcal</span>
         </div>
       </div>
 
       {/* Hourly Timeline Mini-Bars */}
-      <div className="pt-1 border-t border-[#1D2332]/60">
-        <div className="flex items-center justify-between text-[10px] text-[#70788D] mb-1.5 font-medium">
-          <span className="flex items-center gap-1">
-            <TrendingUp className="w-3 h-3 text-[#25D9E6]" />
-            <span>Hourly Activity Cadence</span>
-          </span>
-          <span>{steps > 0 ? 'Pedometer Sync Active' : 'Sensor Standby'}</span>
-        </div>
-
-        <div className="flex items-end justify-between gap-1.5 h-10 px-1 pt-1 bg-[#0D101B]/50 rounded-xl border border-[#1D2332]/50">
+      <div className="pt-0.5">
+        <div className="flex items-end justify-between gap-1.5 h-6 px-1 pt-0.5 bg-[#0D101B]/40 rounded-lg border border-[#1D2332]/40">
           {hourlyCadence.map((h, i) => (
-            <div key={i} className="flex-1 flex flex-col items-center h-full justify-end group relative">
+            <div key={i} className="flex-1 flex flex-col items-center h-full justify-end group relative" title={`${h.hour}: ${h.barSteps || 0} steps`}>
               <div
-                className={`w-full rounded-md transition-all duration-300 ${
+                className={`w-full rounded-sm transition-all duration-300 ${
                   steps === 0
                     ? 'bg-[#151A29]'
-                    : 'bg-gradient-to-t from-[#25D9E6]/40 to-[#25D9E6] group-hover:from-[#25D9E6] group-hover:to-[#39E58C]'
+                    : 'bg-gradient-to-t from-[#25D9E6]/40 to-[#25D9E6]'
                 }`}
                 style={{ height: `${h.heightPercent}%` }}
               />
-              <span className="text-[8px] text-[#70788D] mt-0.5 font-medium scale-90">{h.hour}</span>
             </div>
           ))}
+        </div>
+        <div className="flex items-center justify-between text-[8px] text-[#70788D] px-1 mt-0.5 font-mono">
+          <span>08:00</span>
+          <span>12:00</span>
+          <span>18:00</span>
         </div>
       </div>
     </div>

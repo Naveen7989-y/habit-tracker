@@ -100,4 +100,52 @@ export const adminController = {
       next(err);
     }
   },
+
+  // Broadcast Notifications
+  async getPublicNotifications(req, res, next) {
+    try {
+      const notifications = await adminService.getBroadcastNotifications(true);
+      return successResponse(res, 200, 'Public notifications retrieved', { notifications });
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  async getNotifications(req, res, next) {
+    try {
+      const notifications = await adminService.getBroadcastNotifications(false);
+      return successResponse(res, 200, 'All broadcast notifications retrieved', { notifications });
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  async createNotification(req, res, next) {
+    try {
+      const notification = await adminService.createBroadcastNotification(req.body);
+      return successResponse(res, 201, 'Broadcast notification published', { notification });
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  async updateNotification(req, res, next) {
+    try {
+      const { id } = req.params;
+      const notification = await adminService.updateBroadcastNotification(id, req.body);
+      return successResponse(res, 200, 'Broadcast notification updated', { notification });
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  async deleteNotification(req, res, next) {
+    try {
+      const { id } = req.params;
+      const result = await adminService.deleteBroadcastNotification(id);
+      return successResponse(res, 200, result.message);
+    } catch (err) {
+      next(err);
+    }
+  },
 };

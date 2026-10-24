@@ -13,6 +13,7 @@ import Dashboard from './pages/Dashboard';
 import CalendarView from './pages/CalendarView';
 import Analytics from './pages/Analytics';
 import Settings from './pages/Settings';
+import Profile from './pages/Profile';
 import Nutrition from './pages/Nutrition';
 import Workouts from './pages/Workouts';
 import Logo from './components/Logo';
@@ -271,7 +272,14 @@ export default function App() {
                 </ProtectedRoute>
               }
             />
-            <Route path="/profile" element={<Navigate to="/settings" replace />} />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </BrowserRouter>

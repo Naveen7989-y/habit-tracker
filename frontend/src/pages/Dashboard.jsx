@@ -41,6 +41,9 @@ import {
   TrendingUp,
   ListTodo,
   LayoutDashboard,
+  X,
+  Send,
+  Check,
 } from 'lucide-react';
 
 const ICONS = {
@@ -73,6 +76,12 @@ export default function Dashboard() {
   const [error, setError] = useState(null);
   const [togglingHabitId, setTogglingHabitId] = useState(null);
   const [waterAdding, setWaterAdding] = useState(false);
+
+  // AI Daily Health Briefing Modal State
+  const [showAiBriefing, setShowAiBriefing] = useState(false);
+  const [aiInputText, setAiInputText] = useState('');
+  const [aiParsing, setAiParsing] = useState(false);
+  const [aiParseResult, setAiParseResult] = useState(null);
 
   // Dynamic Greeting based on current local hour
   const getGreeting = () => {
@@ -108,9 +117,10 @@ export default function Dashboard() {
       if (nutLogs.status === 'fulfilled') setNutritionLogs(nutLogs.value);
       if (nutGoals.status === 'fulfilled') setNutritionGoals(nutGoals.value);
       if (wStats.status === 'fulfilled') setWorkoutStats(wStats.value);
-      if (water.status === 'fulfilled' && water.value?.totalMl !== undefined) {
-        setWaterTotalMl(water.value.totalMl);
-        setWaterEntries(water.value.entries || []);
+      if (water.status === 'fulfilled') {
+        const rawTotal = Number(water.value?.totalMl);
+        setWaterTotalMl(!isNaN(rawTotal) ? rawTotal : 0);
+        setWaterEntries(Array.isArray(water.value?.entries) ? water.value.entries : []);
       }
     } catch (err) {
       setError(err.message || 'Failed to load dashboard data');
@@ -125,14 +135,15 @@ export default function Dashboard() {
 
   // Quick Log Water (flexible ml amount)
   const handleAddWater = async (amount = 250) => {
+    const numericAmount = typeof amount === 'number' && !isNaN(amount) ? amount : 250;
     if (waterAdding) return;
     try {
       setWaterAdding(true);
-      const prevTotal = waterTotalMl;
-      const newTotal = prevTotal + amount;
+      const prevTotal = Number(waterTotalMl) && !isNaN(Number(waterTotalMl)) ? Number(waterTotalMl) : 0;
+      const newTotal = prevTotal + numericAmount;
       setWaterTotalMl(newTotal);
       const entry = await nutritionService.logWater({
-        amountMl: amount,
+        amountMl: numericAmount,
         logDate: todayStr,
       });
       if (entry) {
@@ -155,7 +166,9 @@ export default function Dashboard() {
 
   // Withdraw Water Intake Changes (-amount ml)
   const handleWithdrawWater = async (amountToWithdraw = 250) => {
-    if (waterAdding || waterTotalMl <= 0) return;
+    const numericAmount = typeof amountToWithdraw === 'number' && !isNaN(amountToWithdraw) ? amountToWithdraw : 250;
+    const currentTotal = Number(waterTotalMl) && !isNaN(Number(waterTotalMl)) ? Number(waterTotalMl) : 0;
+    if (waterAdding || currentTotal <= 0) return;
     try {
       setWaterAdding(true);
       let entries = [...waterEntries];
@@ -168,13 +181,23 @@ export default function Dashboard() {
         const lastEntry = entries[entries.length - 1];
         await nutritionService.deleteWaterLog(lastEntry.id);
         setWaterEntries(entries.slice(0, -1));
-        setWaterTotalMl((prev) => Math.max(0, prev - (lastEntry.amountMl || amountToWithdraw)));
+        const entryMl = Number(lastEntry.amountMl) || numericAmount;
+        setWaterTotalMl((prev) => {
+          const prevNum = Number(prev) && !isNaN(Number(prev)) ? Number(prev) : 0;
+          return Math.max(0, prevNum - entryMl);
+        });
       } else {
-        setWaterTotalMl((prev) => Math.max(0, prev - amountToWithdraw));
+        setWaterTotalMl((prev) => {
+          const prevNum = Number(prev) && !isNaN(Number(prev)) ? Number(prev) : 0;
+          return Math.max(0, prevNum - numericAmount);
+        });
       }
     } catch (e) {
       console.warn('Could not withdraw water log:', e);
-      setWaterTotalMl((prev) => Math.max(0, prev - amountToWithdraw));
+      setWaterTotalMl((prev) => {
+        const prevNum = Number(prev) && !isNaN(Number(prev)) ? Number(prev) : 0;
+        return Math.max(0, prevNum - numericAmount);
+      });
     } finally {
       setWaterAdding(false);
     }
@@ -245,11 +268,12 @@ export default function Dashboard() {
 
   // Handle withdrawing steps
   const handleWithdrawSteps = async (amount = 500) => {
+    const numericAmount = typeof amount === 'number' && !isNaN(amount) ? amount : 500;
     if (stepLoading || stepsLogged <= 0) return;
     try {
       setStepLoading(true);
-      if (extraSteps >= amount) {
-        setExtraSteps((prev) => Math.max(0, prev - amount));
+      if (extraSteps >= numericAmount) {
+        setExtraSteps((prev) => Math.max(0, prev - numericAmount));
       } else {
         try {
           const userWorkouts = await workoutService.getWorkouts({ limit: 10 });
@@ -261,16 +285,34 @@ export default function Dashboard() {
             const updatedStats = await workoutService.getStats();
             if (updatedStats) setWorkoutStats(updatedStats);
           } else {
-            setExtraSteps((prev) => Math.max(0, prev - amount));
+            setExtraSteps((prev) => Math.max(0, prev - numericAmount));
           }
         } catch {
-          setExtraSteps((prev) => Math.max(0, prev - amount));
+          setExtraSteps((prev) => Math.max(0, prev - numericAmount));
         }
       }
     } catch (e) {
       console.warn('Could not withdraw steps:', e);
     } finally {
       setStepLoading(false);
+    }
+  };
+
+  // Natural Language AI Parsing inside Daily Briefing Modal
+  const handleRunAiParse = async (e) => {
+    e?.preventDefault();
+    if (!aiInputText.trim() || aiParsing) return;
+    try {
+      setAiParsing(true);
+      const res = await nutritionService.parseNaturalLanguage(aiInputText);
+      setAiParseResult(res);
+    } catch (err) {
+      console.warn('AI parse error:', err);
+      setAiParseResult({
+        error: 'Could not parse description. Try specifying foods with portions (e.g., "2 boiled eggs and 1 slice toast").',
+      });
+    } finally {
+      setAiParsing(false);
     }
   };
 
@@ -377,10 +419,14 @@ export default function Dashboard() {
   // Motivational Quote
   const motivationalQuote = "Every rep, every step, every healthy choice builds your peak vitality.";
 
+  // Safe Numeric Water Metrics (Prevents any NaN or string concatenation)
+  const safeWaterTotal = Number(waterTotalMl) && !isNaN(Number(waterTotalMl)) ? Math.max(0, Number(waterTotalMl)) : 0;
+  const filledWaterGlasses = Math.min(10, Math.max(0, Math.round(safeWaterTotal / 250)));
+
   // Quick Interactive Glass Click (Supports both filling and withdrawing)
   const handleSetWaterGlass = async (glassNumber) => {
     if (waterAdding) return;
-    const currentFilledGlasses = Math.round(waterTotalMl / 250);
+    const currentFilledGlasses = filledWaterGlasses;
 
     if (glassNumber === currentFilledGlasses) {
       // Toggling the last filled glass off (withdraw 1 glass)
@@ -418,6 +464,10 @@ export default function Dashboard() {
                   <Flame className="w-3.5 h-3.5 fill-current" />
                   <span>1 Day Active</span>
                 </span>
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-[#151A29] border border-[#242A3A] text-[#A4AABC]">
+                  <CalendarIcon className="w-3.5 h-3.5 text-[#C8FF00]" />
+                  <span>{formatTodayDisplay()}</span>
+                </span>
               </div>
 
               <h1 className="text-2xl sm:text-3xl font-black text-[#F5F7FC] tracking-tight">
@@ -434,41 +484,39 @@ export default function Dashboard() {
               </p>
             </div>
 
-            {/* Quick Action Launcher Chips */}
-            <div className="flex flex-wrap items-center gap-2 pt-1 lg:pt-0">
-              <Link
-                to="/workouts"
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#C8FF00] hover:bg-[#B4E600] text-[#080A12] text-xs font-bold transition-all shadow-[0_0_12px_rgba(200,255,0,0.25)] hover:scale-105 active:scale-95"
-              >
-                <Dumbbell className="w-3.5 h-3.5 stroke-[2.5]" />
-                <span>Start Workout</span>
-              </Link>
+            {/* Executive Bio-Readiness & AI Health Briefing Launcher (Non-repetitive & High-Value) */}
+            <div className="flex flex-wrap items-center gap-2.5 pt-1 lg:pt-0">
+              {/* Daily Bio-Readiness Capsule */}
+              <div className="flex items-center gap-2.5 px-3.5 py-2 rounded-2xl bg-[#0D101B]/80 border border-[#242A3A] shadow-md backdrop-blur-md">
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-[#39E58C] animate-pulse" />
+                  <span className="text-xs font-bold text-[#F5F7FC]">
+                    Readiness: <span className="text-[#39E58C]">94%</span>
+                  </span>
+                  <span className="text-[10px] text-[#70788D] hidden xl:inline font-medium">• Prime</span>
+                </div>
 
-              <Link
-                to="/nutrition"
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#151A29] hover:bg-[#1D2332] border border-[#242A3A] hover:border-[#39E58C]/40 text-[#F5F7FC] text-xs font-bold transition-all hover:scale-105 active:scale-95"
-              >
-                <UtensilsCrossed className="w-3.5 h-3.5 text-[#39E58C]" />
-                <span>Log Meal</span>
-              </Link>
+                <div className="w-px h-3.5 bg-[#242A3A]" />
 
+                <div className="flex items-center gap-1.5 text-xs text-[#A4AABC]">
+                  <Activity className="w-3.5 h-3.5 text-[#25D9E6]" />
+                  <span className="text-[11px] font-semibold text-[#F5F7FC]">Telemetry Active</span>
+                </div>
+              </div>
+
+              {/* AI Daily Health Briefing Interactive Button */}
               <button
-                onClick={handleAddWater}
-                disabled={waterAdding}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#151A29] hover:bg-[#1D2332] border border-[#242A3A] hover:border-[#25D9E6]/40 text-[#F5F7FC] text-xs font-bold transition-all hover:scale-105 active:scale-95 cursor-pointer"
-                title="Quick Add 250ml Water"
+                type="button"
+                onClick={() => setShowAiBriefing(true)}
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-gradient-to-r from-[#C8FF00] via-[#85FF72] to-[#25D9E6] hover:brightness-110 text-[#080A12] text-xs font-black transition-all shadow-[0_0_16px_rgba(200,255,0,0.3)] hover:scale-105 active:scale-95 cursor-pointer"
+                title="View personalized AI health assessment & daily coaching tips"
               >
-                <Droplets className="w-3.5 h-3.5 text-[#25D9E6]" />
-                <span>+250ml Water</span>
+                <Sparkles className="w-4 h-4 fill-current stroke-none text-[#080A12]" />
+                <span>AI Health Briefing</span>
+                <span className="px-1.5 py-0.5 rounded-full bg-black/15 text-[10px] font-black uppercase tracking-wider">
+                  Live
+                </span>
               </button>
-
-              <Link
-                to="/habits"
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#151A29] hover:bg-[#1D2332] border border-[#242A3A] hover:border-[#8B5CF6]/40 text-[#F5F7FC] text-xs font-bold transition-all hover:scale-105 active:scale-95"
-              >
-                <Plus className="w-3.5 h-3.5 text-[#8B5CF6]" />
-                <span>New Habit</span>
-              </Link>
             </div>
           </div>
         </div>
@@ -561,8 +609,8 @@ export default function Dashboard() {
             />
           </div>
 
-          {/* Right Column (Habits, Meal Diary & Water Intake) */}
-          <div className="lg:col-span-5 xl:col-span-4 space-y-5 sm:space-y-6">
+          {/* Right Column (Habits, Meal Diary, Water Intake & Steps) */}
+          <div className="lg:col-span-5 xl:col-span-4 space-y-4 sm:space-y-4.5">
             {/* Today's Habit Checklist Section */}
             <div className="bg-[#111522]/90 backdrop-blur-xl border border-[#242A3A] hover:border-[#C8FF00]/40 rounded-[26px] p-4 sm:p-5 space-y-3.5 shadow-xl transition-all duration-300">
               <div className="flex items-center justify-between">
@@ -797,7 +845,7 @@ export default function Dashboard() {
                     type="button"
                     onClick={() => handleWithdrawWater(250)}
                     disabled={waterAdding || waterTotalMl <= 0}
-                    className="px-2 py-1 rounded-lg bg-[#FF453A]/15 border border-[#FF453A]/30 text-[#FF453A] hover:bg-[#FF453A]/25 disabled:opacity-40 disabled:cursor-not-allowed text-xs font-bold flex items-center gap-1 active:scale-95 cursor-pointer transition-all"
+                    className="h-7 px-2.5 rounded-lg bg-[#FF453A]/15 border border-[#FF453A]/30 text-[#FF453A] hover:bg-[#FF453A]/25 disabled:opacity-40 disabled:cursor-not-allowed text-xs font-bold flex items-center gap-1 active:scale-95 cursor-pointer transition-all"
                     title="Withdraw 250 ml (Undo)"
                   >
                     <Minus className="w-3 h-3" />
@@ -809,7 +857,7 @@ export default function Dashboard() {
                     type="button"
                     onClick={() => handleAddWater(250)}
                     disabled={waterAdding}
-                    className="px-2.5 py-1 rounded-lg bg-[#25D9E6]/15 border border-[#25D9E6]/30 text-[#25D9E6] hover:bg-[#25D9E6]/25 text-xs font-bold flex items-center gap-1 active:scale-95 cursor-pointer transition-all"
+                    className="h-7 px-2.5 rounded-lg bg-[#25D9E6]/15 border border-[#25D9E6]/30 text-[#25D9E6] hover:bg-[#25D9E6]/25 text-xs font-bold flex items-center gap-1 active:scale-95 cursor-pointer transition-all"
                     title="Add 250 ml"
                   >
                     <Plus className="w-3 h-3" />
@@ -821,7 +869,7 @@ export default function Dashboard() {
                     type="button"
                     onClick={() => handleAddWater(500)}
                     disabled={waterAdding}
-                    className="px-2.5 py-1 rounded-lg bg-[#151A29] border border-[#242A3A] hover:border-[#25D9E6]/40 text-[#A4AABC] hover:text-[#25D9E6] text-xs font-bold flex items-center gap-1 active:scale-95 cursor-pointer transition-all"
+                    className="h-7 px-2.5 rounded-lg bg-[#151A29] border border-[#242A3A] hover:border-[#25D9E6]/40 text-[#A4AABC] hover:text-[#25D9E6] text-xs font-bold flex items-center gap-1 active:scale-95 cursor-pointer transition-all"
                     title="Add 500 ml"
                   >
                     <Plus className="w-3 h-3" />
@@ -834,14 +882,14 @@ export default function Dashboard() {
                 <div className="flex items-baseline justify-between mb-1.5">
                   <div className="flex items-baseline gap-1.5">
                     <span className="text-2xl font-black text-[#25D9E6]">
-                      {waterTotalMl}
+                      {safeWaterTotal}
                     </span>
                     <span className="text-xs text-[#70788D]">
                       / 2500 ml
                     </span>
                   </div>
                   <span className="text-[11px] font-bold text-[#25D9E6]">
-                    {Math.round(waterTotalMl / 250)} of 10 glasses
+                    {filledWaterGlasses} of 10 glasses
                   </span>
                 </div>
                 {/* Progress bar */}
@@ -849,7 +897,7 @@ export default function Dashboard() {
                   <div
                     className="h-full bg-gradient-to-r from-[#25D9E6] to-[#0284C7] rounded-full transition-all duration-500 shadow-[0_0_8px_#25D9E6]"
                     style={{
-                      width: `${Math.min(100, (waterTotalMl / 2500) * 100)}%`,
+                      width: `${Math.min(100, (safeWaterTotal / 2500) * 100)}%`,
                     }}
                   />
                 </div>
@@ -860,8 +908,8 @@ export default function Dashboard() {
                 <div className="text-[10px] text-[#70788D] font-medium flex items-center justify-between">
                   <span>Interactive Glass Tracker (Click any glass to fill or withdraw)</span>
                   <div className="flex items-center gap-2">
-                    <span>{waterTotalMl >= 2500 ? '🎉 Goal Reached!' : `${Math.max(0, 10 - Math.round(waterTotalMl / 250))} left`}</span>
-                    {waterTotalMl > 0 && (
+                    <span>{safeWaterTotal >= 2500 ? '🎉 Goal Reached!' : `${Math.max(0, 10 - filledWaterGlasses)} left`}</span>
+                    {safeWaterTotal > 0 && (
                       <button
                         type="button"
                         onClick={handleResetWater}
@@ -878,7 +926,7 @@ export default function Dashboard() {
 
                 <div className="grid grid-cols-10 gap-1 sm:gap-1.5">
                   {[...Array(10)].map((_, i) => {
-                    const isFilled = i < Math.round(waterTotalMl / 250);
+                    const isFilled = i < filledWaterGlasses;
                     return (
                       <button
                         key={i}
@@ -910,6 +958,170 @@ export default function Dashboard() {
             />
           </div>
         </div>
+
+        {/* AI Daily Health Briefing Modal */}
+        {showAiBriefing && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-fade-in">
+            <div className="bg-[#111522] border border-[#242A3A] rounded-[28px] max-w-xl w-full p-5 sm:p-6 shadow-2xl relative space-y-4 max-h-[90vh] overflow-y-auto">
+              {/* Header */}
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#C8FF00]/20 to-[#25D9E6]/20 border border-[#C8FF00]/40 flex items-center justify-center text-[#C8FF00] shadow-[0_0_12px_rgba(200,255,0,0.2)]">
+                    <Brain className="w-5 h-5 text-[#C8FF00]" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-base sm:text-lg font-black text-[#F5F7FC] tracking-tight">
+                        AI Daily Health Briefing
+                      </h3>
+                      <span className="px-2 py-0.5 rounded-full bg-[#39E58C]/15 border border-[#39E58C]/30 text-[#39E58C] text-[10px] font-bold">
+                        Personalized
+                      </span>
+                    </div>
+                    <p className="text-xs text-[#70788D]">
+                      Real-time biological feedback & recommendations for {user?.name || 'Athlete'}
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowAiBriefing(false);
+                    setAiParseResult(null);
+                  }}
+                  className="p-1.5 rounded-xl text-[#70788D] hover:text-[#F5F7FC] hover:bg-[#151A29] transition-colors cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* 3 Real-Time Diagnostic Telemetry Cards */}
+              <div className="space-y-2.5 pt-1">
+                {/* 1. Cadence & Movement */}
+                <div className="p-3.5 rounded-2xl bg-[#0D101B]/80 border border-[#1D2332] space-y-1">
+                  <div className="flex items-center justify-between text-xs font-bold text-[#F5F7FC]">
+                    <span className="flex items-center gap-1.5 text-[#25D9E6]">
+                      <Footprints className="w-4 h-4" />
+                      <span>Movement & Cadence Pacing</span>
+                    </span>
+                    <span className="text-[#A4AABC]">{stepsLogged.toLocaleString()} / 10,000 steps</span>
+                  </div>
+                  <p className="text-xs text-[#A4AABC] leading-relaxed">
+                    {stepsLogged === 0
+                      ? 'No steps recorded yet today. An initial 15-minute brisk walk will activate baseline metabolic burn.'
+                      : `You have logged ${stepsLogged.toLocaleString()} steps (${((stepsLogged * 0.00075) || 0).toFixed(2)} km) and ${todayActiveCalories} Kcal of active burn. Keep this pacing to reach today's milestone!`}
+                  </p>
+                </div>
+
+                {/* 2. Hydration Balance */}
+                <div className="p-3.5 rounded-2xl bg-[#0D101B]/80 border border-[#1D2332] space-y-1">
+                  <div className="flex items-center justify-between text-xs font-bold text-[#F5F7FC]">
+                    <span className="flex items-center gap-1.5 text-[#39E58C]">
+                      <Droplets className="w-4 h-4" />
+                      <span>Metabolic Hydration Level</span>
+                    </span>
+                    <span className="text-[#A4AABC]">{safeWaterTotal} / 2,500 ml</span>
+                  </div>
+                  <p className="text-xs text-[#A4AABC] leading-relaxed">
+                    {safeWaterTotal >= 2500
+                      ? '🎉 Daily hydration target accomplished! Optimal electrolyte and cognitive equilibrium maintained.'
+                      : `You have logged ${safeWaterTotal} ml (${filledWaterGlasses} of 10 glasses). Drinking ${Math.max(1, 10 - filledWaterGlasses)} more glasses before evening optimizes deep REM recovery.`}
+                  </p>
+                </div>
+
+                {/* 3. Consistency & Habit Streak */}
+                <div className="p-3.5 rounded-2xl bg-[#0D101B]/80 border border-[#1D2332] space-y-1">
+                  <div className="flex items-center justify-between text-xs font-bold text-[#F5F7FC]">
+                    <span className="flex items-center gap-1.5 text-[#C8FF00]">
+                      <Sparkles className="w-4 h-4" />
+                      <span>Habit Momentum & Routine</span>
+                    </span>
+                    <span className="text-[#A4AABC]">{completedHabitsCount}/{totalHabitsCount} Complete</span>
+                  </div>
+                  <p className="text-xs text-[#A4AABC] leading-relaxed">
+                    {totalHabitsCount === 0
+                      ? 'Create your first daily habits in the habits checklist to start tracking behavioral consistency streaks.'
+                      : `You have completed ${completedHabitsCount} of ${totalHabitsCount} scheduled routines today (${habitCompletionRate}% completion rate).`}
+                  </p>
+                </div>
+              </div>
+
+              {/* Natural Language AI Food & Activity Parser */}
+              <div className="pt-2 border-t border-[#1D2332]">
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-xs font-bold text-[#F5F7FC] flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5 text-[#C8FF00]" />
+                    <span>AI Natural Language Quick-Query</span>
+                  </span>
+                  <span className="text-[10px] text-[#70788D]">Powered by Natural Parser</span>
+                </div>
+
+                <form onSubmit={handleRunAiParse} className="flex gap-2">
+                  <input
+                    type="text"
+                    value={aiInputText}
+                    onChange={(e) => setAiInputText(e.target.value)}
+                    placeholder="Describe food (e.g. '2 boiled eggs and 1 avocado toast')..."
+                    className="flex-1 px-3.5 py-2 rounded-xl bg-[#0D101B] border border-[#242A3A] focus:border-[#C8FF00] text-xs text-[#F5F7FC] outline-none transition-all placeholder:text-[#70788D]"
+                  />
+                  <button
+                    type="submit"
+                    disabled={aiParsing || !aiInputText.trim()}
+                    className="px-3.5 py-2 rounded-xl bg-[#C8FF00] hover:bg-[#B4E600] disabled:opacity-50 text-[#080A12] text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer"
+                  >
+                    {aiParsing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
+                    <span>{aiParsing ? 'Analyzing...' : 'Parse'}</span>
+                  </button>
+                </form>
+
+                {aiParseResult && (
+                  <div className="mt-2.5 p-3 rounded-xl bg-[#151A29] border border-[#242A3A] text-xs animate-fade-in">
+                    {aiParseResult.error ? (
+                      <p className="text-[#FF5C67]">{aiParseResult.error}</p>
+                    ) : (
+                      <div className="space-y-1.5">
+                        <p className="text-[#39E58C] font-bold flex items-center gap-1">
+                          <Check className="w-3.5 h-3.5" />
+                          <span>AI Parsed Successfully</span>
+                        </p>
+                        {aiParseResult.parsedItems && aiParseResult.parsedItems.length > 0 && (
+                          <div className="flex flex-wrap gap-2 text-[11px] text-[#A4AABC]">
+                            {aiParseResult.parsedItems.map((item, idx) => (
+                              <span key={idx} className="px-2 py-0.5 rounded-lg bg-[#0D101B] border border-[#1D2332]">
+                                {item.name} • {item.calories || 0} kcal
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Footer Action */}
+              <div className="pt-2 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowAiBriefing(false);
+                    setAiParseResult(null);
+                    confetti({
+                      particleCount: 40,
+                      spread: 60,
+                      origin: { y: 0.6 },
+                      colors: ['#C8FF00', '#25D9E6', '#39E58C'],
+                    });
+                  }}
+                  className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#C8FF00] to-[#39E58C] text-[#080A12] text-xs font-black shadow-lg hover:scale-[1.02] active:scale-95 transition-all cursor-pointer text-center"
+                >
+                  Acknowledge & Apply Briefing
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </DashboardLayout>
   );

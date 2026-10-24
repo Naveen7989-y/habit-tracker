@@ -66,4 +66,30 @@ export const adminService = {
     const res = await api.delete(`/admin/foods/${foodId}`);
     return res?.data || res;
   },
+
+  // Broadcast Notifications Management
+  async getPublicNotifications() {
+    const res = await api.get('/admin/public/notifications');
+    return res?.data?.notifications || res?.notifications || [];
+  },
+
+  async getNotifications() {
+    const res = await api.get('/admin/notifications');
+    return res?.data?.notifications || res?.notifications || [];
+  },
+
+  async createNotification(notificationData) {
+    const res = await api.post('/admin/notifications', notificationData);
+    return res?.data?.notification || res?.notification;
+  },
+
+  async updateNotification(id, notificationData) {
+    const res = await api.put(`/admin/notifications/${id}`, notificationData);
+    return res?.data?.notification || res?.notification;
+  },
+
+  async deleteNotification(id) {
+    const res = await api.delete(`/admin/notifications/${id}`);
+    return res?.data || res;
+  },
 };

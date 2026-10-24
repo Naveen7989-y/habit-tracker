@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import ProfileModal from '../components/ProfileModal';
+import NotificationCenter from '../components/NotificationCenter';
 import Logo from '../components/Logo';
 import MobileBottomNav from '../components/fitness/MobileBottomNav';
+import { adminService } from '../services/admin.service';
 import {
   LayoutDashboard,
   Dumbbell,
@@ -21,6 +23,7 @@ import {
   Settings,
   UtensilsCrossed,
   Bell,
+  Shield,
 } from 'lucide-react';
 
 export default function DashboardLayout({ children }) {
@@ -32,6 +35,33 @@ export default function DashboardLayout({ children }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [profileModalOpen, setProfileModalOpen] = useState(false);
+  const [notificationOpen, setNotificationOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  const fetchUnreadCount = async () => {
+    try {
+      const items = await adminService.getPublicNotifications();
+      if (Array.isArray(items)) {
+        let readIds = [];
+        try {
+          const stored = localStorage.getItem(`readNotificationIds_${user?.id || 'guest'}`);
+          readIds = stored ? JSON.parse(stored) : [];
+        } catch {
+          readIds = [];
+        }
+        const unread = items.filter((n) => !readIds.includes(n.id)).length;
+        setUnreadCount(unread);
+      }
+    } catch {
+      // silent
+    }
+  };
+
+  useEffect(() => {
+    fetchUnreadCount();
+    const interval = setInterval(fetchUnreadCount, 30000);
+    return () => clearInterval(interval);
+  }, [user?.id]);
 
   // Desktop navigation items
   const navItems = [
@@ -97,7 +127,7 @@ export default function DashboardLayout({ children }) {
             })}
           </nav>
 
-          {/* Right Action Icons, Theme Switcher & User Dropdown */}
+          {/* Right Action Icons, Theme Switcher, Notifications & User Dropdown */}
           <div className="flex items-center gap-2 sm:gap-3.5 shrink-0">
             {/* Prominent Light / Dark Theme Selector Switcher */}
             <div className="flex items-center p-1 rounded-2xl bg-[#111522] border border-[#242A3A] shadow-inner">
@@ -129,11 +159,23 @@ export default function DashboardLayout({ children }) {
               </button>
             </div>
 
-            {/* Notification Bell */}
-            <div className="relative p-2.5 rounded-2xl text-[#A4AABC] hover:text-[#F5F7FC] hover:bg-[#111522] transition-colors cursor-pointer border border-[#242A3A]">
+            {/* Interactive Admin-Controlled Notification Bell Button */}
+            <button
+              type="button"
+              onClick={() => setNotificationOpen(!notificationOpen)}
+              className="relative p-2.5 rounded-2xl text-[#A4AABC] hover:text-[#F5F7FC] hover:bg-[#111522] transition-all cursor-pointer border border-[#242A3A] hover:border-[#C8FF00]/40 active:scale-95"
+              title="View Broadcast Notifications"
+              aria-label="View notifications"
+            >
               <Bell className="w-5 h-5" />
-              <span className="absolute top-2 right-2 w-2.5 h-2.5 rounded-full bg-[#C8FF00] shadow-[0_0_6px_#C8FF00]" />
-            </div>
+              {unreadCount > 0 ? (
+                <span className="absolute -top-1 -right-1 min-w-[20px] h-5 px-1 rounded-full bg-[#C8FF00] text-[#080A12] text-[10px] font-black flex items-center justify-center shadow-[0_0_8px_#C8FF00] animate-pulse">
+                  {unreadCount}
+                </span>
+              ) : (
+                <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#39E58C]" />
+              )}
+            </button>
 
             {/* User Dropdown (Hidden on Mobile View) */}
             <div className="relative hidden md:block">
@@ -177,7 +219,7 @@ export default function DashboardLayout({ children }) {
                     </div>
 
                     <Link
-                      to="/settings"
+                      to="/profile"
                       onClick={() => setProfileDropdownOpen(false)}
                       className="flex items-center gap-2.5 px-4 py-2 text-[#A4AABC] hover:text-[#F5F7FC] hover:bg-[#151A29] transition-colors"
                     >
@@ -194,6 +236,17 @@ export default function DashboardLayout({ children }) {
                       <span>Theme & Settings</span>
                     </Link>
 
+                    {user?.role === 'ADMIN' && (
+                      <Link
+                        to="/admin/dashboard"
+                        onClick={() => setProfileDropdownOpen(false)}
+                        className="flex items-center gap-2.5 px-4 py-2 text-[#FFB020] hover:bg-[#FFB020]/10 transition-colors font-semibold"
+                      >
+                        <Shield className="w-4 h-4 text-[#FFB020]" />
+                        <span>Admin Console</span>
+                      </Link>
+                    )}
+
                     <div className="border-t border-[#1D2332] my-1" />
 
                     <button
@@ -201,7 +254,7 @@ export default function DashboardLayout({ children }) {
                         setProfileDropdownOpen(false);
                         handleLogout();
                       }}
-                      className="w-full flex items-center gap-2.5 px-4 py-2 text-[#FF5C67] hover:bg-[#FF5C67]/10 transition-colors text-left"
+                      className="w-full flex items-center gap-2.5 px-4 py-2 text-[#FF5C67] hover:bg-[#FF5C67]/10 transition-colors text-left cursor-pointer"
                     >
                       <LogOut className="w-4 h-4" />
                       <span>Sign Out</span>
@@ -261,6 +314,57 @@ export default function DashboardLayout({ children }) {
               );
             })}
 
+            {/* Mobile Additional Quick Links */}
+            <div className="pt-2 border-t border-[#1D2332] space-y-1">
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  setNotificationOpen(true);
+                }}
+                className="w-full px-3 py-2 rounded-xl text-xs font-semibold flex items-center justify-between text-[#A4AABC] hover:text-[#F5F7FC] hover:bg-[#151A29] transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <Bell className="w-4 h-4 text-[#C8FF00]" />
+                  <span>Notifications</span>
+                </div>
+                {unreadCount > 0 && (
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-[#C8FF00] text-[#080A12]">
+                    {unreadCount}
+                  </span>
+                )}
+              </button>
+
+              <Link
+                to="/profile"
+                onClick={() => setMobileMenuOpen(false)}
+                className="px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-3 text-[#A4AABC] hover:text-[#F5F7FC] hover:bg-[#151A29] transition-colors"
+              >
+                <User className="w-4 h-4 text-[#39E58C]" />
+                <span>Profile & Goals</span>
+              </Link>
+
+              <Link
+                to="/settings"
+                onClick={() => setMobileMenuOpen(false)}
+                className="px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-3 text-[#A4AABC] hover:text-[#F5F7FC] hover:bg-[#151A29] transition-colors"
+              >
+                <Settings className="w-4 h-4 text-[#8B5CF6]" />
+                <span>Theme & Settings</span>
+              </Link>
+
+              {user?.role === 'ADMIN' && (
+                <Link
+                  to="/admin/dashboard"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-3 text-[#FFB020] hover:bg-[#FFB020]/10 transition-colors"
+                >
+                  <Shield className="w-4 h-4 text-[#FFB020]" />
+                  <span>Admin Console</span>
+                </Link>
+              )}
+            </div>
+
             <div className="pt-2 mt-2 border-t border-[#1D2332] flex items-center justify-between">
               <span className="text-[11px] text-[#70788D] truncate max-w-[200px]">
                 Signed in as <strong className="text-[#F5F7FC]">{user?.name}</strong>
@@ -270,7 +374,7 @@ export default function DashboardLayout({ children }) {
                   setMobileMenuOpen(false);
                   handleLogout();
                 }}
-                className="px-3 py-1.5 rounded-lg bg-[#FF5C67]/10 text-[#FF5C67] text-xs font-semibold hover:bg-[#FF5C67]/20 transition-colors flex items-center gap-1.5"
+                className="px-3 py-1.5 rounded-lg bg-[#FF5C67]/10 text-[#FF5C67] text-xs font-semibold hover:bg-[#FF5C67]/20 transition-colors flex items-center gap-1.5 cursor-pointer"
               >
                 <LogOut className="w-3.5 h-3.5" />
                 <span>Logout</span>
@@ -305,6 +409,15 @@ export default function DashboardLayout({ children }) {
       <ProfileModal
         isOpen={profileModalOpen}
         onClose={() => setProfileModalOpen(false)}
+      />
+
+      {/* Notification Center Popover Drawer */}
+      <NotificationCenter
+        isOpen={notificationOpen}
+        onClose={() => {
+          setNotificationOpen(false);
+          fetchUnreadCount();
+        }}
       />
     </div>
   );

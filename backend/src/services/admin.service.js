@@ -387,4 +387,165 @@ export const adminService = {
 
     return { message: 'Food item deleted from catalogue successfully.' };
   },
+
+  /**
+   * Broadcast Notifications Management (Admin Controlled)
+   */
+  async getBroadcastNotifications(onlyActive = false) {
+    const content = await this.getSiteContent();
+    let settings = {};
+    try {
+      settings = JSON.parse(content.settingsJson || '{}');
+    } catch {
+      settings = {};
+    }
+
+    let notifications = settings.broadcastNotifications;
+    if (!Array.isArray(notifications)) {
+      notifications = [
+        {
+          id: 'notif-welcome',
+          title: 'Welcome to HAbyTAT Vitality Hub! 🌿',
+          message: 'Configure your personal biometric profile and custom health targets to unlock tailored daily coaching.',
+          type: 'tip',
+          priority: 'normal',
+          actionLink: '/profile',
+          actionText: 'Set Vitality Goals',
+          createdAt: new Date().toISOString(),
+          active: true,
+        },
+        {
+          id: 'notif-water',
+          title: 'Metabolic Hydration Telemetry Active 💧',
+          message: 'Track every glass of water seamlessly. Logging 2,500ml daily aids restorative sleep and muscle recovery.',
+          type: 'announcement',
+          priority: 'normal',
+          actionLink: '/dashboard',
+          actionText: 'View Water Card',
+          createdAt: new Date(Date.now() - 3600000).toISOString(),
+          active: true,
+        },
+        {
+          id: 'notif-macro',
+          title: 'Indian Regional Food Database Live 🍛',
+          message: 'Access 95+ verified North, South, and pan-Indian recipes with precise macronutrient breakdowns.',
+          type: 'challenge',
+          priority: 'high',
+          actionLink: '/nutrition',
+          actionText: 'Explore Food Log',
+          createdAt: new Date(Date.now() - 7200000).toISOString(),
+          active: true,
+        },
+      ];
+      settings.broadcastNotifications = notifications;
+      await prisma.siteContent.update({
+        where: { id: 'default' },
+        data: { settingsJson: JSON.stringify(settings) },
+      });
+    }
+
+    if (onlyActive) {
+      return notifications.filter((n) => n.active);
+    }
+    return notifications;
+  },
+
+  async createBroadcastNotification(data) {
+    const content = await this.getSiteContent();
+    let settings = {};
+    try {
+      settings = JSON.parse(content.settingsJson || '{}');
+    } catch {
+      settings = {};
+    }
+
+    if (!Array.isArray(settings.broadcastNotifications)) {
+      settings.broadcastNotifications = [];
+    }
+
+    const newNotification = {
+      id: `notif-${Date.now()}`,
+      title: data.title ? data.title.trim() : 'System Broadcast',
+      message: data.message ? data.message.trim() : '',
+      type: data.type || 'announcement',
+      priority: data.priority || 'normal',
+      actionLink: data.actionLink ? data.actionLink.trim() : '',
+      actionText: data.actionText ? data.actionText.trim() : '',
+      createdAt: new Date().toISOString(),
+      active: data.active !== undefined ? Boolean(data.active) : true,
+    };
+
+    settings.broadcastNotifications.unshift(newNotification);
+
+    await prisma.siteContent.update({
+      where: { id: 'default' },
+      data: { settingsJson: JSON.stringify(settings) },
+    });
+
+    return newNotification;
+  },
+
+  async updateBroadcastNotification(id, data) {
+    const content = await this.getSiteContent();
+    let settings = {};
+    try {
+      settings = JSON.parse(content.settingsJson || '{}');
+    } catch {
+      settings = {};
+    }
+
+    if (!Array.isArray(settings.broadcastNotifications)) {
+      settings.broadcastNotifications = [];
+    }
+
+    const idx = settings.broadcastNotifications.findIndex((n) => n.id === id);
+    if (idx === -1) {
+      const error = new Error('Notification not found');
+      error.statusCode = 404;
+      throw error;
+    }
+
+    const current = settings.broadcastNotifications[idx];
+    settings.broadcastNotifications[idx] = {
+      ...current,
+      title: data.title !== undefined ? data.title.trim() : current.title,
+      message: data.message !== undefined ? data.message.trim() : current.message,
+      type: data.type || current.type,
+      priority: data.priority || current.priority,
+      actionLink: data.actionLink !== undefined ? data.actionLink.trim() : current.actionLink,
+      actionText: data.actionText !== undefined ? data.actionText.trim() : current.actionText,
+      active: data.active !== undefined ? Boolean(data.active) : current.active,
+      updatedAt: new Date().toISOString(),
+    };
+
+    await prisma.siteContent.update({
+      where: { id: 'default' },
+      data: { settingsJson: JSON.stringify(settings) },
+    });
+
+    return settings.broadcastNotifications[idx];
+  },
+
+  async deleteBroadcastNotification(id) {
+    const content = await this.getSiteContent();
+    let settings = {};
+    try {
+      settings = JSON.parse(content.settingsJson || '{}');
+    } catch {
+      settings = {};
+    }
+
+    if (!Array.isArray(settings.broadcastNotifications)) {
+      settings.broadcastNotifications = [];
+    }
+
+    settings.broadcastNotifications = settings.broadcastNotifications.filter((n) => n.id !== id);
+
+    await prisma.siteContent.update({
+      where: { id: 'default' },
+      data: { settingsJson: JSON.stringify(settings) },
+    });
+
+    return { message: 'Broadcast notification deleted successfully' };
+  },
 };
