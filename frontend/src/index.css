@@ -14,6 +14,11 @@
    HAByTAT FITNESS DESIGN TOKENS (MOBILE-FIRST)
    Exact Reference Palette: #080A12 / #C8FF00 / #8B5CF6 / #25D9E6
    ================================================== */
+/* ==================================================
+   HAByTAT FITNESS DESIGN TOKENS (LIGHT & DARK THEMES)
+   Dark Theme (Default): #080A12 / #C8FF00 / #8B5CF6 / #25D9E6
+   Light Theme: #F8FAFC / #FFFFFF / #0F172A / #0D9488 / #7C3AED
+   ================================================== */
 :root {
   --color-bg: #080A12;
   --color-bg-secondary: #0D101B;
@@ -33,7 +38,188 @@
   --color-text-muted: #70788D;
   --color-border: #242A3A;
   --color-divider: #1D2332;
+  --color-header-bg: rgba(8, 10, 18, 0.95);
+  --color-header-border: #1D2332;
 }
+
+/* --------------------------------------------------
+   LIGHT THEME GLOBAL VARIABLES & OVERRIDES
+   When HTML is NOT .dark or data-theme="light", all pages transform into a pristine light theme
+   -------------------------------------------------- */
+html:not(.dark),
+:root:not(.dark),
+[data-theme="light"] {
+  color-scheme: light;
+  --color-bg: #F8FAFC;
+  --color-bg-secondary: #F1F5F9;
+  --color-card: #FFFFFF;
+  --color-card-elevated: #F8FAFC;
+  --color-input: #FFFFFF;
+  --color-primary: #0D9488;
+  --color-primary-hover: #0F766E;
+  --color-violet: #7C3AED;
+  --color-violet-dark: #6D28D9;
+  --color-cyan: #0284C7;
+  --color-success: #16A34A;
+  --color-warning: #D97706;
+  --color-error: #EF4444;
+  --color-text: #0F172A;
+  --color-text-secondary: #334155;
+  --color-text-muted: #64748B;
+  --color-border: #E2E8F0;
+  --color-divider: #E2E8F0;
+  --color-header-bg: rgba(255, 255, 255, 0.95);
+  --color-header-border: #E2E8F0;
+}
+
+/* Automatic background & card surface adaptations in Light Mode */
+html:not(.dark) body {
+  background-color: #F8FAFC !important;
+  color: #0F172A !important;
+}
+
+html:not(.dark) .bg-\[\#080A12\],
+html:not(.dark) [class*="bg-[#080A12]"] {
+  background-color: #F8FAFC !important;
+}
+
+html:not(.dark) header.bg-\[\#080A12\]\/95,
+html:not(.dark) .bg-\[\#080A12\]\/95 {
+  background-color: rgba(255, 255, 255, 0.96) !important;
+  border-color: #E2E8F0 !important;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04) !important;
+}
+
+html:not(.dark) .bg-\[\#111522\] {
+  background-color: #FFFFFF !important;
+  border-color: #E2E8F0 !important;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.04), 0 1px 3px 0 rgba(15, 23, 42, 0.02) !important;
+}
+
+html:not(.dark) .bg-\[\#0D101B\] {
+  background-color: #F8FAFC !important;
+  border-color: #E2E8F0 !important;
+}
+
+html:not(.dark) .bg-\[\#151A29\] {
+  background-color: #F1F5F9 !important;
+  border-color: #E2E8F0 !important;
+}
+
+/* Text adaptations in Light Mode */
+html:not(.dark) .text-\[\#F5F7FC\] {
+  color: #0F172A !important;
+}
+
+html:not(.dark) .text-\[\#A4AABC\] {
+  color: #334155 !important;
+}
+
+html:not(.dark) .text-\[\#70788D\] {
+  color: #64748B !important;
+}
+
+/* Brand Neon Lime text contrast enhancement in Light Mode */
+html:not(.dark) .text-\[\#C8FF00\] {
+  color: #0D9488 !important;
+}
+
+html:not(.dark) [style*="color: rgb(200, 255, 0)"],
+html:not(.dark) [style*="color: #C8FF00"] {
+  color: #0D9488 !important;
+}
+
+/* Border & Divider adaptations in Light Mode */
+html:not(.dark) .border-\[\#242A3A\],
+html:not(.dark) .border-\[\#1D2332\] {
+  border-color: #E2E8F0 !important;
+}
+
+html:not(.dark) .divide-\[\#1D2332\] > :not([hidden]) ~ :not([hidden]),
+html:not(.dark) .divide-\[\#242A3A\] > :not([hidden]) ~ :not([hidden]) {
+  border-color: #E2E8F0 !important;
+}
+
+/* Active buttons & pills in Light Mode */
+html:not(.dark) .desktop-navbar-pill {
+  background-color: #F1F5F9 !important;
+  border-color: #E2E8F0 !important;
+}
+
+html:not(.dark) .desktop-navbar-pill .bg-\[\#C8FF00\] {
+  background-color: #0F172A !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15) !important;
+}
+
+html:not(.dark) .desktop-navbar-pill .text-\[\#080A12\] {
+  color: #FFFFFF !important;
+}
+
+html:not(.dark) .desktop-navbar-pill .text-\[\#A4AABC\] {
+  color: #475569 !important;
+}
+
+html:not(.dark) .desktop-navbar-pill .text-\[\#A4AABC\]:hover {
+  color: #0F172A !important;
+  background-color: #FFFFFF !important;
+}
+
+/* Modal backgrounds in Light Mode */
+html:not(.dark) .fixed.inset-0.bg-black\/80,
+html:not(.dark) .fixed.inset-0.bg-\[\#080A12\]\/80 {
+  background-color: rgba(15, 23, 42, 0.6) !important;
+}
+
+html:not(.dark) .fixed.inset-0 .bg-\[\#0D101B\] {
+  background-color: #FFFFFF !important;
+  border-color: #E2E8F0 !important;
+  box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.15) !important;
+}
+
+/* Inputs in Light Mode */
+html:not(.dark) input,
+html:not(.dark) select,
+html:not(.dark) textarea {
+  color: #0F172A !important;
+}
+
+/* Progress ring tracks in Light Mode */
+html:not(.dark) circle[stroke="#151A29"] {
+  stroke: #E2E8F0 !important;
+}
+
+/* Mobile bottom nav active indicator in Light Mode */
+html:not(.dark) nav.fixed.bottom-0 .bg-\[\#C8FF00\],
+html:not(.dark) .fixed.bottom-0 span.bg-\[\#C8FF00\] {
+  background-color: #0D9488 !important;
+  box-shadow: 0 0 8px #0D9488 !important;
+}
+
+/* In-page badges in Light Mode */
+html:not(.dark) .bg-\[\#C8FF00\]\/10,
+html:not(.dark) .bg-\[\#C8FF00\]\/15 {
+  background-color: rgba(13, 148, 136, 0.12) !important;
+}
+
+html:not(.dark) .border-\[\#C8FF00\]\/30,
+html:not(.dark) .border-\[\#C8FF00\]\/20,
+html:not(.dark) .border-\[\#C8FF00\]\/40 {
+  border-color: rgba(13, 148, 136, 0.3) !important;
+}
+
+/* Save / Primary buttons in Light Mode */
+html:not(.dark) button.bg-\[\#C8FF00\],
+html:not(.dark) a.bg-\[\#C8FF00\] {
+  background-color: #0D9488 !important;
+  color: #FFFFFF !important;
+}
+
+html:not(.dark) button.bg-\[\#C8FF00\]:hover,
+html:not(.dark) a.bg-\[\#C8FF00\]:hover {
+  background-color: #0F766E !important;
+}
+
 
 /* --------------------------------------------------
    THEME: FRESH SKY

@@ -167,7 +167,7 @@ export default function Workouts() {
 
   return (
     <DashboardLayout>
-      <div className="max-w-7xl mx-auto w-full pt-2 sm:pt-4 pb-6 space-y-5 sm:space-y-6">
+      <div className="w-full pt-2 sm:pt-4 pb-6 space-y-5 sm:space-y-6">
         {/* A. Workout Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">

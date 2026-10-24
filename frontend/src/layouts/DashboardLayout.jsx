@@ -14,6 +14,7 @@ import {
   LogOut,
   User,
   Sun,
+  Moon,
   Menu,
   X,
   ChevronDown,
@@ -24,7 +25,7 @@ import {
 
 export default function DashboardLayout({ children }) {
   const { user, logout } = useAuth();
-  const { theme, toggleTheme } = useTheme();
+  const { theme, isDark, toggleTheme, setTheme } = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -56,26 +57,26 @@ export default function DashboardLayout({ children }) {
 
   return (
     <div className="min-h-screen bg-[#080A12] text-[#F5F7FC] flex flex-col justify-between selection:bg-[#C8FF00] selection:text-[#080A12] transition-colors duration-200">
-      {/* Top Navigation Bar (Hidden on Mobile, Visible on Desktop/Tablet) */}
-      <header className="hidden md:block border-b border-[#1D2332] bg-[#080A12]/95 backdrop-blur-xl sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between">
+      {/* Top Navigation Bar (Prominent, High-Visibility, Screen-Wide like adyapan.com) */}
+      <header className="hidden md:block border-b border-[#1D2332] bg-[#080A12]/95 backdrop-blur-xl sticky top-0 z-40 transition-colors">
+        <div className="max-w-screen-2xl mx-auto px-4 sm:px-8 lg:px-10 h-20 sm:h-22 flex items-center justify-between gap-4">
           {/* Logo & Mobile Menu Toggle */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4 shrink-0">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded-xl text-[#70788D] hover:text-[#F5F7FC] hover:bg-[#111522] transition-colors"
+              className="md:hidden p-2 rounded-2xl text-[#70788D] hover:text-[#F5F7FC] hover:bg-[#111522] transition-colors"
               aria-label="Toggle navigation drawer"
             >
-              {mobileMenuOpen ? <X className="w-5 h-5 text-[#C8FF00]" /> : <Menu className="w-5 h-5" />}
+              {mobileMenuOpen ? <X className="w-6 h-6 text-[#C8FF00]" /> : <Menu className="w-6 h-6 text-[#F5F7FC]" />}
             </button>
 
-            <Link to="/dashboard" className="flex items-center gap-2 shrink-0">
-              <Logo className="h-7 sm:h-8 w-auto object-contain transition-all" />
+            <Link to="/dashboard" className="flex items-center gap-3 shrink-0 group">
+              <Logo className="h-10 sm:h-12 w-auto object-contain transition-transform group-hover:scale-105" />
             </Link>
           </div>
 
-          {/* Desktop Nav Items */}
-          <nav className="desktop-navbar-pill hidden md:flex items-center gap-1 bg-[#111522] p-1.5 rounded-2xl border border-[#242A3A]">
+          {/* Desktop Nav Items (Substantial size, high contrast, clearly visible) */}
+          <nav className="desktop-navbar-pill hidden md:flex items-center gap-1.5 bg-[#111522] p-2 rounded-2xl border border-[#242A3A] shadow-md">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = isRouteActive(item.path);
@@ -83,42 +84,62 @@ export default function DashboardLayout({ children }) {
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all duration-150 ${
+                  className={`px-4 lg:px-5 py-2.5 rounded-xl text-sm lg:text-[15px] font-bold flex items-center gap-2.5 transition-all duration-150 ${
                     isActive
-                      ? 'bg-[#C8FF00] text-[#080A12] shadow-md shadow-[#C8FF00]/20 font-bold'
+                      ? 'bg-[#C8FF00] text-[#080A12] shadow-lg shadow-[#C8FF00]/25 font-black scale-[1.02]'
                       : 'text-[#A4AABC] hover:text-[#F5F7FC] hover:bg-[#151A29]'
                   }`}
                 >
-                  <Icon className="w-3.5 h-3.5" />
+                  <Icon className="w-4 h-4 lg:w-5 lg:h-5 shrink-0" />
                   <span>{item.label}</span>
                 </Link>
               );
             })}
           </nav>
 
-          {/* Right Action Icons & User Dropdown */}
-          <div className="flex items-center gap-1.5 sm:gap-2.5">
-            {/* Notification Bell */}
-            <div className="relative p-2 rounded-xl text-[#A4AABC] hover:text-[#F5F7FC] hover:bg-[#111522] transition-colors cursor-pointer">
-              <Bell className="w-4 h-4" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#C8FF00] shadow-[0_0_6px_#C8FF00]" />
+          {/* Right Action Icons, Theme Switcher & User Dropdown */}
+          <div className="flex items-center gap-2 sm:gap-3.5 shrink-0">
+            {/* Prominent Light / Dark Theme Selector Switcher */}
+            <div className="flex items-center p-1 rounded-2xl bg-[#111522] border border-[#242A3A] shadow-inner">
+              <button
+                onClick={() => setTheme('light')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                  !isDark
+                    ? 'bg-white text-slate-900 shadow-md border border-slate-200'
+                    : 'text-[#70788D] hover:text-[#F5F7FC]'
+                }`}
+                title="Switch to Light Theme"
+                type="button"
+              >
+                <Sun className={`w-4 h-4 ${!isDark ? 'text-amber-500 fill-amber-500' : 'text-[#70788D]'}`} />
+                <span className="hidden xl:inline">Light</span>
+              </button>
+              <button
+                onClick={() => setTheme('dark')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                  isDark
+                    ? 'bg-[#151A29] text-[#C8FF00] border border-[#C8FF00]/40 shadow-[0_0_10px_rgba(200,255,0,0.2)]'
+                    : 'text-[#70788D] hover:text-slate-900'
+                }`}
+                title="Switch to Dark Theme"
+                type="button"
+              >
+                <Moon className={`w-4 h-4 ${isDark ? 'text-[#8B5CF6] fill-[#8B5CF6]/50' : 'text-[#70788D]'}`} />
+                <span className="hidden xl:inline">Dark</span>
+              </button>
             </div>
 
-            {/* Theme Toggle */}
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-xl text-[#A4AABC] hover:text-[#F5F7FC] hover:bg-[#111522] transition-colors"
-              title={`Switch theme (Current: ${theme})`}
-              aria-label="Toggle visual theme"
-            >
-              <Sun className="w-4 h-4 text-[#C8FF00]" />
-            </button>
+            {/* Notification Bell */}
+            <div className="relative p-2.5 rounded-2xl text-[#A4AABC] hover:text-[#F5F7FC] hover:bg-[#111522] transition-colors cursor-pointer border border-[#242A3A]">
+              <Bell className="w-5 h-5" />
+              <span className="absolute top-2 right-2 w-2.5 h-2.5 rounded-full bg-[#C8FF00] shadow-[0_0_6px_#C8FF00]" />
+            </div>
 
             {/* User Dropdown (Hidden on Mobile View) */}
             <div className="relative hidden md:block">
               <button
                 onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-                className="flex items-center gap-2 p-1.5 rounded-xl hover:bg-[#111522] transition-colors"
+                className="flex items-center gap-2.5 p-1.5 pr-3 rounded-2xl hover:bg-[#111522] border border-transparent hover:border-[#242A3A] transition-all cursor-pointer"
                 aria-expanded={profileDropdownOpen}
               >
                 <div className="relative">
@@ -126,20 +147,20 @@ export default function DashboardLayout({ children }) {
                     <img
                       src={user.avatar}
                       alt={user.name}
-                      className="w-8 h-8 rounded-full object-cover border border-[#C8FF00]/50"
+                      className="w-9 h-9 rounded-full object-cover border border-[#C8FF00]/50"
                     />
                   ) : (
-                    <div className="w-8 h-8 rounded-full bg-[#8B5CF6]/20 border border-[#8B5CF6]/50 flex items-center justify-center text-[#F5F7FC] font-bold text-xs shadow-[0_0_10px_rgba(139,92,246,0.3)]">
+                    <div className="w-9 h-9 rounded-full bg-[#8B5CF6]/20 border border-[#8B5CF6]/50 flex items-center justify-center text-[#F5F7FC] font-bold text-sm shadow-[0_0_10px_rgba(139,92,246,0.3)]">
                       {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
                     </div>
                   )}
                   <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-[#39E58C] border-2 border-[#080A12]" />
                 </div>
 
-                <span className="hidden sm:inline-block text-xs font-semibold text-[#F5F7FC] max-w-[100px] truncate">
+                <span className="hidden sm:inline-block text-sm font-bold text-[#F5F7FC] max-w-[120px] truncate">
                   {user?.name || 'Account'}
                 </span>
-                <ChevronDown className="hidden sm:inline-block w-3.5 h-3.5 text-[#70788D]" />
+                <ChevronDown className="hidden sm:inline-block w-4 h-4 text-[#70788D]" />
               </button>
 
               {/* Dropdown Menu */}
@@ -195,6 +216,31 @@ export default function DashboardLayout({ children }) {
         {/* Mobile Slide-down Drawer */}
         {mobileMenuOpen && (
           <div className="md:hidden border-t border-[#1D2332] bg-[#0D101B] px-4 py-3 space-y-1 backdrop-blur-xl animate-fade-in shadow-xl">
+            {/* Mobile Theme Toggle */}
+            <div className="flex items-center justify-between py-2 px-3 border-b border-[#1D2332] mb-2">
+              <span className="text-xs font-bold text-[#A4AABC]">Theme</span>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setTheme('light')}
+                  className={`px-3 py-1 rounded-lg text-xs font-bold flex items-center gap-1.5 ${
+                    !isDark ? 'bg-white text-slate-900 shadow-sm' : 'text-[#70788D]'
+                  }`}
+                >
+                  <Sun className="w-3.5 h-3.5 text-amber-500" />
+                  <span>Light</span>
+                </button>
+                <button
+                  onClick={() => setTheme('dark')}
+                  className={`px-3 py-1 rounded-lg text-xs font-bold flex items-center gap-1.5 ${
+                    isDark ? 'bg-[#151A29] text-[#C8FF00] border border-[#C8FF00]/40' : 'text-[#70788D]'
+                  }`}
+                >
+                  <Moon className="w-3.5 h-3.5 text-[#8B5CF6]" />
+                  <span>Dark</span>
+                </button>
+              </div>
+            </div>
+
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = isRouteActive(item.path);
@@ -234,8 +280,8 @@ export default function DashboardLayout({ children }) {
         )}
       </header>
 
-      {/* Main Content Area */}
-      <main className="flex-1 flex flex-col pb-24 md:pb-10 max-w-7xl mx-auto w-full px-3.5 sm:px-6">
+      {/* Main Content Area (Spacious & screen-filling like adyapan.com) */}
+      <main className="flex-1 flex flex-col pb-24 md:pb-12 max-w-screen-2xl mx-auto w-full px-4 sm:px-8 lg:px-10">
         {children}
       </main>
 
@@ -243,8 +289,16 @@ export default function DashboardLayout({ children }) {
       <MobileBottomNav />
 
       {/* Persistent Desktop Footer */}
-      <footer className="border-t border-[#1D2332] py-5 text-center text-xs text-[#70788D] hidden md:block">
-        HAbyTAT • Intelligent Fitness, Habit & Nutrition Platform
+      <footer className="border-t border-[#1D2332] py-6 text-center text-xs text-[#70788D] hidden md:block">
+        <div className="max-w-screen-2xl mx-auto px-4 flex items-center justify-between">
+          <span>© 2026 HAbyTAT • Intelligent Fitness, Habit & Nutrition Platform</span>
+          <div className="flex items-center gap-4 text-[#A4AABC]">
+            <Link to="/dashboard" className="hover:text-[#F5F7FC]">Dashboard</Link>
+            <Link to="/workouts" className="hover:text-[#F5F7FC]">Workouts</Link>
+            <Link to="/habits" className="hover:text-[#F5F7FC]">Habits</Link>
+            <Link to="/nutrition" className="hover:text-[#F5F7FC]">Nutrition</Link>
+          </div>
+        </div>
       </footer>
 
       {/* Profile Modal */}

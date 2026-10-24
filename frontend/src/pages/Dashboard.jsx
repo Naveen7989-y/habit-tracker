@@ -54,7 +54,7 @@ const ICONS = {
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const { theme } = useTheme();
+  const { theme, isDark } = useTheme();
 
   const [dashboardData, setDashboardData] = useState(null);
   const [nutritionLogs, setNutritionLogs] = useState(null);
@@ -227,17 +227,14 @@ export default function Dashboard() {
 
   return (
     <DashboardLayout>
-      <div className="max-w-7xl mx-auto w-full pt-2 sm:pt-4 pb-6 space-y-5 sm:space-y-6">
+      <div className="w-full pt-2 sm:pt-4 pb-6 space-y-5 sm:space-y-6">
         {/* A. Screen 1 Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1
-              style={{ color: '#C8FF00' }}
-              className="text-lg sm:text-2xl font-bold text-[#C8FF00] tracking-tight"
-            >
-              <span style={{ color: '#C8FF00' }}>{getGreeting()}</span>
+            <h1 className="text-xl sm:text-3xl font-black text-[#0D9488] dark:text-[#C8FF00] tracking-tight">
+              <span>{getGreeting()}</span>
               {', '}
-              <span style={{ color: '#C8FF00' }}>
+              <span>
                 {user?.name ? user.name.split(' ')[0] : 'Athlete'}!
               </span>{' '}
               👋
@@ -320,8 +317,8 @@ export default function Dashboard() {
                   label="Calories"
                   subLabel="Kcal"
                   icon={Flame}
-                  color="#C8FF00"
-                  trackColor="#151A29"
+                  color={isDark ? '#C8FF00' : '#0D9488'}
+                  trackColor={isDark ? '#151A29' : '#E2E8F0'}
                   size={96}
                   strokeWidth={8}
                 />
@@ -332,8 +329,8 @@ export default function Dashboard() {
                   label="Steps"
                   subLabel="Qadamlar"
                   icon={Footprints}
-                  color="#25D9E6"
-                  trackColor="#151A29"
+                  color={isDark ? '#25D9E6' : '#0284C7'}
+                  trackColor={isDark ? '#151A29' : '#E2E8F0'}
                   size={96}
                   strokeWidth={8}
                 />
@@ -344,8 +341,8 @@ export default function Dashboard() {
                   label="Active Time"
                   subLabel="Vaqt"
                   icon={Clock}
-                  color="#8B5CF6"
-                  trackColor="#151A29"
+                  color={isDark ? '#8B5CF6' : '#7C3AED'}
+                  trackColor={isDark ? '#151A29' : '#E2E8F0'}
                   size={96}
                   strokeWidth={8}
                 />

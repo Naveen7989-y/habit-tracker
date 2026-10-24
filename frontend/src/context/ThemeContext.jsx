@@ -1,10 +1,11 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 
-export const availableThemes = ['midnight-sea', 'fresh-sky', 'soft-sunrise', 'warm-horizon'];
-export const DEFAULT_THEME = 'midnight-sea';
+export const availableThemes = ['dark', 'light', 'midnight-sea', 'fresh-sky'];
+export const DEFAULT_THEME = 'dark';
 
 const ThemeContext = createContext({
   theme: DEFAULT_THEME,
+  isDark: true,
   toggleTheme: () => {},
   setTheme: () => {},
   availableThemes,
@@ -22,8 +23,10 @@ export function ThemeProvider({ children }) {
         const savedUser = JSON.parse(savedUserStr);
         if (savedUser?.email) {
           const userTheme = localStorage.getItem(`habytat_theme_${savedUser.email.toLowerCase().trim()}`);
-          if (userTheme && availableThemes.includes(userTheme)) {
-            return userTheme;
+          if (userTheme) {
+            return userTheme === 'light' || userTheme === 'fresh-sky' || userTheme === 'soft-sunrise' || userTheme === 'warm-horizon'
+              ? 'light'
+              : 'dark';
           }
         }
       }
@@ -33,33 +36,40 @@ export function ThemeProvider({ children }) {
 
     // 2. Check general stored preference
     const saved = localStorage.getItem('habytat_theme');
-    if (saved && availableThemes.includes(saved)) {
-      return saved;
+    if (saved) {
+      return saved === 'light' || saved === 'fresh-sky' || saved === 'soft-sunrise' || saved === 'warm-horizon'
+        ? 'light'
+        : 'dark';
     }
 
-    // 3. System default theme is Midnight Sea
+    // 3. System default theme is Dark
     return DEFAULT_THEME;
   });
+
+  const isDark = theme === 'dark' || theme === 'midnight-sea';
 
   // Apply DOM classes and persist
   useEffect(() => {
     const root = document.documentElement;
-    root.setAttribute('data-theme', theme);
+    const currentIsDark = theme === 'dark' || theme === 'midnight-sea';
 
-    // Sync theme class list for utility compatibility
-    root.classList.remove('theme-fresh-sky', 'theme-soft-sunrise', 'theme-warm-horizon', 'theme-midnight-sea', 'dark');
-    root.classList.add(`theme-${theme}`);
-    if (theme === 'midnight-sea') {
+    root.setAttribute('data-theme', currentIsDark ? 'dark' : 'light');
+
+    if (currentIsDark) {
       root.classList.add('dark');
+      root.classList.remove('light');
+    } else {
+      root.classList.remove('dark');
+      root.classList.add('light');
     }
 
-    localStorage.setItem('habytat_theme', theme);
+    localStorage.setItem('habytat_theme', currentIsDark ? 'dark' : 'light');
   }, [theme]);
 
   // Set theme and bind to current logged-in account if present
   const setTheme = useCallback((newTheme) => {
-    if (!availableThemes.includes(newTheme)) return;
-    setThemeState(newTheme);
+    const normalized = (newTheme === 'dark' || newTheme === 'midnight-sea') ? 'dark' : 'light';
+    setThemeState(normalized);
 
     // Save for active user if logged in
     try {
@@ -67,7 +77,7 @@ export function ThemeProvider({ children }) {
       if (savedUserStr) {
         const savedUser = JSON.parse(savedUserStr);
         if (savedUser?.email) {
-          localStorage.setItem(`habytat_theme_${savedUser.email.toLowerCase().trim()}`, newTheme);
+          localStorage.setItem(`habytat_theme_${savedUser.email.toLowerCase().trim()}`, normalized);
         }
       }
     } catch (e) {
@@ -75,12 +85,11 @@ export function ThemeProvider({ children }) {
     }
   }, []);
 
-  // Cycle to next available theme
+  // Toggle between dark and light theme
   const toggleTheme = useCallback(() => {
     setThemeState((prev) => {
-      const idx = availableThemes.indexOf(prev);
-      const nextIdx = (idx + 1) % availableThemes.length;
-      const nextTheme = availableThemes[nextIdx];
+      const isCurrentlyDark = prev === 'dark' || prev === 'midnight-sea';
+      const nextTheme = isCurrentlyDark ? 'light' : 'dark';
 
       // Save for active user if logged in
       try {
@@ -104,18 +113,19 @@ export function ThemeProvider({ children }) {
     if (!emailOrId) return null;
     const cleanKey = String(emailOrId).toLowerCase().trim();
     const saved = localStorage.getItem(`habytat_theme_${cleanKey}`);
-    if (saved && availableThemes.includes(saved)) {
-      return saved;
+    if (saved) {
+      return saved === 'light' ? 'light' : 'dark';
     }
     return null;
   }, []);
 
   // Save a theme for a specific account
   const saveAccountTheme = useCallback((emailOrId, themeName) => {
-    if (!emailOrId || !availableThemes.includes(themeName)) return;
+    if (!emailOrId) return;
+    const normalized = themeName === 'light' ? 'light' : 'dark';
     const cleanKey = String(emailOrId).toLowerCase().trim();
-    localStorage.setItem(`habytat_theme_${cleanKey}`, themeName);
-    localStorage.setItem('habytat_theme', themeName);
+    localStorage.setItem(`habytat_theme_${cleanKey}`, normalized);
+    localStorage.setItem('habytat_theme', normalized);
   }, []);
 
   // Apply an account's theme immediately if known, or fallback to default
@@ -123,8 +133,9 @@ export function ThemeProvider({ children }) {
     if (!emailOrId) return false;
     const cleanKey = String(emailOrId).toLowerCase().trim();
     const accountTheme = localStorage.getItem(`habytat_theme_${cleanKey}`);
-    if (accountTheme && availableThemes.includes(accountTheme)) {
-      setThemeState(accountTheme);
+    if (accountTheme) {
+      const normalized = accountTheme === 'light' ? 'light' : 'dark';
+      setThemeState(normalized);
       return true;
     }
     return false;
@@ -133,6 +144,7 @@ export function ThemeProvider({ children }) {
   return (
     <ThemeContext.Provider value={{ 
       theme, 
+      isDark,
       toggleTheme, 
       setTheme, 
       availableThemes,

@@ -51,7 +51,7 @@ const DEFAULT_MONTHLY_SERIES = [
 export default function Analytics() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { theme } = useTheme();
+  const { theme, isDark } = useTheme();
 
   const [period, setPeriod] = useState('Week'); // 'Week' | 'Month'
   const [activeTab, setActiveTab] = useState('fitness'); // 'fitness' | 'habits'
@@ -94,7 +94,7 @@ export default function Analytics() {
 
   return (
     <DashboardLayout>
-      <div className="max-w-7xl mx-auto w-full pt-2 sm:pt-4 pb-6 space-y-5 sm:space-y-6">
+      <div className="w-full pt-2 sm:pt-4 pb-6 space-y-5 sm:space-y-6">
         {/* A. Analytics Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-3">
@@ -178,21 +178,21 @@ export default function Analytics() {
                     barGap={4}
                   >
                     <CartesianGrid
-                      stroke="#1D2332"
+                      stroke={isDark ? '#1D2332' : '#E2E8F0'}
                       strokeDasharray="3 3"
                       vertical={false}
                     />
 
                     <XAxis
                       dataKey="day"
-                      stroke="#70788D"
+                      stroke={isDark ? '#70788D' : '#64748B'}
                       fontSize={11}
                       tickLine={false}
-                      axisLine={{ stroke: '#1D2332' }}
+                      axisLine={{ stroke: isDark ? '#1D2332' : '#E2E8F0' }}
                     />
 
                     <YAxis
-                      stroke="#70788D"
+                      stroke={isDark ? '#70788D' : '#64748B'}
                       fontSize={10}
                       tickLine={false}
                       axisLine={false}
@@ -230,7 +230,7 @@ export default function Analytics() {
                     <Bar
                       dataKey="steps"
                       name="Steps"
-                      fill="#C8FF00"
+                      fill={isDark ? '#C8FF00' : '#0D9488'}
                       radius={[4, 4, 0, 0]}
                       maxBarSize={14}
                     />
@@ -238,7 +238,7 @@ export default function Analytics() {
                     <Bar
                       dataKey="calories"
                       name="Active Calories (Kcal)"
-                      fill="#8B5CF6"
+                      fill={isDark ? '#8B5CF6' : '#7C3AED'}
                       radius={[4, 4, 0, 0]}
                       maxBarSize={14}
                     />
@@ -246,7 +246,7 @@ export default function Analytics() {
                     <Bar
                       dataKey="time"
                       name="Active Time (min)"
-                      fill="#25D9E6"
+                      fill={isDark ? '#25D9E6' : '#0284C7'}
                       radius={[4, 4, 0, 0]}
                       maxBarSize={14}
                     />
