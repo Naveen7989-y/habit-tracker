@@ -39,15 +39,31 @@ import {
   RotateCcw,
   Timer,
   Award,
+  ListChecks,
 } from 'lucide-react';
 
-// Comprehensive, scientifically backed workout styles and disciplines
+// Helper to resolve discipline icon reliably
+const getStyleIcon = (styleId) => {
+  switch (styleId) {
+    case 'Running': return Footprints;
+    case 'Strength': return Dumbbell;
+    case 'HIIT': return Zap;
+    case 'Calisthenics': return Activity;
+    case 'Yoga': return Sparkles;
+    case 'Cycling': return Bike;
+    case 'Boxing': return Flame;
+    case 'Walking': return Footprints;
+    default: return Activity;
+  }
+};
+
+// Comprehensive, scientifically backed workout styles and disciplines with curated exercises & imagery
 const WORKOUT_STYLES = [
   {
     id: 'Running',
     name: 'Road & Track Running',
     category: 'Cardio',
-    icon: Footprints,
+    image: '/workouts/running.jpg',
     badge: 'VO2 Max Pacing',
     color: '#C8FF00',
     lightColor: '#059669',
@@ -62,32 +78,108 @@ const WORKOUT_STYLES = [
     speedMultiplier: 0.003, // km per sec (~10.8 km/h)
     calPerSec: 0.19,
     hasGps: true,
+    exercises: [
+      {
+        name: 'Aerobic Base Tempo Run',
+        target: '20-30 min • Zone 3',
+        muscles: 'Quads, Heart, Lungs',
+        image: '/workouts/running.jpg',
+        instructions: 'Run at a steady, rhythmic pace where you can speak short sentences. Keep shoulders relaxed and cadence at 170+ SPM.',
+        difficulty: 'Moderate',
+      },
+      {
+        name: '400m Track Interval Repeats',
+        target: '4-6 sets • 90s rest',
+        muscles: 'Hamstrings, Calves, Glutes',
+        image: '/workouts/running.jpg',
+        instructions: 'Sprint at 90-95% VO2 max pace for 400 meters, then walk or slow jog for 90 seconds recovery between intervals.',
+        difficulty: 'High',
+      },
+      {
+        name: 'Incline Hill Strides',
+        target: '6-8 reps • 45s effort',
+        muscles: 'Glutes, Hip Flexors, Calves',
+        image: '/workouts/running.jpg',
+        instructions: 'Drive knees upward powerfully on a 6-8% incline. Focus on explosive hip extension and controlled jog down.',
+        difficulty: 'Very High',
+      },
+      {
+        name: 'Cooldown Flush & Strides',
+        target: '5-10 min • Zone 1',
+        muscles: 'Full Leg Kinetic Chain',
+        image: '/workouts/walking.jpg',
+        instructions: 'Light jog easing into a brisk walk to clear lactic acid and safely bring heart rate below 110 BPM.',
+        difficulty: 'Low',
+      },
+    ],
   },
   {
-    id: 'Cycling',
-    name: 'Power & Endurance Cycling',
-    category: 'Cardio',
-    icon: Bike,
-    badge: 'Low-Impact Power',
-    color: '#25D9E6',
-    lightColor: '#0284C7',
-    zone: 'Zone 2-3 (Aerobic Power)',
-    burnRate: '9 - 14 kcal/min',
-    muscles: 'Quadriceps, Hamstrings, Gluteus Maximus, Hip Flexors',
-    idealTime: '30 - 90 min',
-    intensity: 'Moderate-High',
-    description: 'High-cadence, joint-friendly cardiovascular conditioning that develops aerobic endurance, functional threshold power (FTP), and lower body power.',
-    protocol: 'Aim for a smooth cadence of 85-95 RPM in steady-state riding with balanced pelvic stability.',
-    benefits: ['Zero joint impact on knees & ankles', 'Superior aerobic base development', 'Exceptional quad & glute stamina'],
-    speedMultiplier: 0.006, // km per sec (~21.6 km/h)
-    calPerSec: 0.16,
-    hasGps: true,
+    id: 'Strength',
+    name: 'Strength & Hypertrophy',
+    category: 'Strength',
+    image: '/workouts/strength.jpg',
+    badge: 'Myofibrillar Growth',
+    color: '#8B5CF6',
+    lightColor: '#7C3AED',
+    zone: 'Anaerobic Strength (Phosphagen)',
+    burnRate: '7 - 11 kcal/min',
+    muscles: 'Pectorals, Lats, Quads, Delts, Core',
+    idealTime: '45 - 75 min',
+    intensity: 'High Resistance',
+    description: 'Progressive resistance training utilizing barbells, dumbbells, and cables to trigger mechanical tension, muscle protein synthesis, and bone mineral density.',
+    protocol: 'Perform compound movements for 3-5 working sets of 6-12 reps with 90-120s rest between sets for maximum mechanical tension.',
+    benefits: ['Builds lean muscle mass & basal metabolic rate', 'Strengthens tendon & bone density', 'Optimizes posture & physical strength'],
+    speedMultiplier: 0.0005,
+    calPerSec: 0.14,
+    hasGps: false,
+    exercises: [
+      {
+        name: 'Barbell Conventional Deadlift',
+        target: '4 sets x 6 reps • 120s rest',
+        muscles: 'Posterior Chain, Glutes, Lats, Erector Spinae',
+        image: '/exercises/deadlift.jpg',
+        instructions: 'Brace core with Valsalva maneuver, pack lats, and drive through the midfoot while keeping barbell dragging close to shins.',
+        difficulty: 'High',
+      },
+      {
+        name: 'Barbell Back Squat',
+        target: '4 sets x 8 reps • 90s rest',
+        muscles: 'Quadriceps, Gluteus Maximus, Adductors',
+        image: '/exercises/squat.jpg',
+        instructions: 'Set feet shoulder-width, break at hips and knees simultaneously, achieve hip crease below parallel, drive up explosively.',
+        difficulty: 'High',
+      },
+      {
+        name: 'Incline Dumbbell Chest Press',
+        target: '3 sets x 10 reps • 75s rest',
+        muscles: 'Upper Pectorals, Anterior Deltoids, Triceps',
+        image: '/exercises/bench.jpg',
+        instructions: 'Set bench to 30 degrees, retract scapulae, lower dumbbells with a 3-second eccentric tempo, press up without clashing weights.',
+        difficulty: 'Moderate',
+      },
+      {
+        name: 'Chest-Supported Dumbbell Row',
+        target: '3 sets x 10-12 reps • 60s rest',
+        muscles: 'Rhomboids, Middle Traps, Latissimus Dorsi',
+        image: '/exercises/bench.jpg',
+        instructions: 'Lie prone on an incline bench, pull elbows toward hips, squeeze scapulae together at peak contraction for 1 second.',
+        difficulty: 'Moderate',
+      },
+      {
+        name: 'Standing Overhead Barbell Press',
+        target: '3 sets x 8 reps • 90s rest',
+        muscles: 'Deltoids, Upper Traps, Triceps, Core',
+        image: '/exercises/squat.jpg',
+        instructions: 'Squeeze glutes and brace abs, press barbell vertically clearing forehead, lock out overhead with head pushed slightly forward.',
+        difficulty: 'High',
+      },
+    ],
   },
   {
     id: 'HIIT',
     name: 'HIIT & Tabata Intervals',
     category: 'High Intensity',
-    icon: Zap,
+    image: '/workouts/hiit.jpg',
     badge: 'EPOC Afterburn',
     color: '#FF5C67',
     lightColor: '#DC2626',
@@ -102,32 +194,46 @@ const WORKOUT_STYLES = [
     speedMultiplier: 0.0018,
     calPerSec: 0.26,
     hasGps: false,
-  },
-  {
-    id: 'Weight Training',
-    name: 'Strength & Hypertrophy',
-    category: 'Strength',
-    icon: Dumbbell,
-    badge: 'Myofibrillar Growth',
-    color: '#8B5CF6',
-    lightColor: '#7C3AED',
-    zone: 'Anaerobic Strength (Phosphagen System)',
-    burnRate: '7 - 11 kcal/min',
-    muscles: 'Target Muscle Groups (Pushes, Pulls, Squats, Hinges)',
-    idealTime: '45 - 75 min',
-    intensity: 'High Resistance',
-    description: 'Progressive resistance training utilizing barbells, dumbbells, and cables to trigger mechanical tension, muscle protein synthesis, and bone mineral density.',
-    protocol: 'Perform compound movements for 3-5 working sets of 6-12 reps with 90-120s rest between sets for maximum mechanical tension.',
-    benefits: ['Builds lean muscle mass & basal metabolic rate', 'Strengthens tendon & bone density', 'Optimizes posture & physical strength'],
-    speedMultiplier: 0.0005,
-    calPerSec: 0.14,
-    hasGps: false,
+    exercises: [
+      {
+        name: 'Alternating Battle Rope Waves',
+        target: '40s Work / 20s Rest x 4 rounds',
+        muscles: 'Shoulders, Core, Forearms, Heart',
+        image: '/exercises/battle_ropes.jpg',
+        instructions: 'Hinge hips into an athletic quarter-squat, whip arms in rapid opposing waves keeping core braced and heels planted.',
+        difficulty: 'Very High',
+      },
+      {
+        name: 'Explosive Burpee Box Jumps',
+        target: '30s Work / 30s Rest x 4 rounds',
+        muscles: 'Full Body, Chest, Quads, Calves',
+        image: '/workouts/hiit.jpg',
+        instructions: 'Drop chest to floor, pop feet under hips, and jump immediately onto 20-24" box, landing softly in a partial squat.',
+        difficulty: 'High',
+      },
+      {
+        name: 'Russian Kettlebell Swings',
+        target: '45s Work / 15s Rest x 4 rounds',
+        muscles: 'Glutes, Hamstrings, Core, Grip',
+        image: '/exercises/battle_ropes.jpg',
+        instructions: 'Hinge at the hips with neutral spine, snap hips forward forcefully to propel kettlebell to chest height without using arms.',
+        difficulty: 'Moderate',
+      },
+      {
+        name: 'Cross-Body Mountain Climbers',
+        target: '30s Max Pace x 4 rounds',
+        muscles: 'Transverse Abdominis, Obliques, Shoulders',
+        image: '/workouts/hiit.jpg',
+        instructions: 'High plank position, drive right knee toward left elbow in rapid cadence, alternating sides without letting hips sag.',
+        difficulty: 'Moderate',
+      },
+    ],
   },
   {
     id: 'Calisthenics',
     name: 'Calisthenics & Bodyweight',
     category: 'Strength',
-    icon: Activity,
+    image: '/workouts/calisthenics.jpg',
     badge: 'Relative Strength',
     color: '#39E58C',
     lightColor: '#059669',
@@ -142,12 +248,46 @@ const WORKOUT_STYLES = [
     speedMultiplier: 0.0006,
     calPerSec: 0.15,
     hasGps: false,
+    exercises: [
+      {
+        name: 'Strict Chest-to-Bar Pull-ups',
+        target: '4 sets x 8-10 reps • 90s rest',
+        muscles: 'Latissimus Dorsi, Biceps, Upper Back',
+        image: '/exercises/pullups.jpg',
+        instructions: 'Dead hang with active scapular depression, pull elbows down toward ribs until upper chest contacts bar. Zero kipping.',
+        difficulty: 'High',
+      },
+      {
+        name: 'Parallel Bar Dips',
+        target: '4 sets x 10-12 reps • 75s rest',
+        muscles: 'Lower Pectorals, Triceps, Anterior Deltoids',
+        image: '/workouts/calisthenics.jpg',
+        instructions: 'Lean torso forward 15 degrees, lower until upper arms are parallel to bars, press up locking out triceps smoothly.',
+        difficulty: 'Moderate',
+      },
+      {
+        name: 'Ring Push-ups with Turnout',
+        target: '3 sets x 12 reps • 60s rest',
+        muscles: 'Chest, Serratus Anterior, Core Stabilizers',
+        image: '/workouts/calisthenics.jpg',
+        instructions: 'Maintain rigid plank on gymnastics rings, descend deep, press up, and turn palms forward at top for maximal pec contraction.',
+        difficulty: 'Moderate',
+      },
+      {
+        name: 'Hanging L-Sit Knee Raises / Holds',
+        target: '4 sets x 20-30s hold • 60s rest',
+        muscles: 'Rectus Abdominis, Hip Flexors, Quadriceps',
+        image: '/exercises/pullups.jpg',
+        instructions: 'Hang from bar with active shoulders, elevate straight legs to 90 degrees and hold with toes pointed and abs hollowed.',
+        difficulty: 'High',
+      },
+    ],
   },
   {
     id: 'Yoga',
     name: 'Vinyasa Flow & Mobility',
     category: 'Mobility',
-    icon: Sparkles,
+    image: '/workouts/yoga.jpg',
     badge: 'Parasympathetic Calm',
     color: '#06B6D4',
     lightColor: '#0891B2',
@@ -162,32 +302,92 @@ const WORKOUT_STYLES = [
     speedMultiplier: 0.0002,
     calPerSec: 0.08,
     hasGps: false,
+    exercises: [
+      {
+        name: 'Surya Namaskar (Sun Salutations)',
+        target: '5 cycles • Continuous flow',
+        muscles: 'Full Body, Hamstrings, Spine, Shoulders',
+        image: '/workouts/yoga.jpg',
+        instructions: 'Flow through Mountain, Forward Fold, Halfway Lift, Chaturanga, Upward Dog, and Downward Dog with synchronized breath.',
+        difficulty: 'Low-Moderate',
+      },
+      {
+        name: 'Warrior II (Virabhadrasana II)',
+        target: '5 deep breaths per side',
+        muscles: 'Quads, Glutes, Hip Adductors, Deltoids',
+        image: '/workouts/yoga.jpg',
+        instructions: 'Deep lunge with front thigh parallel to floor, arms outstretched at shoulder height, gaze over front middle fingertip.',
+        difficulty: 'Moderate',
+      },
+      {
+        name: 'Sleeping Pigeon Hip Opener',
+        target: '90s hold per side',
+        muscles: 'Piriformis, Gluteus Medius, IT Band',
+        image: '/workouts/yoga.jpg',
+        instructions: 'Bring front shin forward across mat, extend back leg straight, fold torso down over bolster or floor breathing into tight hips.',
+        difficulty: 'Low',
+      },
+      {
+        name: 'Upward-Facing Dog (Urdhva Mukha Svanasana)',
+        target: '4 sets x 5 deep breaths',
+        muscles: 'Pectorals, Abdominals, Spinal Extensors',
+        image: '/workouts/yoga.jpg',
+        instructions: 'Press palms and tops of feet firmly into mat, elevate thighs off floor, roll shoulders back and expand chest forward.',
+        difficulty: 'Low',
+      },
+    ],
   },
   {
-    id: 'Walking',
-    name: 'Brisk Walking & Rucking',
+    id: 'Cycling',
+    name: 'Power & Endurance Cycling',
     category: 'Cardio',
-    icon: Compass,
-    badge: 'Zone 2 Fat Burn',
-    color: '#FFB020',
-    lightColor: '#D97706',
-    zone: 'Zone 2 (Fat Oxidation Peak)',
-    burnRate: '5 - 8 kcal/min',
-    muscles: 'Calves, Glutes, Hamstrings, Postural Stabilizers',
-    idealTime: '30 - 60 min',
-    intensity: 'Low-to-Moderate',
-    description: 'Steady low-stress aerobic movement in the Zone 2 sweet spot where muscle cells maximize fatty acid oxidation without generating systemic cortisol fatigue.',
-    protocol: 'Maintain a brisk conversational pace (100-120 steps/minute) or add a 10-15kg rucking pack to increase caloric burn by 40%.',
-    benefits: ['Optimal metabolic base conditioning', 'Enhances insulin sensitivity without joint wear', 'Perfect daily active recovery'],
-    speedMultiplier: 0.0014, // ~5.0 km/h
-    calPerSec: 0.09,
+    image: '/workouts/cycling.jpg',
+    badge: 'Low-Impact Power',
+    color: '#25D9E6',
+    lightColor: '#0284C7',
+    zone: 'Zone 2-3 (Aerobic Power)',
+    burnRate: '9 - 14 kcal/min',
+    muscles: 'Quadriceps, Hamstrings, Gluteus Maximus, Hip Flexors',
+    idealTime: '30 - 90 min',
+    intensity: 'Moderate-High',
+    description: 'High-cadence, joint-friendly cardiovascular conditioning that develops aerobic endurance, functional threshold power (FTP), and lower body power.',
+    protocol: 'Aim for a smooth cadence of 85-95 RPM in steady-state riding with balanced pelvic stability.',
+    benefits: ['Zero joint impact on knees & ankles', 'Superior aerobic base development', 'Exceptional quad & glute stamina'],
+    speedMultiplier: 0.006,
+    calPerSec: 0.16,
     hasGps: true,
+    exercises: [
+      {
+        name: 'Steady-State Aerobic Spin (Zone 2)',
+        target: '30-45 min • 85-90 RPM',
+        muscles: 'Quadriceps, Cardiovascular System',
+        image: '/workouts/cycling.jpg',
+        instructions: 'Ride at comfortable breathing rhythm where speech is effortless, developing slow-twitch mitochondrial energy pathways.',
+        difficulty: 'Moderate',
+      },
+      {
+        name: 'Standing Climb Power Surges',
+        target: '5 reps x 2 min • 65-70 RPM',
+        muscles: 'Glutes, Quads, Core, Calves',
+        image: '/workouts/cycling.jpg',
+        instructions: 'Shift into high resistance gear, stand out of saddle, and push down powerfully through pedals with smooth fluid rhythm.',
+        difficulty: 'High',
+      },
+      {
+        name: 'High-Cadence Spin Sprints (105+ RPM)',
+        target: '8 sets x 30s max • 60s cruise',
+        muscles: 'Neuromuscular Leg Cadence, Hip Flexors',
+        image: '/workouts/cycling.jpg',
+        instructions: 'Spin legs as fast as possible without bouncing in saddle, training fast-twitch neuromuscular pedal stroke efficiency.',
+        difficulty: 'Very High',
+      },
+    ],
   },
   {
     id: 'Boxing',
     name: 'Boxing & Combat Agility',
     category: 'High Intensity',
-    icon: Target,
+    image: '/workouts/boxing.jpg',
     badge: 'Rotational Power',
     color: '#F43F5E',
     lightColor: '#E11D48',
@@ -202,6 +402,78 @@ const WORKOUT_STYLES = [
     speedMultiplier: 0.0012,
     calPerSec: 0.22,
     hasGps: false,
+    exercises: [
+      {
+        name: 'Heavy Bag 1-2-3-2 Power Combinations',
+        target: '3 min rounds • Jab-Cross-Hook-Cross',
+        muscles: 'Shoulders, Core Rotation, Legs',
+        image: '/workouts/boxing.jpg',
+        instructions: 'Rotate rear foot and hip fully on the cross, pivot front foot on the hook, exhale sharply on each strike.',
+        difficulty: 'High',
+      },
+      {
+        name: 'Shadowboxing Footwork & Slip Drill',
+        target: '3 rounds x 3 min • High cadence',
+        muscles: 'Calves, Obliques, Anterior Deltoids',
+        image: '/workouts/boxing.jpg',
+        instructions: 'Circle right and left on balls of feet, slip simulated incoming punches with quick 45-degree head movements.',
+        difficulty: 'Moderate',
+      },
+      {
+        name: 'Speed Bag Rhythm & Shoulder Burn',
+        target: '4 sets x 90s continuous',
+        muscles: 'Anterior & Lateral Deltoids, Forearms',
+        image: '/workouts/boxing.jpg',
+        instructions: 'Maintain eye-level circular hand rhythm with small triplet bounces, keeping hands up without dropping guards.',
+        difficulty: 'Moderate',
+      },
+    ],
+  },
+  {
+    id: 'Walking',
+    name: 'Brisk Walking & Rucking',
+    category: 'Cardio',
+    image: '/workouts/walking.jpg',
+    badge: 'Zone 2 Fat Burn',
+    color: '#FFB020',
+    lightColor: '#D97706',
+    zone: 'Zone 2 (Fat Oxidation Peak)',
+    burnRate: '5 - 8 kcal/min',
+    muscles: 'Calves, Glutes, Hamstrings, Postural Stabilizers',
+    idealTime: '30 - 60 min',
+    intensity: 'Low-to-Moderate',
+    description: 'Steady low-stress aerobic movement in the Zone 2 sweet spot where muscle cells maximize fatty acid oxidation without generating systemic cortisol fatigue.',
+    protocol: 'Maintain a brisk conversational pace (100-120 steps/minute) or add a 10-15kg rucking pack to increase caloric burn by 40%.',
+    benefits: ['Optimal metabolic base conditioning', 'Enhances insulin sensitivity without joint wear', 'Perfect daily active recovery'],
+    speedMultiplier: 0.0014,
+    calPerSec: 0.09,
+    hasGps: true,
+    exercises: [
+      {
+        name: 'Zone 2 Brisk Power Walk',
+        target: '30-45 min • 110-120 SPM',
+        muscles: 'Calves, Glutes, Core',
+        image: '/workouts/walking.jpg',
+        instructions: 'Maintain upright posture, pump arms rhythmically, push off firmly through the big toe of each foot.',
+        difficulty: 'Low',
+      },
+      {
+        name: 'Weighted Pack Ruck (10-15kg)',
+        target: '3.0 - 5.0 km • Constant pace',
+        muscles: 'Trapezius, Core, Glutes, Lower Back',
+        image: '/workouts/walking.jpg',
+        instructions: 'Strap weighted backpack high and tight against spine. Stand tall without leaning excessively forward.',
+        difficulty: 'Moderate',
+      },
+      {
+        name: 'Incline Gradient Power March',
+        target: '15-20 min • 8-12% grade',
+        muscles: 'Gluteus Maximus, Hamstrings, Calves',
+        image: '/workouts/walking.jpg',
+        instructions: 'Ascend hills or set treadmill incline without holding handrails, engaging posterior chain on every stride.',
+        difficulty: 'Moderate-High',
+      },
+    ],
   },
 ];
 
@@ -232,9 +504,9 @@ const WORKOUT_PRESETS = [
   },
   {
     title: 'Upper Hypertrophy Power',
-    styleId: 'Weight Training',
+    styleId: 'Strength',
     target: '45 min • 18 Sets • 320 Kcal',
-    type: 'Weight Training',
+    type: 'Strength',
     color: '#8B5CF6',
     tag: 'Mechanical Tension',
   },
@@ -271,6 +543,7 @@ export default function Workouts() {
   const [selectedStyleId, setSelectedStyleId] = useState('Running');
   const [activeFilter, setActiveFilter] = useState('All Styles');
   const [inspectingStyle, setInspectingStyle] = useState(null);
+  const [completedExerciseIds, setCompletedExerciseIds] = useState(new Set());
 
   const [workoutState, setWorkoutState] = useState('Ready'); // 'Ready' | 'Recording' | 'Paused' | 'Completed'
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
@@ -373,7 +646,7 @@ export default function Workouts() {
         if (prev > 0) return prev;
         if (selectedStyle.id === 'Yoga') return 96;
         if (selectedStyle.id === 'Walking') return 112;
-        if (selectedStyle.id === 'Weight Training') return 128;
+        if (selectedStyle.id === 'Strength') return 128;
         if (selectedStyle.id === 'HIIT' || selectedStyle.id === 'Boxing') return 155;
         return 142;
       });
@@ -434,6 +707,19 @@ export default function Workouts() {
       minutes.toString().padStart(2, '0'),
       seconds.toString().padStart(2, '0'),
     ].join(':');
+  };
+
+  // Toggle Exercise Completion checkbox
+  const handleToggleExerciseDone = (exerciseName) => {
+    setCompletedExerciseIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(exerciseName)) {
+        next.delete(exerciseName);
+      } else {
+        next.add(exerciseName);
+      }
+      return next;
+    });
   };
 
   // Handle Pause / Resume
@@ -498,6 +784,7 @@ export default function Workouts() {
     setAvgHeartRate(0);
     setAvgPace('--');
     setConfirmStopModal(false);
+    setCompletedExerciseIds(new Set());
   };
 
   // Delete recorded workout
@@ -517,11 +804,11 @@ export default function Workouts() {
     setWorkoutState('Recording');
   };
 
-  const IconSelected = selectedStyle.icon;
+  const IconSelected = getStyleIcon(selectedStyle.id);
 
   return (
     <DashboardLayout>
-      <div className="w-full pt-2 sm:pt-4 pb-10 space-y-6">
+      <div className="w-full pt-2 sm:pt-4 pb-12 space-y-6">
         {/* A. Top Header Banner with Live Sensor Badge & Reset */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-3">
@@ -539,14 +826,14 @@ export default function Workouts() {
             <div>
               <div className="flex items-center gap-2">
                 <h1 className={`text-lg sm:text-2xl font-black tracking-tight ${isDark ? 'text-[#F5F7FC]' : 'text-[#0F172A]'}`}>
-                  Workout Telemetry & Styles Hub
+                  Workout Styles & Exercise Studio
                 </h1>
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-[#C8FF00]/15 border border-[#C8FF00]/30 text-[#C8FF00]">
-                  Dynamic Engine
+                  HD Visuals & Form Cues
                 </span>
               </div>
               <p className={`text-xs mt-0.5 ${isDark ? 'text-[#70788D]' : 'text-[#64748B]'}`}>
-                Multi-discipline bio-telemetry, metabolic zone pacing, and scientific guides
+                Photorealistic style galleries, curated exercises, real-time bio-telemetry, and heart rate pacing
               </p>
             </div>
           </div>
@@ -558,7 +845,7 @@ export default function Workouts() {
                 : 'bg-emerald-50 border-emerald-200 text-emerald-700'
             }`}>
               <span className="w-2 h-2 rounded-full bg-[#39E58C] animate-pulse" />
-              <span>Telemetry Active</span>
+              <span>Sensors Ready</span>
             </span>
 
             <button
@@ -584,8 +871,8 @@ export default function Workouts() {
           </div>
         )}
 
-        {/* B. Workout Disciplines & Styles Catalogue Explorer */}
-        <div className={`rounded-[26px] p-4 sm:p-6 border transition-all shadow-xl space-y-4 ${
+        {/* B. Workout Disciplines & Styles Visual Showcase with Real Images */}
+        <div className={`rounded-[26px] p-4 sm:p-6 border transition-all shadow-xl space-y-4.5 ${
           isDark
             ? 'bg-[#111522]/90 backdrop-blur-xl border-[#242A3A]'
             : 'bg-white border-[#E2E8F0]'
@@ -597,10 +884,10 @@ export default function Workouts() {
               </div>
               <div>
                 <h2 className={`text-sm sm:text-base font-black tracking-tight ${isDark ? 'text-[#F5F7FC]' : 'text-[#0F172A]'}`}>
-                  Select Workout Discipline & Style
+                  Workout Disciplines & Style Gallery
                 </h2>
                 <p className={`text-[11px] ${isDark ? 'text-[#70788D]' : 'text-[#64748B]'}`}>
-                  Choose a style to view scientific protocols, targeted muscle chains, and real-time cadence
+                  Select any discipline to view its photographic guide, curated exercises, and calibrated pacing
                 </p>
               </div>
             </div>
@@ -627,10 +914,10 @@ export default function Workouts() {
             </div>
           </div>
 
-          {/* Interactive Workout Styles Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-1">
+          {/* Photographic Workout Cards Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-1">
             {filteredStyles.map((style) => {
-              const Icon = style.icon;
+              const Icon = getStyleIcon(style.id);
               const isSelected = selectedStyleId === style.id;
               const themeColor = isDark ? style.color : style.lightColor;
 
@@ -638,24 +925,33 @@ export default function Workouts() {
                 <div
                   key={style.id}
                   onClick={() => setSelectedStyleId(style.id)}
-                  className={`relative p-3.5 rounded-2xl border transition-all duration-200 cursor-pointer flex flex-col justify-between group hover:scale-[1.01] ${
+                  className={`relative rounded-2xl border overflow-hidden transition-all duration-300 cursor-pointer flex flex-col justify-between group hover:scale-[1.02] shadow-md ${
                     isSelected
                       ? isDark
-                        ? 'bg-[#151A29] border-[#C8FF00] shadow-[0_0_16px_rgba(200,255,0,0.2)]'
-                        : 'bg-emerald-50/70 border-emerald-500 shadow-md ring-1 ring-emerald-400'
+                        ? 'bg-[#151A29] border-[#C8FF00] shadow-[0_0_20px_rgba(200,255,0,0.25)] ring-1 ring-[#C8FF00]'
+                        : 'bg-white border-emerald-500 shadow-lg ring-2 ring-emerald-400'
                       : isDark
-                      ? 'bg-[#0D101B]/80 border-[#1D2332] hover:border-[#242A3A] hover:bg-[#151A29]/70'
+                      ? 'bg-[#0D101B] border-[#1D2332] hover:border-[#242A3A]'
                       : 'bg-[#F8FAFC] border-[#E2E8F0] hover:border-slate-300 hover:bg-white'
                   }`}
                 >
-                  <div>
-                    {/* Top Tag & Info Button */}
-                    <div className="flex items-center justify-between mb-2">
+                  {/* Photo Header with Ambient Gradient */}
+                  <div className="relative w-full h-36 overflow-hidden">
+                    <img
+                      src={style.image}
+                      alt={style.name}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent pointer-events-none" />
+
+                    {/* Top Floating Badge & Guide Button */}
+                    <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between">
                       <span
-                        className="text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider"
+                        className="text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider backdrop-blur-md shadow-sm"
                         style={{
-                          backgroundColor: `${themeColor}18`,
-                          color: themeColor,
+                          backgroundColor: `${themeColor}E0`,
+                          color: '#080A12',
                         }}
                       >
                         {style.badge}
@@ -667,49 +963,61 @@ export default function Workouts() {
                           e.stopPropagation();
                           setInspectingStyle(style);
                         }}
-                        className={`p-1 rounded-lg transition-colors cursor-pointer ${
-                          isDark ? 'text-[#70788D] hover:text-[#C8FF00] hover:bg-[#111522]' : 'text-slate-400 hover:text-emerald-700 hover:bg-slate-200'
-                        }`}
-                        title="View detailed scientific guide & protocol"
+                        className="w-7 h-7 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center transition-transform hover:scale-110 backdrop-blur-md cursor-pointer"
+                        title="View detailed scientific exercise guide"
                       >
                         <Info className="w-3.5 h-3.5" />
                       </button>
                     </div>
 
-                    {/* Style Icon & Name */}
-                    <div className="flex items-center gap-2.5 mb-2">
+                    {/* Discipline Name over Image Bottom */}
+                    <div className="absolute bottom-2 left-2.5 right-2.5 flex items-center gap-2">
                       <div
-                        className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-110 shadow-sm"
-                        style={{
-                          backgroundColor: `${themeColor}20`,
-                          color: themeColor,
-                        }}
+                        className="w-6 h-6 rounded-lg flex items-center justify-center shrink-0 shadow-sm"
+                        style={{ backgroundColor: `${themeColor}E0`, color: '#080A12' }}
                       >
-                        <Icon className="w-4 h-4 stroke-[2.2]" />
+                        <Icon className="w-3.5 h-3.5 stroke-[2.5]" />
                       </div>
-                      <h3 className={`text-xs sm:text-sm font-black leading-tight ${isDark ? 'text-[#F5F7FC]' : 'text-[#0F172A]'}`}>
+                      <h3 className="text-xs sm:text-sm font-black text-white leading-tight drop-shadow-md truncate">
                         {style.name}
                       </h3>
                     </div>
-
-                    {/* Scientific Summary Description */}
-                    <p className={`text-[11px] leading-relaxed line-clamp-2 mb-3 ${isDark ? 'text-[#A4AABC]' : 'text-[#475569]'}`}>
-                      {style.description}
-                    </p>
                   </div>
 
-                  {/* Micro Specs Footer */}
-                  <div className={`pt-2 border-t flex items-center justify-between text-[10px] font-semibold ${
-                    isDark ? 'border-[#1D2332] text-[#70788D]' : 'border-slate-200 text-slate-500'
-                  }`}>
-                    <span className="flex items-center gap-1">
-                      <Flame className="w-3 h-3 text-[#FF5C67]" />
-                      <span>{style.burnRate}</span>
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Clock className="w-3 h-3 text-[#25D9E6]" />
-                      <span>{style.idealTime}</span>
-                    </span>
+                  {/* Card Content & Details */}
+                  <div className="p-3.5 flex flex-col justify-between flex-1 space-y-2.5">
+                    {/* Scientific Summary Description */}
+                    <p className={`text-[11px] leading-relaxed line-clamp-2 ${isDark ? 'text-[#A4AABC]' : 'text-slate-600'}`}>
+                      {style.description}
+                    </p>
+
+                    {/* Exercise Counter Pill */}
+                    <div className="flex items-center justify-between">
+                      <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md ${
+                        isDark ? 'bg-[#151A29] text-[#39E58C]' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                      }`}>
+                        <ListChecks className="w-3 h-3" />
+                        <span>{style.exercises?.length || 4} Targeted Exercises</span>
+                      </span>
+
+                      <span className="text-[10px] text-[#70788D] font-semibold">
+                        {style.intensity} Effort
+                      </span>
+                    </div>
+
+                    {/* Micro Specs Footer */}
+                    <div className={`pt-2 border-t flex items-center justify-between text-[10px] font-bold ${
+                      isDark ? 'border-[#1D2332] text-[#70788D]' : 'border-slate-200 text-slate-500'
+                    }`}>
+                      <span className="flex items-center gap-1">
+                        <Flame className="w-3 h-3 text-[#FF5C67]" />
+                        <span>{style.burnRate}</span>
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-3 h-3 text-[#25D9E6]" />
+                        <span>{style.idealTime}</span>
+                      </span>
+                    </div>
                   </div>
                 </div>
               );
@@ -719,7 +1027,7 @@ export default function Workouts() {
 
         {/* C. Responsive Two-Column Grid: Left (Active Session & Telemetry), Right (Presets & History) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-start">
-          {/* Main Left Column: Selected Style Featured Banner & Live Stopwatch */}
+          {/* Main Left Column: Selected Style Featured Banner, Live Stopwatch & Curated Exercises */}
           <div className="lg:col-span-7 xl:col-span-8 space-y-5 sm:space-y-6">
             {/* Active Style Spotlight & Telemetry Board */}
             <div className={`rounded-[26px] p-5 sm:p-6 border transition-all shadow-xl space-y-4 relative overflow-hidden ${
@@ -727,17 +1035,19 @@ export default function Workouts() {
                 ? 'bg-[#111522]/90 backdrop-blur-xl border-[#242A3A]'
                 : 'bg-white border-[#E2E8F0]'
             }`}>
-              {/* Header: Discipline Title & Dynamic Pulse Tag */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+              {/* Header: Discipline Title with Photo Thumbnail */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <div
-                    className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 shadow-md"
-                    style={{
-                      backgroundColor: `${isDark ? selectedStyle.color : selectedStyle.lightColor}20`,
-                      color: isDark ? selectedStyle.color : selectedStyle.lightColor,
-                    }}
-                  >
-                    <IconSelected className="w-5 h-5 stroke-[2.2]" />
+                  <div className="relative w-12 h-12 rounded-2xl overflow-hidden border border-white/20 shadow-md shrink-0">
+                    <img
+                      src={selectedStyle.image}
+                      alt={selectedStyle.name}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-black/25" />
+                    <div className="absolute inset-0 flex items-center justify-center text-white">
+                      <IconSelected className="w-5 h-5 stroke-[2.5]" />
+                    </div>
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
@@ -868,6 +1178,117 @@ export default function Workouts() {
                   </div>
                 </div>
               )}
+            </div>
+
+            {/* Curated Exercises in this Discipline Section */}
+            <div className={`rounded-[26px] p-5 sm:p-6 border transition-all shadow-xl space-y-4 ${
+              isDark ? 'bg-[#111522]/90 border-[#242A3A]' : 'bg-white border-[#E2E8F0]'
+            }`}>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-[#39E58C]/15 border border-[#39E58C]/30 flex items-center justify-center text-[#39E58C]">
+                    <ListChecks className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className={`text-sm sm:text-base font-black ${isDark ? 'text-[#F5F7FC]' : 'text-[#0F172A]'}`}>
+                      Curated Exercises for {selectedStyle.name}
+                    </h3>
+                    <p className={`text-[11px] ${isDark ? 'text-[#70788D]' : 'text-[#64748B]'}`}>
+                      Check off exercises as you execute them during your active session
+                    </p>
+                  </div>
+                </div>
+
+                <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full ${
+                  isDark ? 'bg-[#151A29] text-[#A4AABC]' : 'bg-slate-100 text-slate-700'
+                }`}>
+                  {completedExerciseIds.size}/{selectedStyle.exercises?.length || 0} Complete
+                </span>
+              </div>
+
+              {/* Exercises List */}
+              <div className="space-y-2.5">
+                {selectedStyle.exercises?.map((ex, idx) => {
+                  const isDone = completedExerciseIds.has(ex.name);
+
+                  return (
+                    <div
+                      key={idx}
+                      onClick={() => handleToggleExerciseDone(ex.name)}
+                      className={`p-3.5 rounded-2xl border transition-all cursor-pointer flex items-start justify-between gap-3 group ${
+                        isDone
+                          ? isDark
+                            ? 'bg-[#0D101B]/90 border-[#39E58C]/40 opacity-75'
+                            : 'bg-emerald-50/60 border-emerald-300'
+                          : isDark
+                          ? 'bg-[#0D101B] border-[#1D2332] hover:border-[#242A3A] hover:bg-[#151A29]/70'
+                          : 'bg-[#F8FAFC] border-slate-200 hover:border-slate-300 hover:bg-white'
+                      }`}
+                    >
+                      <div className="flex items-start gap-3 min-w-0 flex-1">
+                        {/* Checkbox */}
+                        <div
+                          className={`w-6 h-6 rounded-full flex items-center justify-center transition-all shrink-0 mt-1 ${
+                            isDone
+                              ? 'bg-[#39E58C] text-[#080A12] shadow-[0_0_8px_#39E58C]'
+                              : 'border-2 border-[#70788D] group-hover:border-[#C8FF00]'
+                          }`}
+                        >
+                          {isDone ? (
+                            <CheckCircle2 className="w-4 h-4 fill-current stroke-none" />
+                          ) : (
+                            <span className="text-[10px] font-bold text-[#70788D] group-hover:text-[#C8FF00]">{idx + 1}</span>
+                          )}
+                        </div>
+
+                        {/* Exercise Photo Thumbnail */}
+                        <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden shrink-0 border border-black/10 dark:border-white/10 shadow-sm group-hover:scale-105 transition-transform">
+                          <img
+                            src={ex.image || selectedStyle.image}
+                            alt={ex.name}
+                            className="w-full h-full object-cover"
+                            loading="lazy"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
+                        </div>
+
+                        <div className="min-w-0 space-y-1 flex-1">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <p className={`text-xs sm:text-sm font-black ${
+                              isDone
+                                ? 'line-through text-[#70788D]'
+                                : isDark
+                                ? 'text-[#F5F7FC]'
+                                : 'text-[#0F172A]'
+                            }`}>
+                              {ex.name}
+                            </p>
+                            <span className="text-[10px] font-bold px-2 py-0.2 rounded-full bg-[#8B5CF6]/15 text-[#8B5CF6]">
+                              {ex.target}
+                            </span>
+                            <span className={`text-[10px] font-semibold px-1.5 py-0.2 rounded-full ${
+                              ex.difficulty === 'High' || ex.difficulty === 'Very High'
+                                ? 'bg-[#FF5C67]/15 text-[#FF5C67]'
+                                : 'bg-[#C8FF00]/15 text-[#C8FF00]'
+                            }`}>
+                              {ex.difficulty}
+                            </span>
+                          </div>
+
+                          <p className={`text-[11px] leading-relaxed ${isDark ? 'text-[#A4AABC]' : 'text-slate-600'}`}>
+                            {ex.instructions}
+                          </p>
+
+                          <p className="text-[10px] text-[#70788D] flex items-center gap-1 font-semibold">
+                            <span>Target:</span>
+                            <span className={isDark ? 'text-[#F5F7FC]' : 'text-slate-800'}>{ex.muscles}</span>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
 
             {/* Workout Live Controller Card */}
@@ -1075,7 +1496,7 @@ export default function Workouts() {
                 <div className="space-y-2 max-h-[380px] overflow-y-auto pr-1">
                   {recentWorkouts.map((w) => {
                     const matchStyle = WORKOUT_STYLES.find((s) => s.id === w.activityType) || WORKOUT_STYLES[0];
-                    const WIcon = matchStyle.icon;
+                    const WIcon = getStyleIcon(matchStyle.id);
 
                     return (
                       <div
@@ -1124,127 +1545,146 @@ export default function Workouts() {
           </div>
         </div>
 
-        {/* D. Workout Style Scientific Deep Dive Modal */}
+        {/* D. Workout Style Scientific Deep Dive Modal with Photo & Exercises */}
         {inspectingStyle && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
-            <div className={`w-full max-w-lg rounded-[28px] p-6 shadow-2xl space-y-4 relative max-h-[90vh] overflow-y-auto border ${
+            <div className={`w-full max-w-xl rounded-[28px] overflow-hidden shadow-2xl space-y-4 relative max-h-[90vh] overflow-y-auto border ${
               isDark ? 'bg-[#111522] border-[#242A3A]' : 'bg-white border-slate-200'
             }`}>
-              {/* Header */}
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex items-center gap-3">
-                  <div
-                    className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-md"
-                    style={{
-                      backgroundColor: `${inspectingStyle.color}20`,
-                      color: inspectingStyle.color,
-                    }}
+              {/* Top Hero Photo */}
+              <div className="relative w-full h-48 overflow-hidden">
+                <img
+                  src={inspectingStyle.image}
+                  alt={inspectingStyle.name}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent pointer-events-none" />
+
+                <button
+                  type="button"
+                  onClick={() => setInspectingStyle(null)}
+                  className="absolute top-3.5 right-3.5 w-8 h-8 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center transition-transform hover:scale-110 backdrop-blur-md cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+
+                <div className="absolute bottom-3 left-4 right-4">
+                  <span
+                    className="text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider mb-1 inline-block"
+                    style={{ backgroundColor: `${inspectingStyle.color}E0`, color: '#080A12' }}
                   >
-                    <inspectingStyle.icon className="w-6 h-6 stroke-[2.2]" />
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h3 className={`text-base sm:text-lg font-black tracking-tight ${isDark ? 'text-[#F5F7FC]' : 'text-[#0F172A]'}`}>
-                        {inspectingStyle.name}
-                      </h3>
-                      <span
-                        className="text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase"
-                        style={{ backgroundColor: `${inspectingStyle.color}18`, color: inspectingStyle.color }}
-                      >
-                        {inspectingStyle.badge}
-                      </span>
-                    </div>
-                    <p className={`text-xs ${isDark ? 'text-[#70788D]' : 'text-slate-500'}`}>
-                      {inspectingStyle.category} • {inspectingStyle.intensity} Intensity
+                    {inspectingStyle.badge}
+                  </span>
+                  <h3 className="text-xl font-black text-white leading-tight drop-shadow-md">
+                    {inspectingStyle.name}
+                  </h3>
+                  <p className="text-xs text-white/80">
+                    {inspectingStyle.category} • {inspectingStyle.intensity} Intensity
+                  </p>
+                </div>
+              </div>
+
+              {/* Modal Body */}
+              <div className="p-5 pt-0 space-y-4">
+                {/* Description */}
+                <div className={`p-3.5 rounded-2xl border ${isDark ? 'bg-[#0D101B]/80 border-[#1D2332]' : 'bg-slate-50 border-slate-200'}`}>
+                  <p className={`text-xs leading-relaxed ${isDark ? 'text-[#A4AABC]' : 'text-slate-700'}`}>
+                    {inspectingStyle.description}
+                  </p>
+                </div>
+
+                {/* Protocol & Form Cues */}
+                <div className="space-y-1.5">
+                  <h4 className={`text-xs font-black uppercase tracking-wider ${isDark ? 'text-[#F5F7FC]' : 'text-slate-900'}`}>
+                    Training Protocol & Execution
+                  </h4>
+                  <div className={`p-3 rounded-2xl border ${isDark ? 'bg-[#0D101B]/80 border-[#1D2332]' : 'bg-slate-50 border-slate-200'}`}>
+                    <p className={`text-xs leading-relaxed ${isDark ? 'text-[#C8FF00]' : 'text-emerald-800'} font-semibold`}>
+                      💡 {inspectingStyle.protocol}
                     </p>
                   </div>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => setInspectingStyle(null)}
-                  className={`p-1.5 rounded-xl transition-colors cursor-pointer ${
-                    isDark ? 'text-[#70788D] hover:text-[#F5F7FC] hover:bg-[#151A29]' : 'text-slate-400 hover:text-slate-800 hover:bg-slate-100'
-                  }`}
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              {/* Description */}
-              <div className={`p-3.5 rounded-2xl border ${isDark ? 'bg-[#0D101B]/80 border-[#1D2332]' : 'bg-slate-50 border-slate-200'}`}>
-                <p className={`text-xs leading-relaxed ${isDark ? 'text-[#A4AABC]' : 'text-slate-700'}`}>
-                  {inspectingStyle.description}
-                </p>
-              </div>
-
-              {/* Protocol & Form Cues */}
-              <div className="space-y-1.5">
-                <h4 className={`text-xs font-black uppercase tracking-wider ${isDark ? 'text-[#F5F7FC]' : 'text-slate-900'}`}>
-                  Training Protocol & Execution
-                </h4>
-                <div className={`p-3 rounded-2xl border ${isDark ? 'bg-[#0D101B]/80 border-[#1D2332]' : 'bg-slate-50 border-slate-200'}`}>
-                  <p className={`text-xs leading-relaxed ${isDark ? 'text-[#C8FF00]' : 'text-emerald-800'} font-medium`}>
-                    💡 {inspectingStyle.protocol}
-                  </p>
+                {/* Exercises in this style */}
+                <div className="space-y-2">
+                  <h4 className={`text-xs font-black uppercase tracking-wider ${isDark ? 'text-[#F5F7FC]' : 'text-slate-900'}`}>
+                    Featured Exercises ({inspectingStyle.exercises?.length || 0})
+                  </h4>
+                  <div className="space-y-2">
+                    {inspectingStyle.exercises?.map((ex, i) => (
+                      <div
+                        key={i}
+                        className={`p-3 rounded-xl border text-xs flex gap-3 items-center ${
+                          isDark ? 'bg-[#0D101B] border-[#1D2332]' : 'bg-slate-50 border-slate-200'
+                        }`}
+                      >
+                        <div className="w-16 h-16 rounded-lg overflow-hidden shrink-0 border border-black/10 dark:border-white/10 shadow-sm">
+                          <img
+                            src={ex.image || inspectingStyle.image}
+                            alt={ex.name}
+                            className="w-full h-full object-cover"
+                            loading="lazy"
+                          />
+                        </div>
+                        <div className="min-w-0 flex-1 space-y-1">
+                          <div className="flex items-center justify-between font-bold">
+                            <span className={isDark ? 'text-[#F5F7FC]' : 'text-slate-900'}>
+                              {i + 1}. {ex.name}
+                            </span>
+                            <span className="text-[10px] text-[#39E58C] font-extrabold">{ex.target}</span>
+                          </div>
+                          <p className={`text-[11px] ${isDark ? 'text-[#70788D]' : 'text-slate-600'}`}>
+                            {ex.instructions}
+                          </p>
+                          <p className="text-[10px] text-[#70788D] font-semibold">
+                            Target: <span className={isDark ? 'text-[#F5F7FC]' : 'text-slate-800'}>{ex.muscles}</span>
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
 
-              {/* Physiological Benefits */}
-              <div className="space-y-1.5">
-                <h4 className={`text-xs font-black uppercase tracking-wider ${isDark ? 'text-[#F5F7FC]' : 'text-slate-900'}`}>
-                  Key Biological Benefits
-                </h4>
-                <div className="space-y-1">
-                  {inspectingStyle.benefits.map((b, i) => (
-                    <div key={i} className="flex items-center gap-2 text-xs font-semibold text-[#39E58C]">
-                      <Check className="w-3.5 h-3.5 shrink-0" />
-                      <span className={isDark ? 'text-[#F5F7FC]' : 'text-slate-800'}>{b}</span>
-                    </div>
-                  ))}
+                {/* Physiological Benefits */}
+                <div className="space-y-1.5">
+                  <h4 className={`text-xs font-black uppercase tracking-wider ${isDark ? 'text-[#F5F7FC]' : 'text-slate-900'}`}>
+                    Key Biological Benefits
+                  </h4>
+                  <div className="space-y-1">
+                    {inspectingStyle.benefits.map((b, i) => (
+                      <div key={i} className="flex items-center gap-2 text-xs font-semibold text-[#39E58C]">
+                        <Check className="w-3.5 h-3.5 shrink-0" />
+                        <span className={isDark ? 'text-[#F5F7FC]' : 'text-slate-800'}>{b}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
 
-              {/* Telemetry Target Specs */}
-              <div className={`grid grid-cols-2 gap-2 pt-1 border-t ${isDark ? 'border-[#1D2332]' : 'border-slate-200'}`}>
-                <div className={`p-2.5 rounded-xl border ${isDark ? 'bg-[#0D101B] border-[#1D2332]' : 'bg-slate-50 border-slate-200'}`}>
-                  <p className="text-[10px] text-[#70788D] uppercase font-bold">Target Zone</p>
-                  <p className={`text-xs font-bold mt-0.5 ${isDark ? 'text-[#F5F7FC]' : 'text-slate-900'}`}>
-                    {inspectingStyle.zone}
-                  </p>
+                {/* Action Buttons */}
+                <div className="pt-2 flex items-center justify-end gap-2 border-t border-slate-200 dark:border-[#1D2332]">
+                  <button
+                    type="button"
+                    onClick={() => setInspectingStyle(null)}
+                    className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                      isDark ? 'bg-[#151A29] text-[#70788D] hover:text-[#F5F7FC]' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    }`}
+                  >
+                    Close
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedStyleId(inspectingStyle.id);
+                      setInspectingStyle(null);
+                      handleReset();
+                      setWorkoutState('Recording');
+                    }}
+                    className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#C8FF00] to-[#39E58C] text-[#080A12] text-xs font-black shadow-lg hover:scale-[1.02] active:scale-95 transition-all cursor-pointer flex items-center gap-1.5"
+                  >
+                    <Play className="w-3.5 h-3.5 fill-[#080A12]" />
+                    <span>Start {inspectingStyle.name}</span>
+                  </button>
                 </div>
-                <div className={`p-2.5 rounded-xl border ${isDark ? 'bg-[#0D101B] border-[#1D2332]' : 'bg-slate-50 border-slate-200'}`}>
-                  <p className="text-[10px] text-[#70788D] uppercase font-bold">Burn Rate</p>
-                  <p className="text-xs font-bold mt-0.5 text-[#C8FF00]">
-                    {inspectingStyle.burnRate}
-                  </p>
-                </div>
-              </div>
-
-              {/* Action Button: Load and Start Session */}
-              <div className="pt-2 flex items-center justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setInspectingStyle(null)}
-                  className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                    isDark ? 'bg-[#151A29] text-[#70788D] hover:text-[#F5F7FC]' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                  }`}
-                >
-                  Close
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSelectedStyleId(inspectingStyle.id);
-                    setInspectingStyle(null);
-                    handleReset();
-                    setWorkoutState('Recording');
-                  }}
-                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#C8FF00] to-[#39E58C] text-[#080A12] text-xs font-black shadow-lg hover:scale-[1.02] active:scale-95 transition-all cursor-pointer flex items-center gap-1.5"
-                >
-                  <Play className="w-3.5 h-3.5 fill-[#080A12]" />
-                  <span>Start {inspectingStyle.name}</span>
-                </button>
               </div>
             </div>
           </div>
