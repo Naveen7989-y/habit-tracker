@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
@@ -37,6 +37,35 @@ export default function DashboardLayout({ children }) {
   const [profileModalOpen, setProfileModalOpen] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+
+  const profileDropdownRef = useRef(null);
+
+  // Close profile dropdown when clicking outside or pressing Escape
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (profileDropdownRef.current && !profileDropdownRef.current.contains(event.target)) {
+        setProfileDropdownOpen(false);
+      }
+    };
+
+    const handleEscapeKey = (event) => {
+      if (event.key === 'Escape') {
+        setProfileDropdownOpen(false);
+      }
+    };
+
+    if (profileDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('touchstart', handleClickOutside);
+      document.addEventListener('keydown', handleEscapeKey);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+      document.removeEventListener('keydown', handleEscapeKey);
+    };
+  }, [profileDropdownOpen]);
 
   const fetchUnreadCount = async () => {
     try {
@@ -178,7 +207,7 @@ export default function DashboardLayout({ children }) {
             </button>
 
             {/* User Dropdown (Hidden on Mobile View) */}
-            <div className="relative hidden md:block">
+            <div className="relative hidden md:block" ref={profileDropdownRef}>
               <button
                 onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
                 className="flex items-center gap-2.5 p-1.5 pr-3 rounded-2xl hover:bg-[#111522] border border-transparent hover:border-[#242A3A] transition-all cursor-pointer"
@@ -207,12 +236,7 @@ export default function DashboardLayout({ children }) {
 
               {/* Dropdown Menu */}
               {profileDropdownOpen && (
-                <>
-                  <div
-                    className="fixed inset-0 z-40"
-                    onClick={() => setProfileDropdownOpen(false)}
-                  />
-                  <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-[#0D101B] border border-[#242A3A] shadow-2xl py-2 z-50 animate-scale-in text-xs">
+                <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-[#0D101B] border border-[#242A3A] shadow-2xl py-2 z-50 animate-scale-in text-xs">
                     <div className="px-4 py-2.5 border-b border-[#1D2332]">
                       <p className="font-bold text-[#F5F7FC] truncate">{user?.name}</p>
                       <p className="text-[11px] text-[#70788D] truncate">{user?.email}</p>
@@ -260,7 +284,6 @@ export default function DashboardLayout({ children }) {
                       <span>Sign Out</span>
                     </button>
                   </div>
-                </>
               )}
             </div>
           </div>
