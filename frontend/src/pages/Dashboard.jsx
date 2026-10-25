@@ -83,6 +83,9 @@ export default function Dashboard() {
   const [aiParsing, setAiParsing] = useState(false);
   const [aiParseResult, setAiParseResult] = useState(null);
 
+  const [calorieRingMode, setCalorieRingMode] = useState('burn'); // 'burn' (Active Burn) | 'intake' (Dietary Fuel)
+  const [aiLogging, setAiLogging] = useState(false);
+
   // Dynamic Greeting based on current local hour
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -98,7 +101,15 @@ export default function Dashboard() {
     return `Today, ${now.toLocaleDateString('en-US', options)}`;
   };
 
-  const todayStr = new Date().toISOString().split('T')[0];
+  const getLocalDateStr = () => {
+    const d = new Date();
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const todayStr = getLocalDateStr();
 
   // Fetch all dashboard & fitness telemetry
   const fetchAllData = async () => {
@@ -232,17 +243,21 @@ export default function Dashboard() {
     if (stepLoading) return;
     try {
       setStepLoading(true);
-      setExtraSteps((prev) => prev + amount);
+      const newExtra = extraSteps + amount;
+      setExtraSteps(newExtra);
 
       const distKm = Math.round((amount / 1350) * 100) / 100;
       const durationMin = Math.max(5, Math.round(amount / 100));
       const calories = Math.round(amount * 0.04);
+
       await workoutService.logWorkout({
-        workoutType: 'WALKING',
+        title: 'Daily Walking Cadence',
+        activityType: 'Walking',
+        durationSeconds: durationMin * 60,
         distanceKm: distKm,
-        durationMinutes: durationMin,
         caloriesBurned: calories,
         loggedDate: todayStr,
+        status: 'COMPLETED',
       });
 
       const updatedStats = await workoutService.getStats();
@@ -251,7 +266,7 @@ export default function Dashboard() {
         setExtraSteps(0);
       }
 
-      if (stepsLogged + amount >= 10000 && stepsLogged < 10000) {
+      if (stepsLogged + amount >= stepsGoal && stepsLogged < stepsGoal) {
         confetti({
           particleCount: 50,
           spread: 70,
@@ -276,9 +291,12 @@ export default function Dashboard() {
         setExtraSteps((prev) => Math.max(0, prev - numericAmount));
       } else {
         try {
-          const userWorkouts = await workoutService.getWorkouts({ limit: 10 });
-          const todayWalk = userWorkouts?.find(
-            (w) => w.loggedDate === todayStr && w.workoutType === 'WALKING'
+          const userWorkoutsRes = await workoutService.getWorkouts({ limit: 20 });
+          const workoutList = userWorkoutsRes?.workouts || (Array.isArray(userWorkoutsRes) ? userWorkoutsRes : []);
+          const todayWalk = workoutList.find(
+            (w) =>
+              (w.loggedDate === todayStr || (w.startedAt && w.startedAt.startsWith(todayStr))) &&
+              (w.activityType?.toLowerCase() === 'walking' || w.title?.toLowerCase().includes('walk') || w.title?.toLowerCase().includes('step'))
           );
           if (todayWalk) {
             await workoutService.deleteWorkout(todayWalk.id);
@@ -287,7 +305,8 @@ export default function Dashboard() {
           } else {
             setExtraSteps((prev) => Math.max(0, prev - numericAmount));
           }
-        } catch {
+        } catch (err) {
+          console.warn('Could not delete workout for steps:', err);
           setExtraSteps((prev) => Math.max(0, prev - numericAmount));
         }
       }
@@ -313,6 +332,44 @@ export default function Dashboard() {
       });
     } finally {
       setAiParsing(false);
+    }
+  };
+
+  // Actionable Log AI Parsed Items Directly to Food Diary
+  const handleLogAiItems = async () => {
+    if (!aiParseResult?.parsedItems?.length || aiLogging) return;
+    try {
+      setAiLogging(true);
+      const itemsToLog = aiParseResult.parsedItems.map((item) => ({
+        foodName: item.name || 'Food item',
+        mealType: 'Lunch',
+        logDate: todayStr,
+        servingQuantity: 1,
+        servingUnit: item.servingUnit || 'serving',
+        totalGrams: Number(item.servingSizeGrams || item.grams || 100),
+        calories: Number(item.calories || 0),
+        protein: Number(item.protein || 0),
+        carbs: Number(item.carbs || 0),
+        fat: Number(item.fat || 0),
+        fiber: Number(item.fiber || 0),
+      }));
+
+      await nutritionService.logMultipleFoods(itemsToLog);
+      const updatedLogs = await nutritionService.getDailyLogs(todayStr);
+      if (updatedLogs) setNutritionLogs(updatedLogs);
+      setShowAiBriefing(false);
+      setAiParseResult(null);
+      setAiInputText('');
+      confetti({
+        particleCount: 50,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ['#39E58C', '#C8FF00', '#25D9E6'],
+      });
+    } catch (e) {
+      console.warn('Could not log AI items to diary:', e);
+    } finally {
+      setAiLogging(false);
     }
   };
 
@@ -392,18 +449,33 @@ export default function Dashboard() {
     );
   }
 
-  // Derive Real Metrics
-  const dailyCaloriesTarget = nutritionGoals?.dailyCalories || 2000;
+  // Derive Dynamic Goals & Live Telemetry
+  const dailyCaloriesTarget = Number(nutritionGoals?.dailyCalories) || 2000;
   const caloriesConsumed = Math.round(nutritionLogs?.totals?.calories || 0);
 
-  const stepsGoal = 10000;
+  const stepsGoal = Number(nutritionGoals?.dailyStepsTarget) || 10000;
   const stepsLogged = (workoutStats?.today?.steps || 0) + extraSteps;
 
-  const activeTimeGoal = 60;
-  const activeTimeMinutes = workoutStats?.today?.activeMinutes || 0;
+  const activeTimeGoal = Number(nutritionGoals?.activeTimeGoal) || 60;
+  const extraActiveMinutes = Math.round(extraSteps / 100);
+  const activeTimeMinutes = (workoutStats?.today?.activeMinutes || 0) + extraActiveMinutes;
 
-  const todayDistanceKm = workoutStats?.today?.distanceKm || 0;
-  const todayActiveCalories = workoutStats?.today?.caloriesBurned || 0;
+  const activeBurnGoal = Number(nutritionGoals?.activeBurnGoal) || 500;
+  const extraCaloriesBurned = Math.round(extraSteps * 0.04);
+  const todayActiveCalories = Math.round((workoutStats?.today?.caloriesBurned || 0) + extraCaloriesBurned);
+
+  const baseDistance = Number(workoutStats?.today?.distanceKm) || 0;
+  const extraDist = extraSteps > 0 ? (extraSteps * 0.00075) : 0;
+  const todayDistanceKm = Math.round((baseDistance + extraDist) * 10) / 10;
+
+  const waterTargetMl = Number(nutritionGoals?.waterTargetMl) || 2500;
+  const safeWaterTotal = Number(waterTotalMl) && !isNaN(Number(waterTotalMl)) ? Math.max(0, Number(waterTotalMl)) : 0;
+  const targetGlasses = Math.max(1, Math.round(waterTargetMl / 250));
+  const filledWaterGlasses = Math.min(targetGlasses, Math.max(0, Math.round(safeWaterTotal / 250)));
+
+  const targetProtein = Number(nutritionGoals?.proteinGrams) || 125;
+  const targetCarbs = Number(nutritionGoals?.carbsGrams) || 225;
+  const targetFat = Number(nutritionGoals?.fatGrams) || 65;
 
   const todayHabits = dashboardData?.todayHabits || [];
   const completedHabitsCount = dashboardData?.today?.completedCount || 0;
@@ -411,17 +483,27 @@ export default function Dashboard() {
   const habitCompletionRate = totalHabitsCount > 0 ? Math.round((completedHabitsCount / totalHabitsCount) * 100) : 0;
 
   // Calculate Overall Daily Vitality Momentum (0 - 100%)
-  const calProgress = Math.min(100, Math.round((caloriesConsumed / dailyCaloriesTarget) * 100));
-  const stepsProgress = Math.min(100, Math.round((stepsLogged / stepsGoal) * 100));
-  const activeProgress = Math.min(100, Math.round((activeTimeMinutes / activeTimeGoal) * 100));
-  const vitalityScore = Math.round((calProgress + stepsProgress + activeProgress) / 3);
+  const burnProgress = activeBurnGoal > 0 ? Math.min(100, Math.round((todayActiveCalories / activeBurnGoal) * 100)) : 0;
+  const intakeProgress = dailyCaloriesTarget > 0 ? Math.min(100, Math.round((caloriesConsumed / dailyCaloriesTarget) * 100)) : 0;
+  const stepsProgress = stepsGoal > 0 ? Math.min(100, Math.round((stepsLogged / stepsGoal) * 100)) : 0;
+  const activeProgress = activeTimeGoal > 0 ? Math.min(100, Math.round((activeTimeMinutes / activeTimeGoal) * 100)) : 0;
+  const waterProgress = waterTargetMl > 0 ? Math.min(100, Math.round((safeWaterTotal / waterTargetMl) * 100)) : 0;
+
+  // Holistic Vitality: responsive to movement, hydration, active burn, and habits
+  const calProgToUse = calorieRingMode === 'burn' ? burnProgress : intakeProgress;
+  const vitalityScore = Math.min(
+    100,
+    Math.round(
+      (calProgToUse * 0.3) +
+      (stepsProgress * 0.3) +
+      (activeProgress * 0.2) +
+      (waterProgress * 0.1) +
+      (habitCompletionRate * 0.1)
+    )
+  );
 
   // Motivational Quote
   const motivationalQuote = "Every rep, every step, every healthy choice builds your peak vitality.";
-
-  // Safe Numeric Water Metrics (Prevents any NaN or string concatenation)
-  const safeWaterTotal = Number(waterTotalMl) && !isNaN(Number(waterTotalMl)) ? Math.max(0, Number(waterTotalMl)) : 0;
-  const filledWaterGlasses = Math.min(10, Math.max(0, Math.round(safeWaterTotal / 250)));
 
   // Quick Interactive Glass Click (Supports both filling and withdrawing)
   const handleSetWaterGlass = async (glassNumber) => {
@@ -527,7 +609,7 @@ export default function Dashboard() {
           <div className="lg:col-span-7 xl:col-span-8 space-y-5 sm:space-y-6">
             {/* Daily Progress Section */}
             <div className="bg-[#111522]/90 backdrop-blur-xl border border-[#242A3A] hover:border-[#C8FF00]/40 rounded-[26px] p-5 sm:p-6 space-y-4 shadow-xl transition-all duration-300">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-2.5">
                   <div className="w-8 h-8 rounded-xl bg-[#C8FF00]/15 border border-[#C8FF00]/30 flex items-center justify-center text-[#C8FF00]">
                     <Zap className="w-4 h-4" />
@@ -542,28 +624,58 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                {/* Overall Vitality Pill */}
-                <div className="flex items-center gap-2 bg-[#0D101B] border border-[#1D2332] px-3 py-1.5 rounded-full">
-                  <span className={`w-2 h-2 rounded-full ${vitalityScore > 0 ? 'bg-[#C8FF00] animate-ping' : 'bg-[#70788D]'}`} />
-                  <span className="text-xs font-black text-[#F5F7FC]">
-                    Vitality: {vitalityScore}%
-                  </span>
-                  <span className="text-[10px] font-semibold text-[#70788D] hidden sm:inline">
-                    {vitalityScore >= 80 ? 'Peak' : vitalityScore >= 40 ? 'On Track' : 'Rising'}
-                  </span>
+                <div className="flex items-center gap-2">
+                  {/* Calorie Mode Segmented Switch: Active Burn vs Dietary Fuel */}
+                  <div className="flex items-center bg-[#0D101B] border border-[#1D2332] p-0.5 rounded-xl">
+                    <button
+                      type="button"
+                      onClick={() => setCalorieRingMode('burn')}
+                      className={`px-2.5 py-1 rounded-lg text-[10px] font-black transition-all cursor-pointer ${
+                        calorieRingMode === 'burn'
+                          ? 'bg-[#C8FF00] text-[#080A12] shadow-[0_0_8px_rgba(200,255,0,0.3)]'
+                          : 'text-[#70788D] hover:text-[#F5F7FC]'
+                      }`}
+                      title="Show Active Metabolic Calories Burned from Workouts & Steps"
+                    >
+                      Active Burn
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setCalorieRingMode('intake')}
+                      className={`px-2.5 py-1 rounded-lg text-[10px] font-black transition-all cursor-pointer ${
+                        calorieRingMode === 'intake'
+                          ? 'bg-[#39E58C] text-[#080A12] shadow-[0_0_8px_rgba(57,229,140,0.3)]'
+                          : 'text-[#70788D] hover:text-[#F5F7FC]'
+                      }`}
+                      title="Show Dietary Calories Consumed from Meal Diary"
+                    >
+                      Dietary Fuel
+                    </button>
+                  </div>
+
+                  {/* Overall Vitality Pill */}
+                  <div className="flex items-center gap-2 bg-[#0D101B] border border-[#1D2332] px-3 py-1.5 rounded-full shrink-0">
+                    <span className={`w-2 h-2 rounded-full ${vitalityScore > 0 ? 'bg-[#C8FF00] animate-ping' : 'bg-[#70788D]'}`} />
+                    <span className="text-xs font-black text-[#F5F7FC]">
+                      Vitality: {vitalityScore}%
+                    </span>
+                    <span className="text-[10px] font-semibold text-[#70788D] hidden sm:inline">
+                      {vitalityScore >= 80 ? 'Peak' : vitalityScore >= 40 ? 'On Track' : 'Rising'}
+                    </span>
+                  </div>
                 </div>
               </div>
 
               {/* 3 Circular Rings in a Single Row */}
-              <div className="grid grid-cols-3 gap-2 sm:gap-6 pt-3 pb-1 border-t border-[#1D2332]">
+              <div className="grid grid-cols-3 gap-2 sm:gap-6 pt-3 pb-2 border-t border-[#1D2332]">
                 <CircularProgressRing
-                  value={caloriesConsumed}
-                  target={dailyCaloriesTarget}
-                  label="Calories"
-                  subLabel="Kcal Burned"
-                  icon={Flame}
-                  color={isDark ? '#C8FF00' : '#0D9488'}
-                  gradientTo="#39E58C"
+                  value={calorieRingMode === 'burn' ? todayActiveCalories : caloriesConsumed}
+                  target={calorieRingMode === 'burn' ? activeBurnGoal : dailyCaloriesTarget}
+                  label={calorieRingMode === 'burn' ? 'Active Burn' : 'Calories'}
+                  subLabel={calorieRingMode === 'burn' ? 'Kcal Burned' : 'Kcal Consumed'}
+                  icon={calorieRingMode === 'burn' ? Flame : UtensilsCrossed}
+                  color={calorieRingMode === 'burn' ? (isDark ? '#C8FF00' : '#0D9488') : (isDark ? '#39E58C' : '#059669')}
+                  gradientTo={calorieRingMode === 'burn' ? '#39E58C' : '#25D9E6'}
                   trackColor={isDark ? '#151A29' : '#E2E8F0'}
                   size={112}
                   strokeWidth={9}
@@ -594,6 +706,30 @@ export default function Dashboard() {
                   size={112}
                   strokeWidth={9}
                 />
+              </div>
+
+              {/* Integrated Real-Time Biomarker Telemetry Sub-bar */}
+              <div className="flex flex-wrap items-center justify-between gap-2 pt-2.5 border-t border-[#1D2332] text-[11px]">
+                <div className="flex items-center gap-1.5 text-[#A4AABC]">
+                  <Flame className="w-3.5 h-3.5 text-[#C8FF00]" />
+                  <span>Active Burn:</span>
+                  <span className="font-bold text-[#F5F7FC]">{todayActiveCalories} Kcal</span>
+                  <span className="text-[#70788D]">/ {activeBurnGoal}</span>
+                </div>
+
+                <div className="flex items-center gap-1.5 text-[#A4AABC]">
+                  <UtensilsCrossed className="w-3.5 h-3.5 text-[#39E58C]" />
+                  <span>Dietary Fuel:</span>
+                  <span className="font-bold text-[#F5F7FC]">{caloriesConsumed} Kcal</span>
+                  <span className="text-[#70788D]">/ {dailyCaloriesTarget}</span>
+                </div>
+
+                <div className="flex items-center gap-1.5 text-[#A4AABC]">
+                  <Droplets className="w-3.5 h-3.5 text-[#25D9E6]" />
+                  <span>Hydration:</span>
+                  <span className="font-bold text-[#F5F7FC]">{safeWaterTotal} ml</span>
+                  <span className="text-[#70788D]">/ {waterTargetMl}</span>
+                </div>
               </div>
             </div>
 
@@ -784,12 +920,12 @@ export default function Dashboard() {
                 <div className="bg-[#0D101B]/80 p-2 rounded-xl border border-[#1D2332]">
                   <div className="flex items-center justify-between text-[10px] text-[#A4AABC] font-semibold mb-1">
                     <span>Protein</span>
-                    <span className="text-[#39E58C] font-bold">{Math.round(nutritionLogs?.totals?.protein || 0)}g</span>
+                    <span className="text-[#39E58C] font-bold">{Math.round(nutritionLogs?.totals?.protein || 0)}/{targetProtein}g</span>
                   </div>
                   <div className="w-full h-1.5 rounded-full bg-[#151A29] overflow-hidden">
                     <div
-                      className="h-full bg-[#39E58C] rounded-full"
-                      style={{ width: `${Math.min(100, ((nutritionLogs?.totals?.protein || 0) / 130) * 100)}%` }}
+                      className="h-full bg-[#39E58C] rounded-full transition-all duration-500"
+                      style={{ width: `${Math.min(100, ((nutritionLogs?.totals?.protein || 0) / targetProtein) * 100)}%` }}
                     />
                   </div>
                 </div>
@@ -798,12 +934,12 @@ export default function Dashboard() {
                 <div className="bg-[#0D101B]/80 p-2 rounded-xl border border-[#1D2332]">
                   <div className="flex items-center justify-between text-[10px] text-[#A4AABC] font-semibold mb-1">
                     <span>Carbs</span>
-                    <span className="text-[#FFB020] font-bold">{Math.round(nutritionLogs?.totals?.carbs || 0)}g</span>
+                    <span className="text-[#FFB020] font-bold">{Math.round(nutritionLogs?.totals?.carbs || 0)}/{targetCarbs}g</span>
                   </div>
                   <div className="w-full h-1.5 rounded-full bg-[#151A29] overflow-hidden">
                     <div
-                      className="h-full bg-[#FFB020] rounded-full"
-                      style={{ width: `${Math.min(100, ((nutritionLogs?.totals?.carbs || 0) / 220) * 100)}%` }}
+                      className="h-full bg-[#FFB020] rounded-full transition-all duration-500"
+                      style={{ width: `${Math.min(100, ((nutritionLogs?.totals?.carbs || 0) / targetCarbs) * 100)}%` }}
                     />
                   </div>
                 </div>
@@ -812,19 +948,19 @@ export default function Dashboard() {
                 <div className="bg-[#0D101B]/80 p-2 rounded-xl border border-[#1D2332]">
                   <div className="flex items-center justify-between text-[10px] text-[#A4AABC] font-semibold mb-1">
                     <span>Fat</span>
-                    <span className="text-[#8B5CF6] font-bold">{Math.round(nutritionLogs?.totals?.fat || 0)}g</span>
+                    <span className="text-[#8B5CF6] font-bold">{Math.round(nutritionLogs?.totals?.fat || 0)}/{targetFat}g</span>
                   </div>
                   <div className="w-full h-1.5 rounded-full bg-[#151A29] overflow-hidden">
                     <div
-                      className="h-full bg-[#8B5CF6] rounded-full"
-                      style={{ width: `${Math.min(100, ((nutritionLogs?.totals?.fat || 0) / 65) * 100)}%` }}
+                      className="h-full bg-[#8B5CF6] rounded-full transition-all duration-500"
+                      style={{ width: `${Math.min(100, ((nutritionLogs?.totals?.fat || 0) / targetFat) * 100)}%` }}
                     />
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Hydration Tracker Card with 10 Interactive Glasses */}
+            {/* Hydration Tracker Card with Dynamic Interactive Glasses */}
             <div className="bg-[#111522]/90 backdrop-blur-xl border border-[#242A3A] hover:border-[#25D9E6]/40 rounded-[26px] p-4 sm:p-5 flex flex-col justify-between space-y-3.5 shadow-xl transition-all duration-300">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
@@ -835,7 +971,7 @@ export default function Dashboard() {
                     <h3 className="text-xs sm:text-sm font-bold text-[#F5F7FC]">
                       Water Intake
                     </h3>
-                    <p className="text-[10px] text-[#70788D]">Target: 2,500 ml daily</p>
+                    <p className="text-[10px] text-[#70788D]">Target: {waterTargetMl.toLocaleString()} ml daily</p>
                   </div>
                 </div>
 
@@ -885,11 +1021,11 @@ export default function Dashboard() {
                       {safeWaterTotal}
                     </span>
                     <span className="text-xs text-[#70788D]">
-                      / 2500 ml
+                      / {waterTargetMl.toLocaleString()} ml
                     </span>
                   </div>
                   <span className="text-[11px] font-bold text-[#25D9E6]">
-                    {filledWaterGlasses} of 10 glasses
+                    {filledWaterGlasses} of {targetGlasses} glasses
                   </span>
                 </div>
                 {/* Progress bar */}
@@ -897,18 +1033,18 @@ export default function Dashboard() {
                   <div
                     className="h-full bg-gradient-to-r from-[#25D9E6] to-[#0284C7] rounded-full transition-all duration-500 shadow-[0_0_8px_#25D9E6]"
                     style={{
-                      width: `${Math.min(100, (safeWaterTotal / 2500) * 100)}%`,
+                      width: `${Math.min(100, (safeWaterTotal / waterTargetMl) * 100)}%`,
                     }}
                   />
                 </div>
               </div>
 
-              {/* 10 Interactive Water Glasses Grid */}
+              {/* Dynamic Interactive Water Glasses Grid */}
               <div className="space-y-1.5 pt-1">
                 <div className="text-[10px] text-[#70788D] font-medium flex items-center justify-between">
                   <span>Interactive Glass Tracker (Click any glass to fill or withdraw)</span>
                   <div className="flex items-center gap-2">
-                    <span>{safeWaterTotal >= 2500 ? '🎉 Goal Reached!' : `${Math.max(0, 10 - filledWaterGlasses)} left`}</span>
+                    <span>{safeWaterTotal >= waterTargetMl ? '🎉 Goal Reached!' : `${Math.max(0, targetGlasses - filledWaterGlasses)} left`}</span>
                     {safeWaterTotal > 0 && (
                       <button
                         type="button"
@@ -924,8 +1060,11 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-10 gap-1 sm:gap-1.5">
-                  {[...Array(10)].map((_, i) => {
+                <div
+                  className="grid gap-1 sm:gap-1.5"
+                  style={{ gridTemplateColumns: `repeat(${Math.min(10, targetGlasses)}, minmax(0, 1fr))` }}
+                >
+                  {[...Array(targetGlasses)].map((_, i) => {
                     const isFilled = i < filledWaterGlasses;
                     return (
                       <button
@@ -1005,12 +1144,12 @@ export default function Dashboard() {
                       <Footprints className="w-4 h-4" />
                       <span>Movement & Cadence Pacing</span>
                     </span>
-                    <span className="text-[#A4AABC]">{stepsLogged.toLocaleString()} / 10,000 steps</span>
+                    <span className="text-[#A4AABC]">{stepsLogged.toLocaleString()} / {stepsGoal.toLocaleString()} steps</span>
                   </div>
                   <p className="text-xs text-[#A4AABC] leading-relaxed">
                     {stepsLogged === 0
                       ? 'No steps recorded yet today. An initial 15-minute brisk walk will activate baseline metabolic burn.'
-                      : `You have logged ${stepsLogged.toLocaleString()} steps (${((stepsLogged * 0.00075) || 0).toFixed(2)} km) and ${todayActiveCalories} Kcal of active burn. Keep this pacing to reach today's milestone!`}
+                      : `You have logged ${stepsLogged.toLocaleString()} steps (${todayDistanceKm} km) and ${todayActiveCalories} Kcal of active burn. Keep this pacing to reach today's milestone!`}
                   </p>
                 </div>
 
@@ -1021,12 +1160,12 @@ export default function Dashboard() {
                       <Droplets className="w-4 h-4" />
                       <span>Metabolic Hydration Level</span>
                     </span>
-                    <span className="text-[#A4AABC]">{safeWaterTotal} / 2,500 ml</span>
+                    <span className="text-[#A4AABC]">{safeWaterTotal.toLocaleString()} / {waterTargetMl.toLocaleString()} ml</span>
                   </div>
                   <p className="text-xs text-[#A4AABC] leading-relaxed">
-                    {safeWaterTotal >= 2500
+                    {safeWaterTotal >= waterTargetMl
                       ? '🎉 Daily hydration target accomplished! Optimal electrolyte and cognitive equilibrium maintained.'
-                      : `You have logged ${safeWaterTotal} ml (${filledWaterGlasses} of 10 glasses). Drinking ${Math.max(1, 10 - filledWaterGlasses)} more glasses before evening optimizes deep REM recovery.`}
+                      : `You have logged ${safeWaterTotal} ml (${filledWaterGlasses} of ${targetGlasses} glasses). Drinking ${Math.max(1, targetGlasses - filledWaterGlasses)} more glasses before evening optimizes deep REM recovery.`}
                   </p>
                 </div>
 
@@ -1080,11 +1219,15 @@ export default function Dashboard() {
                     {aiParseResult.error ? (
                       <p className="text-[#FF5C67]">{aiParseResult.error}</p>
                     ) : (
-                      <div className="space-y-1.5">
-                        <p className="text-[#39E58C] font-bold flex items-center gap-1">
-                          <Check className="w-3.5 h-3.5" />
-                          <span>AI Parsed Successfully</span>
-                        </p>
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <p className="text-[#39E58C] font-bold flex items-center gap-1">
+                            <Check className="w-3.5 h-3.5" />
+                            <span>AI Parsed Successfully</span>
+                          </p>
+                          <span className="text-[10px] text-[#A4AABC]">Ready to Log</span>
+                        </div>
+
                         {aiParseResult.parsedItems && aiParseResult.parsedItems.length > 0 && (
                           <div className="flex flex-wrap gap-2 text-[11px] text-[#A4AABC]">
                             {aiParseResult.parsedItems.map((item, idx) => (
@@ -1093,6 +1236,23 @@ export default function Dashboard() {
                               </span>
                             ))}
                           </div>
+                        )}
+
+                        {/* Instant Log Button to save directly into user's nutrition log */}
+                        {aiParseResult.parsedItems && aiParseResult.parsedItems.length > 0 && (
+                          <button
+                            type="button"
+                            onClick={handleLogAiItems}
+                            disabled={aiLogging}
+                            className="w-full mt-1.5 py-2 px-3 rounded-xl bg-[#39E58C]/20 border border-[#39E58C]/40 hover:bg-[#39E58C]/30 text-[#39E58C] text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-sm active:scale-95"
+                          >
+                            {aiLogging ? (
+                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            ) : (
+                              <Plus className="w-3.5 h-3.5" />
+                            )}
+                            <span>Log {aiParseResult.parsedItems.length} {aiParseResult.parsedItems.length === 1 ? 'item' : 'items'} to Today's Food Diary</span>
+                          </button>
                         )}
                       </div>
                     )}

@@ -50,9 +50,17 @@ class WorkoutService {
     const workout = await prisma.workout.create({
       data: {
         userId,
-        title: data.title || `${data.activityType || 'Fitness'} Workout`,
-        activityType: data.activityType || 'Running',
-        durationSeconds: Math.max(0, parseInt(data.durationSeconds || 0, 10)),
+        title: data.title || `${data.activityType || data.workoutType || 'Fitness'} Workout`,
+        activityType: data.activityType || (data.workoutType ? (data.workoutType.charAt(0).toUpperCase() + data.workoutType.slice(1).toLowerCase()) : 'Running'),
+        durationSeconds: Math.max(
+          0,
+          parseInt(
+            data.durationSeconds !== undefined && data.durationSeconds !== null
+              ? data.durationSeconds
+              : (data.durationMinutes ? data.durationMinutes * 60 : 0),
+            10
+          ) || 0
+        ),
         distanceKm: data.distanceKm ? parseFloat(data.distanceKm) : null,
         caloriesBurned: data.caloriesBurned ? parseFloat(data.caloriesBurned) : null,
         avgPace: data.avgPace || null,
