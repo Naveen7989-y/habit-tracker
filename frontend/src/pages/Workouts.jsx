@@ -4,6 +4,10 @@ import confetti from 'canvas-confetti';
 import { useTheme } from '../context/ThemeContext';
 import DashboardLayout from '../layouts/DashboardLayout';
 import WorkoutRouteMap from '../components/fitness/WorkoutRouteMap';
+import RestTimerHUD from '../components/fitness/RestTimerHUD';
+import ManualWorkoutModal from '../components/fitness/ManualWorkoutModal';
+import ExerciseSetLogger from '../components/fitness/ExerciseSetLogger';
+import WorkoutStatsBanner from '../components/fitness/WorkoutStatsBanner';
 import { workoutService } from '../services/workout.service';
 import {
   ChevronLeft,
@@ -40,6 +44,7 @@ import {
   Timer,
   Award,
   ListChecks,
+  Search,
 } from 'lucide-react';
 
 // Helper to resolve discipline icon reliably
@@ -542,8 +547,16 @@ export default function Workouts() {
 
   const [selectedStyleId, setSelectedStyleId] = useState('Running');
   const [activeFilter, setActiveFilter] = useState('All Styles');
+  const [searchQuery, setSearchQuery] = useState('');
   const [inspectingStyle, setInspectingStyle] = useState(null);
   const [completedExerciseIds, setCompletedExerciseIds] = useState(new Set());
+
+  // Rest Timer & Manual Workout Modal states
+  const [isRestTimerOpen, setIsRestTimerOpen] = useState(false);
+  const [restTimerSeconds, setRestTimerSeconds] = useState(60);
+  const [restExerciseName, setRestExerciseName] = useState('');
+  const [isManualModalOpen, setIsManualModalOpen] = useState(false);
+  const [historyFilter, setHistoryFilter] = useState('All');
 
   const [workoutState, setWorkoutState] = useState('Ready'); // 'Ready' | 'Recording' | 'Paused' | 'Completed'
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
@@ -553,6 +566,7 @@ export default function Workouts() {
   const [avgPace, setAvgPace] = useState('--');
 
   const [recentWorkouts, setRecentWorkouts] = useState([]);
+  const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saveSuccessMsg, setSaveSuccessMsg] = useState('');
   const [confirmStopModal, setConfirmStopModal] = useState(false);
@@ -564,17 +578,38 @@ export default function Workouts() {
     return WORKOUT_STYLES.find((s) => s.id === selectedStyleId) || WORKOUT_STYLES[0];
   }, [selectedStyleId]);
 
-  // Filtered styles list
+  // Filtered styles list with search
   const filteredStyles = useMemo(() => {
-    if (activeFilter === 'All Styles') return WORKOUT_STYLES;
-    return WORKOUT_STYLES.filter((s) => s.category === activeFilter);
-  }, [activeFilter]);
+    return WORKOUT_STYLES.filter((s) => {
+      const matchesCategory = activeFilter === 'All Styles' || s.category === activeFilter;
+      if (!matchesCategory) return false;
+      if (!searchQuery.trim()) return true;
+      const q = searchQuery.toLowerCase();
+      const matchesName =
+        s.name.toLowerCase().includes(q) ||
+        s.category.toLowerCase().includes(q) ||
+        s.muscles.toLowerCase().includes(q);
+      const matchesExercise = s.exercises?.some(
+        (ex) =>
+          ex.name.toLowerCase().includes(q) ||
+          ex.muscles.toLowerCase().includes(q) ||
+          ex.instructions.toLowerCase().includes(q)
+      );
+      return matchesName || matchesExercise;
+    });
+  }, [activeFilter, searchQuery]);
+
+  // Filtered recent workouts list
+  const filteredHistory = useMemo(() => {
+    if (historyFilter === 'All') return recentWorkouts;
+    return recentWorkouts.filter((w) => w.activityType === historyFilter);
+  }, [recentWorkouts, historyFilter]);
 
   // Load existing workouts from backend
   const fetchWorkouts = async () => {
     try {
       setLoading(true);
-      const res = await workoutService.getWorkouts({ limit: 12 });
+      const res = await workoutService.getWorkouts({ limit: 16 });
       const list = res?.workouts || (Array.isArray(res) ? res : []);
       setRecentWorkouts(list);
     } catch (err) {
@@ -584,8 +619,20 @@ export default function Workouts() {
     }
   };
 
+  // Load aggregated workout stats
+  const fetchStats = async () => {
+    try {
+      const res = await workoutService.getStats();
+      const s = res?.data || res;
+      setStats(s);
+    } catch (err) {
+      console.warn('Could not load workout stats:', err);
+    }
+  };
+
   useEffect(() => {
     fetchWorkouts();
+    fetchStats();
   }, []);
 
   // Heart Rate Zone categorization
@@ -768,8 +815,9 @@ export default function Workouts() {
       setSaveSuccessMsg(`Awesome work! Your ${selectedStyle.name} session (${Math.round(caloriesBurned)} Kcal) is now synced to your daily records!`);
       setTimeout(() => setSaveSuccessMsg(''), 5000);
 
-      // Refresh recent list
+      // Refresh recent list and stats
       fetchWorkouts();
+      fetchStats();
     } catch (err) {
       console.error('Error saving workout:', err);
     }
@@ -792,6 +840,7 @@ export default function Workouts() {
     try {
       await workoutService.deleteWorkout(id);
       setRecentWorkouts((prev) => prev.filter((w) => w.id !== id));
+      fetchStats();
     } catch (err) {
       console.error('Failed to delete workout:', err);
     }
@@ -839,14 +888,31 @@ export default function Workouts() {
           </div>
 
           <div className="flex items-center gap-2 self-end sm:self-center">
-            <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border ${
-              isDark
-                ? 'bg-[#111522] border-[#242A3A] text-[#39E58C]'
-                : 'bg-emerald-50 border-emerald-200 text-emerald-700'
-            }`}>
-              <span className="w-2 h-2 rounded-full bg-[#39E58C] animate-pulse" />
-              <span>Sensors Ready</span>
-            </span>
+            <button
+              onClick={() => {
+                setRestExerciseName('');
+                setRestTimerSeconds(60);
+                setIsRestTimerOpen(true);
+              }}
+              className={`h-9 px-3 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+                isDark
+                  ? 'bg-[#111522] border-[#242A3A] text-[#C8FF00] hover:bg-[#151A29]'
+                  : 'bg-white border-[#E2E8F0] text-emerald-700 hover:bg-slate-50 shadow-sm'
+              }`}
+              title="Open Rest Timer"
+            >
+              <Timer className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Rest Timer</span>
+            </button>
+
+            <button
+              onClick={() => setIsManualModalOpen(true)}
+              className="h-9 px-3.5 rounded-xl bg-gradient-to-r from-[#C8FF00] to-[#39E58C] hover:brightness-110 text-[#080A12] text-xs font-black flex items-center gap-1.5 shadow-sm active:scale-95 transition-all cursor-pointer"
+              title="Log completed workout"
+            >
+              <Plus className="w-3.5 h-3.5 stroke-[3]" />
+              <span>Log Workout</span>
+            </button>
 
             <button
               onClick={handleReset}
@@ -871,6 +937,18 @@ export default function Workouts() {
           </div>
         )}
 
+        {/* A2. Weekly Volume & Momentum Banner */}
+        <WorkoutStatsBanner
+          stats={stats}
+          recentWorkouts={recentWorkouts}
+          onOpenManualModal={() => setIsManualModalOpen(true)}
+          onOpenRestTimer={() => {
+            setRestExerciseName('');
+            setRestTimerSeconds(60);
+            setIsRestTimerOpen(true);
+          }}
+        />
+
         {/* B. Workout Disciplines & Styles Visual Showcase with Real Images */}
         <div className={`rounded-[26px] p-4 sm:p-6 border transition-all shadow-xl space-y-4.5 ${
           isDark
@@ -883,34 +961,65 @@ export default function Workouts() {
                 <Layers className="w-4 h-4" />
               </div>
               <div>
-                <h2 className={`text-sm sm:text-base font-black tracking-tight ${isDark ? 'text-[#F5F7FC]' : 'text-[#0F172A]'}`}>
-                  Workout Disciplines & Style Gallery
-                </h2>
+                <div className="flex items-center gap-2">
+                  <h2 className={`text-sm sm:text-base font-black tracking-tight ${isDark ? 'text-[#F5F7FC]' : 'text-[#0F172A]'}`}>
+                    Workout Disciplines & Style Gallery
+                  </h2>
+                  <span className="text-[10px] font-bold px-2 py-0.2 rounded-full bg-[#8B5CF6]/15 text-[#8B5CF6]">
+                    {filteredStyles.length} Available
+                  </span>
+                </div>
                 <p className={`text-[11px] ${isDark ? 'text-[#70788D]' : 'text-[#64748B]'}`}>
                   Select any discipline to view its photographic guide, curated exercises, and calibrated pacing
                 </p>
               </div>
             </div>
 
-            {/* Filter Tabs */}
-            <div className={`flex flex-wrap items-center gap-1 p-1 rounded-2xl border ${
-              isDark ? 'bg-[#0D101B] border-[#1D2332]' : 'bg-slate-100 border-[#E2E8F0]'
-            }`}>
-              {DISCIPLINE_FILTERS.map((filter) => (
-                <button
-                  key={filter}
-                  onClick={() => setActiveFilter(filter)}
-                  className={`px-3 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                    activeFilter === filter
-                      ? 'bg-[#C8FF00] text-[#080A12] shadow-sm font-black'
-                      : isDark
-                      ? 'text-[#70788D] hover:text-[#F5F7FC]'
-                      : 'text-slate-600 hover:text-slate-900'
+            {/* Search Input & Filter Tabs */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+              <div className="relative">
+                <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-[#70788D]" />
+                <input
+                  type="text"
+                  placeholder="Search styles, muscles..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className={`w-full sm:w-56 pl-8 pr-7 py-1.5 rounded-xl text-xs font-medium border transition-colors outline-none ${
+                    isDark
+                      ? 'bg-[#0D101B] border-[#1D2332] text-[#F5F7FC] placeholder-[#70788D] focus:border-[#C8FF00]'
+                      : 'bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400 focus:border-emerald-500'
                   }`}
-                >
-                  {filter}
-                </button>
-              ))}
+                />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-[#70788D] hover:text-white"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                )}
+              </div>
+
+              <div className={`flex flex-wrap items-center gap-1 p-1 rounded-2xl border ${
+                isDark ? 'bg-[#0D101B] border-[#1D2332]' : 'bg-slate-100 border-[#E2E8F0]'
+              }`}>
+                {DISCIPLINE_FILTERS.map((filter) => (
+                  <button
+                    key={filter}
+                    onClick={() => setActiveFilter(filter)}
+                    className={`px-3 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                      activeFilter === filter
+                        ? 'bg-[#C8FF00] text-[#080A12] shadow-sm font-black'
+                        : isDark
+                        ? 'text-[#70788D] hover:text-[#F5F7FC]'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    {filter}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
@@ -1283,6 +1392,17 @@ export default function Workouts() {
                             <span>Target:</span>
                             <span className={isDark ? 'text-[#F5F7FC]' : 'text-slate-800'}>{ex.muscles}</span>
                           </p>
+
+                          {/* Interactive Set & Rep Logger */}
+                          <ExerciseSetLogger
+                            exerciseName={ex.name}
+                            targetDescription={ex.target}
+                            onTriggerRest={(name) => {
+                              setRestExerciseName(name);
+                              setRestTimerSeconds(60);
+                              setIsRestTimerOpen(true);
+                            }}
+                          />
                         </div>
                       </div>
                     </div>
@@ -1353,6 +1473,52 @@ export default function Workouts() {
                     {avgHeartRate}
                   </p>
                   <p className="text-[11px] text-[#70788D]">Pulse (BPM)</p>
+                </div>
+              </div>
+
+              {/* Quick Rest Interval Selector */}
+              <div className={`p-2.5 rounded-2xl border flex flex-wrap items-center justify-between gap-2 ${
+                isDark ? 'bg-[#0D101B]/80 border-[#1D2332]' : 'bg-slate-50 border-slate-200'
+              }`}>
+                <div className="flex items-center gap-1.5 text-xs font-bold text-[#70788D]">
+                  <Timer className="w-3.5 h-3.5 text-[#C8FF00]" />
+                  <span>Rest Interval:</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  {[30, 60, 90, 120].map((sec) => (
+                    <button
+                      key={sec}
+                      type="button"
+                      onClick={() => {
+                        setRestExerciseName(selectedStyle.name);
+                        setRestTimerSeconds(sec);
+                        setIsRestTimerOpen(true);
+                      }}
+                      className={`px-2 py-1 rounded-xl text-[11px] font-bold border transition-all cursor-pointer ${
+                        isDark
+                          ? 'bg-[#151A29] border-[#242A3A] text-[#A4AABC] hover:text-[#C8FF00] hover:border-[#C8FF00]/40'
+                          : 'bg-white border-slate-200 text-slate-700 hover:text-emerald-700 hover:bg-slate-100 shadow-sm'
+                      }`}
+                    >
+                      {sec}s
+                    </button>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setRestExerciseName(selectedStyle.name);
+                      setRestTimerSeconds(60);
+                      setIsRestTimerOpen(true);
+                    }}
+                    className={`p-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                      isDark
+                        ? 'bg-[#151A29] border-[#242A3A] text-[#C8FF00] hover:bg-[#1D2332]'
+                        : 'bg-white border-slate-200 text-emerald-700 hover:bg-slate-100'
+                    }`}
+                    title="Open Full Rest Timer HUD"
+                  >
+                    <SlidersHorizontal className="w-3.5 h-3.5" />
+                  </button>
                 </div>
               </div>
 
@@ -1467,34 +1633,66 @@ export default function Workouts() {
                   </div>
                   <div>
                     <h3 className={`text-sm font-black ${isDark ? 'text-[#F5F7FC]' : 'text-[#0F172A]'}`}>
-                      Recorded Sessions ({recentWorkouts.length})
+                      Recorded Sessions ({filteredHistory.length})
                     </h3>
                     <p className={`text-[10px] ${isDark ? 'text-[#70788D]' : 'text-[#64748B]'}`}>
                       Synced with Activity Rings & Biomarkers
                     </p>
                   </div>
                 </div>
-                <span className="text-[10px] text-[#39E58C] font-bold flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#39E58C]" />
-                  <span>Synced</span>
-                </span>
+                <button
+                  type="button"
+                  onClick={() => setIsManualModalOpen(true)}
+                  className="text-[10px] font-bold text-[#C8FF00] hover:underline flex items-center gap-1 cursor-pointer"
+                >
+                  <Plus className="w-3 h-3" />
+                  <span>Log Manual</span>
+                </button>
               </div>
 
-              {recentWorkouts.length === 0 ? (
+              {/* History Filter Pills */}
+              <div className="flex items-center gap-1 overflow-x-auto pb-1 scrollbar-none">
+                {['All', 'Running', 'Strength', 'HIIT', 'Calisthenics', 'Yoga', 'Cycling', 'Boxing', 'Walking'].map((f) => (
+                  <button
+                    key={f}
+                    type="button"
+                    onClick={() => setHistoryFilter(f)}
+                    className={`px-2.5 py-1 rounded-xl text-[10px] font-bold whitespace-nowrap transition-all cursor-pointer ${
+                      historyFilter === f
+                        ? 'bg-[#C8FF00] text-[#080A12] font-black shadow-sm'
+                        : isDark
+                        ? 'bg-[#0D101B] text-[#70788D] hover:text-[#F5F7FC] border border-[#1D2332]'
+                        : 'bg-slate-100 text-slate-600 hover:text-slate-900 border border-slate-200'
+                    }`}
+                  >
+                    {f}
+                  </button>
+                ))}
+              </div>
+
+              {filteredHistory.length === 0 ? (
                 <div className={`py-8 text-center space-y-2 rounded-2xl border ${
                   isDark ? 'bg-[#0D101B]/80 border-[#1D2332]' : 'bg-slate-50 border-slate-200'
                 }`}>
                   <Dumbbell className="w-8 h-8 text-[#70788D] mx-auto opacity-50" />
                   <p className={`text-xs font-bold ${isDark ? 'text-[#A4AABC]' : 'text-slate-600'}`}>
-                    No workouts recorded yet
+                    No {historyFilter === 'All' ? '' : historyFilter} workouts recorded yet
                   </p>
                   <p className="text-[10px] text-[#70788D]">
-                    Pick a style and click Start Session to record your first workout
+                    Pick a preset, run live stopwatch, or log past workouts manually
                   </p>
+                  <button
+                    type="button"
+                    onClick={() => setIsManualModalOpen(true)}
+                    className="mt-2 px-3 py-1.5 rounded-xl bg-[#C8FF00]/15 text-[#C8FF00] border border-[#C8FF00]/30 text-xs font-bold hover:bg-[#C8FF00]/25 transition-colors cursor-pointer inline-flex items-center gap-1"
+                  >
+                    <Plus className="w-3 h-3" />
+                    <span>Log Workout Now</span>
+                  </button>
                 </div>
               ) : (
                 <div className="space-y-2 max-h-[380px] overflow-y-auto pr-1">
-                  {recentWorkouts.map((w) => {
+                  {filteredHistory.map((w) => {
                     const matchStyle = WORKOUT_STYLES.find((s) => s.id === w.activityType) || WORKOUT_STYLES[0];
                     const WIcon = getStyleIcon(matchStyle.id);
 
@@ -1507,7 +1705,7 @@ export default function Workouts() {
                             : 'bg-slate-50 border-slate-200 hover:border-slate-300'
                         }`}
                       >
-                        <div className="flex items-center gap-3 min-w-0">
+                        <div className="flex items-center gap-3 min-w-0 flex-1">
                           <div
                             className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border"
                             style={{
@@ -1518,20 +1716,33 @@ export default function Workouts() {
                           >
                             <WIcon className="w-4 h-4" />
                           </div>
-                          <div className="min-w-0">
-                            <p className={`text-xs sm:text-sm font-bold truncate ${isDark ? 'text-[#F5F7FC]' : 'text-[#0F172A]'}`}>
-                              {w.title}
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-1.5">
+                              <p className={`text-xs sm:text-sm font-bold truncate ${isDark ? 'text-[#F5F7FC]' : 'text-[#0F172A]'}`}>
+                                {w.title}
+                              </p>
+                              {w.distanceKm && (
+                                <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-[#25D9E6]/15 text-[#25D9E6]">
+                                  {w.distanceKm} km
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-[10px] sm:text-[11px] text-[#70788D] mt-0.5">
+                              {w.loggedDate} • {Math.round((w.durationSeconds || 0) / 60)} min • {w.caloriesBurned ? `${w.caloriesBurned} Kcal` : ''} {w.avgHeartRate ? `• ${w.avgHeartRate} BPM` : ''} {w.avgPace ? `• ${w.avgPace}` : ''}
                             </p>
-                            <p className="text-[10px] sm:text-[11px] text-[#70788D]">
-                              {w.loggedDate} • {Math.round((w.durationSeconds || 0) / 60)} min • {w.distanceKm ? `${w.distanceKm} km` : `${w.caloriesBurned} Kcal`}
-                            </p>
+                            {w.notes && (
+                              <p className="text-[10px] text-[#A4AABC] truncate mt-0.5 flex items-center gap-1">
+                                <span className="text-[#8B5CF6]">✦</span>
+                                <span>{w.notes}</span>
+                              </p>
+                            )}
                           </div>
                         </div>
 
                         <button
                           type="button"
                           onClick={() => handleDeleteWorkout(w.id)}
-                          className="p-1.5 text-[#70788D] hover:text-[#FF5C67] transition-colors rounded-lg hover:bg-rose-500/10 cursor-pointer"
+                          className="p-1.5 text-[#70788D] hover:text-[#FF5C67] transition-colors rounded-lg hover:bg-rose-500/10 cursor-pointer ml-2"
                           title="Delete workout record"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -1735,6 +1946,25 @@ export default function Workouts() {
             </div>
           </div>
         )}
+
+        {/* F. High-Precision Rest Timer HUD Modal */}
+        <RestTimerHUD
+          isOpen={isRestTimerOpen}
+          onClose={() => setIsRestTimerOpen(false)}
+          initialSeconds={restTimerSeconds}
+          exerciseName={restExerciseName}
+          autoStart={true}
+        />
+
+        {/* G. Manual Workout Entry Modal */}
+        <ManualWorkoutModal
+          isOpen={isManualModalOpen}
+          onClose={() => setIsManualModalOpen(false)}
+          onWorkoutSaved={() => {
+            fetchWorkouts();
+            fetchStats();
+          }}
+        />
       </div>
     </DashboardLayout>
   );

@@ -40,6 +40,23 @@
   --color-divider: #1D2332;
   --color-header-bg: rgba(8, 10, 18, 0.95);
   --color-header-border: #1D2332;
+  --primary: #C8FF00;
+  --on-primary: #080A12;
+  --secondary: #8B5CF6;
+  --on-secondary: #F5F7FC;
+  --accent: #39E58C;
+  --on-accent: #080A12;
+  --background: #080A12;
+  --foreground: #F5F7FC;
+  --card: #111522;
+  --card-foreground: #F5F7FC;
+  --card-elevated: #151A29;
+  --muted: #1D2332;
+  --muted-foreground: #A4AABC;
+  --border: #242A3A;
+  --destructive: #FF5C67;
+  --on-destructive: #FFFFFF;
+  --ring: #C8FF00;
 }
 
 /* --------------------------------------------------
@@ -70,6 +87,23 @@ html:not(.dark),
   --color-divider: #E2E8F0;
   --color-header-bg: rgba(255, 255, 255, 0.95);
   --color-header-border: #E2E8F0;
+  --primary: #0D9488;
+  --on-primary: #FFFFFF;
+  --secondary: #7C3AED;
+  --on-secondary: #FFFFFF;
+  --accent: #16A34A;
+  --on-accent: #FFFFFF;
+  --background: #F8FAFC;
+  --foreground: #0F172A;
+  --card: #FFFFFF;
+  --card-foreground: #0F172A;
+  --card-elevated: #F1F5F9;
+  --muted: #E2E8F0;
+  --muted-foreground: #64748B;
+  --border: #CBD5E1;
+  --destructive: #EF4444;
+  --on-destructive: #FFFFFF;
+  --ring: #0D9488;
 }
 
 /* Automatic background & card surface adaptations in Light Mode */
@@ -3173,38 +3207,48 @@ body {
    LANDING PAGE HERO & LIQUID GLASS SPECIFICATION
    ================================================== */
 .landing-page {
-  background-color: #021526 !important;
-  color: #FFFFFF !important;
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+.dark .landing-page {
+  background-color: #080A12;
+  color: #F5F7FC;
+}
+
+html:not(.dark) .landing-page {
+  background-color: #F8FAFC;
+  color: #0F172A;
 }
 
 header.landing-header {
   background: transparent !important;
   background-color: transparent !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
   box-shadow: none !important;
   backdrop-filter: none !important;
 }
 
-header.landing-header a,
-header.landing-header button {
+.dark header.landing-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+html:not(.dark) header.landing-header {
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08) !important;
+}
+
+.dark .landing-page h1 {
   color: #FFFFFF !important;
 }
 
-header.landing-header img[alt="HAbyTAT"] {
-  content: url('/logo-dark.png') !important;
+html:not(.dark) .landing-page h1 {
+  color: #0F172A !important;
 }
 
-.landing-page .text-white,
-.landing-page h1,
-.landing-page h1 *,
-.landing-page h2,
-.landing-page h3 {
-  color: #FFFFFF !important;
-}
-
-.landing-page .text-\[\#A1A1AA\],
-.landing-page em.text-\[\#A1A1AA\] {
+.dark .landing-page .hero-subtitle {
   color: #A1A1AA !important;
+}
+
+html:not(.dark) .landing-page .hero-subtitle {
+  color: #475569 !important;
 }
 
 .liquid-glass {

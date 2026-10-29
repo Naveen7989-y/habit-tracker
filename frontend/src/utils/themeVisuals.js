@@ -136,6 +136,14 @@ export const THEME_CONFIGS = {
   },
 };
 
+// Map generic 'dark' and 'light' to their full configurations
+THEME_CONFIGS['dark'] = THEME_CONFIGS['midnight-sea'];
+THEME_CONFIGS['light'] = THEME_CONFIGS['fresh-sky'];
+
 export function getThemeVisual(themeKey) {
-  return THEME_CONFIGS[themeKey] || THEME_CONFIGS['midnight-sea'];
+  if (!themeKey) return THEME_CONFIGS['midnight-sea'];
+  const cleanKey = String(themeKey).toLowerCase().trim();
+  if (cleanKey === 'dark' || cleanKey === 'midnight-sea') return THEME_CONFIGS['midnight-sea'];
+  if (cleanKey === 'light' || cleanKey === 'fresh-sky') return THEME_CONFIGS['fresh-sky'];
+  return THEME_CONFIGS[cleanKey] || THEME_CONFIGS['midnight-sea'];
 }

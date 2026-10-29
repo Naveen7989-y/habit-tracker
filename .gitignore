@@ -40,3 +40,7 @@ Thumbs.db
 *.njsproj
 *.sln
 *.sw?
+
+# Agent tool artifacts
+.agent/
+.agents/

@@ -9,6 +9,7 @@ import calendarRoutes from './calendar.routes.js';
 import nutritionRoutes from './nutrition.routes.js';
 import workoutRoutes from './workout.routes.js';
 import adminRoutes from './admin.routes.js';
+import aiRoutes from './ai.routes.js';
 
 const router = Router();
 
@@ -41,6 +42,9 @@ router.use('/workouts', workoutRoutes);
 
 // Admin & CMS endpoints: /api/admin/*
 router.use('/admin', adminRoutes);
+
+// AI Agent & Coach endpoints: /api/ai/*
+router.use('/ai', aiRoutes);
 
 export default router;
 
