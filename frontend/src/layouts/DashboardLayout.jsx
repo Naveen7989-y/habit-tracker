@@ -116,9 +116,17 @@ export default function DashboardLayout({ children }) {
 
   return (
     <div className="min-h-screen bg-[#080A12] text-[#F5F7FC] flex flex-col justify-between selection:bg-[#C8FF00] selection:text-[#080A12] transition-colors duration-200">
+      {/* Skip to Main Content Link for Keyboard Accessibility (WCAG 2.2) */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2.5 focus:bg-[#C8FF00] focus:text-[#080A12] focus:font-black focus:rounded-xl focus:shadow-2xl focus:outline-none focus:ring-4 focus:ring-white"
+      >
+        Skip to main content
+      </a>
+
       {/* Top Navigation Bar (Prominent, High-Visibility, Screen-Wide like adyapan.com) */}
       <header className="hidden md:block border-b border-[#1D2332] bg-[#080A12]/95 backdrop-blur-xl sticky top-0 z-40 transition-colors">
-        <div className="max-w-screen-2xl mx-auto px-4 sm:px-8 lg:px-10 h-20 sm:h-22 flex items-center justify-between gap-4">
+        <div className="max-w-screen-2xl 3xl:max-w-[1780px] 4xl:max-w-[2100px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 h-20 sm:h-22 flex items-center justify-between gap-4">
           {/* Logo & Mobile Menu Toggle */}
           <div className="flex items-center gap-4 shrink-0">
             <button
@@ -407,8 +415,12 @@ export default function DashboardLayout({ children }) {
         )}
       </header>
 
-      {/* Main Content Area (Spacious & screen-filling like adyapan.com) */}
-      <main className="flex-1 flex flex-col pb-24 md:pb-12 max-w-screen-2xl mx-auto w-full px-4 sm:px-8 lg:px-10">
+      {/* Main Content Area (Fluid & Responsive: Mobile to 4K Ultrawide) */}
+      <main
+        id="main-content"
+        tabIndex="-1"
+        className="flex-1 flex flex-col pb-28 md:pb-12 max-w-screen-2xl 3xl:max-w-[1780px] 4xl:max-w-[2100px] mx-auto w-full px-3.5 sm:px-6 lg:px-8 xl:px-10 focus:outline-none"
+      >
         {children}
       </main>
 
@@ -417,7 +429,7 @@ export default function DashboardLayout({ children }) {
 
       {/* Persistent Desktop Footer */}
       <footer className="border-t border-[#1D2332] py-6 text-center text-xs text-[#70788D] hidden md:block">
-        <div className="max-w-screen-2xl mx-auto px-4 flex items-center justify-between">
+        <div className="max-w-screen-2xl 3xl:max-w-[1780px] 4xl:max-w-[2100px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 flex items-center justify-between">
           <span>© 2026 HAbyTAT • Intelligent Fitness, Habit & Nutrition Platform</span>
           <div className="flex items-center gap-4 text-[#A4AABC]">
             <Link to="/dashboard" className="hover:text-[#F5F7FC]">Dashboard</Link>

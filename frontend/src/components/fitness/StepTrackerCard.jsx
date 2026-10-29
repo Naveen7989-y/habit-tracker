@@ -109,7 +109,7 @@ export default function StepTrackerCard({
       {/* Main Value & Percentage Bar */}
       <div>
         <div className="flex items-baseline justify-between mb-1.5">
-          <div className="flex items-baseline gap-1.5">
+          <div className="flex items-baseline gap-1.5 font-mono">
             <span className="text-2xl font-black text-[#F5F7FC] tracking-tight">
               {steps.toLocaleString()}
             </span>

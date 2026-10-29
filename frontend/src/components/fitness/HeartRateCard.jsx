@@ -163,7 +163,7 @@ export default function HeartRateCard({
                 style={{ backgroundColor: zone.color }}
               />
               <span
-                className="text-xs font-black tracking-tight"
+                className="text-xs font-black font-mono tracking-tight"
                 style={{ color: zone.color }}
               >
                 {effectiveBpm} BPM
@@ -172,7 +172,7 @@ export default function HeartRateCard({
           ) : (
             <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0D101B] border border-[#1D2332]">
               <span className="w-1.5 h-1.5 rounded-full bg-[#70788D]" />
-              <span className="text-xs font-semibold text-[#70788D] tracking-tight">
+              <span className="text-xs font-semibold font-mono text-[#70788D] tracking-tight">
                 -- BPM
               </span>
             </div>

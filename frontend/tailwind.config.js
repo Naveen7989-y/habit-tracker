@@ -7,7 +7,34 @@ export default {
   darkMode: 'class',
   theme: {
     extend: {
+      screens: {
+        'xs': '420px',
+        '3xl': '1920px',
+        '4xl': '2560px',
+      },
       colors: {
+        background: 'var(--color-bg)',
+        'background-secondary': 'var(--color-bg-secondary)',
+        card: {
+          DEFAULT: 'var(--color-card)',
+          elevated: 'var(--color-card-elevated)',
+        },
+        primary: {
+          DEFAULT: 'var(--color-primary)',
+          hover: 'var(--color-primary-hover)',
+          foreground: 'var(--color-on-primary)',
+        },
+        secondary: {
+          DEFAULT: 'var(--color-secondary)',
+          foreground: 'var(--color-on-secondary)',
+        },
+        accent: {
+          DEFAULT: 'var(--color-accent)',
+          foreground: 'var(--color-on-accent)',
+        },
+        border: 'var(--color-border)',
+        divider: 'var(--color-divider)',
+        ring: 'var(--color-ring)',
         brand: {
           50: '#eef2ff',
           100: '#e0e7ff',
@@ -51,6 +78,10 @@ export default {
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+        condensed: ['"Barlow Condensed"', 'Inter', 'sans-serif'],
+        display: ['"Barlow Condensed"', 'Inter', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
+        serif: ['"Instrument Serif"', 'Georgia', 'serif'],
       },
       animation: {
         'pulse-subtle': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',

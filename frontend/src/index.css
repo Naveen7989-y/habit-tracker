@@ -20,26 +20,57 @@
    Light Theme: #F8FAFC / #FFFFFF / #0F172A / #0D9488 / #7C3AED
    ================================================== */
 :root {
+  color-scheme: dark;
   --color-bg: #080A12;
+  --color-background: #080A12;
   --color-bg-secondary: #0D101B;
   --color-card: #111522;
   --color-card-elevated: #151A29;
   --color-input: #0B0E17;
   --color-primary: #C8FF00;
   --color-primary-hover: #B4E600;
+  --color-on-primary: #080A12;
+  --color-secondary: #8B5CF6;
+  --color-on-secondary: #FFFFFF;
   --color-violet: #8B5CF6;
   --color-violet-dark: #6D3CF5;
   --color-cyan: #25D9E6;
+  --color-accent: #25D9E6;
+  --color-on-accent: #080A12;
   --color-success: #39E58C;
   --color-warning: #FFBF47;
   --color-error: #FF5C67;
+  --color-destructive: #FF5C67;
+  --color-on-destructive: #FFFFFF;
   --color-text: #F5F7FC;
+  --color-foreground: #F5F7FC;
   --color-text-secondary: #A4AABC;
   --color-text-muted: #70788D;
+  --color-muted: #151A29;
+  --color-muted-foreground: #70788D;
   --color-border: #242A3A;
   --color-divider: #1D2332;
+  --color-ring: #C8FF00;
   --color-header-bg: rgba(8, 10, 18, 0.95);
   --color-header-border: #1D2332;
+
+  /* UI/UX Pro Max Density 8/10 Scale */
+  --space-xs: 2px;
+  --space-sm: 4px;
+  --space-md: 8px;
+  --space-lg: 12px;
+  --space-xl: 16px;
+  --space-2xl: 24px;
+  --space-3xl: 32px;
+
+  /* Elevation Shadows & Glow */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -2px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.6), 0 4px 6px -4px rgba(0, 0, 0, 0.6);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.7), 0 8px 10px -6px rgba(0, 0, 0, 0.7);
+  --shadow-glow-primary: 0 0 16px rgba(200, 255, 0, 0.35);
+  --shadow-glow-cyan: 0 0 16px rgba(37, 217, 230, 0.35);
+  --shadow-glow-violet: 0 0 16px rgba(139, 92, 246, 0.35);
 }
 
 /* --------------------------------------------------
@@ -51,25 +82,59 @@ html:not(.dark),
 [data-theme="light"] {
   color-scheme: light;
   --color-bg: #F8FAFC;
+  --color-background: #F8FAFC;
   --color-bg-secondary: #F1F5F9;
   --color-card: #FFFFFF;
   --color-card-elevated: #F8FAFC;
   --color-input: #FFFFFF;
   --color-primary: #0D9488;
   --color-primary-hover: #0F766E;
+  --color-on-primary: #FFFFFF;
+  --color-secondary: #7C3AED;
+  --color-on-secondary: #FFFFFF;
   --color-violet: #7C3AED;
   --color-violet-dark: #6D28D9;
   --color-cyan: #0284C7;
+  --color-accent: #0284C7;
+  --color-on-accent: #FFFFFF;
   --color-success: #16A34A;
   --color-warning: #D97706;
   --color-error: #EF4444;
+  --color-destructive: #EF4444;
+  --color-on-destructive: #FFFFFF;
   --color-text: #0F172A;
+  --color-foreground: #0F172A;
   --color-text-secondary: #334155;
   --color-text-muted: #64748B;
+  --color-muted: #F1F5F9;
+  --color-muted-foreground: #64748B;
   --color-border: #E2E8F0;
   --color-divider: #E2E8F0;
+  --color-ring: #0D9488;
   --color-header-bg: rgba(255, 255, 255, 0.95);
   --color-header-border: #E2E8F0;
+
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.08), 0 2px 4px -2px rgba(15, 23, 42, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.04);
+  --shadow-xl: 0 20px 25px -5px rgba(15, 23, 42, 0.1), 0 8px 10px -6px rgba(15, 23, 42, 0.05);
+  --shadow-glow-primary: 0 0 16px rgba(13, 148, 136, 0.25);
+}
+
+/* WCAG 2.2 AAA Keyboard Focus Appearance */
+:focus-visible {
+  outline: 2px solid var(--color-ring) !important;
+  outline-offset: 2px !important;
+}
+
+/* Motion Accessibility: Respect user preference for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* Automatic background & card surface adaptations in Light Mode */
@@ -3276,4 +3341,116 @@ header.landing-header img[alt="HAbyTAT"] {
 
 .animate-shimmer {
   animation: shimmer-sheen 2.5s infinite;
+}
+
+/* ==================================================
+   UI/UX PRO MAX - ARCHITECTURAL UTILITIES & TOKENS
+   ================================================== */
+
+/* Fluid modern layout container with strict boundary rules (Mobile to 4K Ultrawide) */
+.container-fluid-constrained {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: clamp(1rem, 3.5vw, 3rem);
+  padding-right: clamp(1rem, 3.5vw, 3rem);
+  max-width: 1720px;
+}
+
+@media (min-width: 2560px) {
+  .container-fluid-constrained {
+    max-width: 2100px;
+  }
+}
+
+/* Bento Box Grid Utilities */
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: var(--space-xl, 16px);
+}
+@media (min-width: 768px) {
+  .bento-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1200px) {
+  .bento-grid {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+}
+
+/* Bento Cards with consistent elevation, modular variables & hover states */
+.bento-card {
+  background-color: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: 24px;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-md);
+  transition: border-color 200ms ease, box-shadow 200ms ease, transform 200ms ease;
+  position: relative;
+  overflow: hidden;
+}
+.bento-card:hover {
+  border-color: rgba(200, 255, 0, 0.4);
+  box-shadow: var(--shadow-lg);
+}
+html:not(.dark) .bento-card:hover {
+  border-color: rgba(13, 148, 136, 0.4);
+}
+
+/* Modulated Action Buttons adhering to Sports / Athletic Design System */
+.btn-athletic-primary {
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+  font-family: 'Barlow Condensed', 'Inter', sans-serif;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.75rem 1.5rem;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 180ms ease;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(200, 255, 0, 0.25);
+}
+.btn-athletic-primary:hover {
+  background-color: var(--color-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(200, 255, 0, 0.35);
+}
+.btn-athletic-primary:active {
+  transform: translateY(0);
+}
+html:not(.dark) .btn-athletic-primary {
+  box-shadow: 0 4px 14px rgba(13, 148, 136, 0.25);
+}
+html:not(.dark) .btn-athletic-primary:hover {
+  box-shadow: 0 6px 20px rgba(13, 148, 136, 0.35);
+}
+
+.btn-athletic-secondary {
+  background-color: transparent;
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  font-family: 'Barlow Condensed', 'Inter', sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.75rem 1.5rem;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 180ms ease;
+  cursor: pointer;
+}
+.btn-athletic-secondary:hover {
+  background-color: var(--color-card-elevated);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
 }

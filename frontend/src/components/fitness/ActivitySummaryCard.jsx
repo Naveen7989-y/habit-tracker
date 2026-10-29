@@ -95,7 +95,7 @@ export default function ActivitySummaryCard({
               </div>
 
               <div>
-                <p className="text-base sm:text-lg font-black text-[#F5F7FC] tracking-tight leading-tight">
+                <p className="text-base sm:text-lg font-black font-mono text-[#F5F7FC] tracking-tight leading-tight">
                   {tile.value}
                 </p>
                 <p className="text-[10px] text-[#70788D] mt-0.5 font-medium">

@@ -91,11 +91,11 @@ export default function CircularProgressRing({
               <Icon className="w-3.5 h-3.5 shrink-0 stroke-[2.5]" />
             </div>
           )}
-          <span className="text-base sm:text-lg font-black text-[#F5F7FC] tracking-tight leading-none">
+          <span className="text-base sm:text-lg font-black text-[#F5F7FC] font-mono tracking-tight leading-none">
             {formatValue(value)}
           </span>
           {target > 0 && (
-            <span className="text-[10px] sm:text-[11px] font-semibold text-[#70788D] leading-tight mt-0.5">
+            <span className="text-[10px] sm:text-[11px] font-semibold text-[#70788D] font-mono leading-tight mt-0.5">
               /{formatValue(target)}
             </span>
           )}
