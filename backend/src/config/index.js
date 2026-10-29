@@ -9,6 +9,7 @@ export const config = {
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
   frontendUrl: process.env.FRONTEND_URL || 'http://localhost:5173',
   redisUrl: process.env.REDIS_URL || '',
+  groqApiKey: process.env.GROQ_API_KEY || '',
   isProduction: process.env.NODE_ENV === 'production',
 };
 

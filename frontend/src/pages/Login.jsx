@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
@@ -26,7 +26,8 @@ import {
   ArrowLeft,
   Zap,
   CheckCircle2,
-  Sun
+  Sun,
+  Moon
 } from 'lucide-react';
 
 export default function Login() {
@@ -37,6 +38,9 @@ export default function Login() {
   const [isSuccess, setIsSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
+  const emailInputRef = useRef(null);
+  const passwordInputRef = useRef(null);
+
   const { login } = useAuth();
   const { theme, toggleTheme, setTheme, applyAccountTheme, saveAccountTheme } = useTheme();
   const themeVisual = getThemeVisual(theme);
@@ -46,18 +50,11 @@ export default function Login() {
 
   const from = location.state?.from?.pathname || '/dashboard';
 
-  // Load account-based theme or ensure midnight-sea default on mount
-  useEffect(() => {
-    const lastAccount = localStorage.getItem('habytat_last_account');
-    if (lastAccount) {
-      applyAccountTheme(lastAccount);
-    }
-  }, [applyAccountTheme]);
-
   // When email input changes, dynamically detect if this account has a saved theme
   const handleEmailChange = (e) => {
     const newEmail = e.target.value;
     setEmail(newEmail);
+    if (errorMessage) setErrorMessage('');
     if (newEmail && newEmail.includes('@') && newEmail.includes('.')) {
       applyAccountTheme(newEmail);
     }
@@ -66,9 +63,8 @@ export default function Login() {
   const handleThemeToggle = () => {
     toggleTheme();
     if (email && email.includes('@')) {
-      // Find the next theme and save for this account
       setTimeout(() => {
-        const activeTheme = localStorage.getItem('habytat_theme') || 'midnight-sea';
+        const activeTheme = localStorage.getItem('habytat_theme') || 'dark';
         saveAccountTheme(email, activeTheme);
       }, 50);
     }
@@ -86,8 +82,20 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     if (e && e.preventDefault) e.preventDefault();
-    if (!email || !password) {
-      setErrorMessage('Please fill in both email and password.');
+    if (e && e.stopPropagation) e.stopPropagation();
+
+    const cleanEmail = (email || '').trim();
+    const cleanPassword = (password || '').trim();
+
+    if (!cleanEmail) {
+      setErrorMessage('Please enter your email address.');
+      emailInputRef.current?.focus();
+      return;
+    }
+
+    if (!cleanPassword) {
+      setErrorMessage('Please enter your password.');
+      passwordInputRef.current?.focus();
       return;
     }
 
@@ -95,10 +103,10 @@ export default function Login() {
     setErrorMessage('');
 
     try {
-      await login(email, password);
+      await login(cleanEmail, cleanPassword);
       // Persist active account and theme association
-      localStorage.setItem('habytat_last_account', email);
-      saveAccountTheme(email, theme);
+      localStorage.setItem('habytat_last_account', cleanEmail);
+      saveAccountTheme(cleanEmail, theme);
 
       setIsSuccess(true);
       triggerCelebration();
@@ -106,19 +114,17 @@ export default function Login() {
         navigate(from, { replace: true });
       }, 700);
     } catch (err) {
-      const msg = err.response?.data?.message || err.message || 'Login failed. Please verify your credentials.';
+      const msg = err.message || err.response?.data?.message || 'Login failed. Please verify your credentials.';
       setErrorMessage(msg);
       setIsSubmitting(false);
     }
   };
-
 
   const handleDemoFill = () => {
     const demoEmail = 'alex@example.com';
     setEmail(demoEmail);
     setPassword('password123');
     setErrorMessage('');
-    // Apply demo account's theme or default
     applyAccountTheme(demoEmail);
   };
 
@@ -156,24 +162,31 @@ export default function Login() {
 
           {/* Theme Switcher Button */}
           <button
+            id="login-theme-toggle-btn"
             onClick={handleThemeToggle}
             type="button"
-            className={`p-2 rounded-xl border transition-all flex items-center gap-1.5 shadow-sm cursor-pointer ${
+            className={`p-2 px-3 rounded-xl border transition-all flex items-center gap-2 shadow-sm cursor-pointer ${
               themeVisual.isDark
                 ? 'bg-slate-900/80 border-slate-700/60 text-slate-300 hover:text-white hover:bg-slate-800/80'
-                : 'bg-white/90 border-slate-200/90 text-slate-700 hover:text-slate-950 hover:bg-white'
+                : 'bg-white/90 border-slate-200 text-slate-700 hover:text-slate-950 hover:bg-white shadow-xs'
             }`}
-            title={`Switch theme (Current: ${themeVisual.name})`}
+            title={`Switch to ${themeVisual.isDark ? 'Light' : 'Dark'} Theme`}
             aria-label="Toggle visual theme"
           >
-            <Sun 
-              className="w-4 h-4 transition-transform duration-300 hover:rotate-45"
-              style={{ color: themeVisual.accentColor }}
-            />
-            <span className={`hidden md:inline text-[11px] ${
-              themeVisual.isDark ? 'text-slate-300' : 'text-slate-700 font-medium'
+            {themeVisual.isDark ? (
+              <Sun 
+                className="w-4 h-4 transition-transform duration-300 hover:rotate-45"
+                style={{ color: themeVisual.accentColor }}
+              />
+            ) : (
+              <Moon 
+                className="w-4 h-4 text-sky-600 transition-transform duration-300 hover:rotate-12"
+              />
+            )}
+            <span className={`text-[11px] font-medium ${
+              themeVisual.isDark ? 'text-slate-300' : 'text-slate-700'
             }`}>
-              {themeVisual.name}
+              {themeVisual.isDark ? 'Dark Theme' : 'Light Theme'}
             </span>
           </button>
 
@@ -207,31 +220,28 @@ export default function Login() {
       <main className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 flex-1 flex items-center justify-center">
         <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           
-          {/* Left Column: 3D Visual Habit Ecosystem Showcase (Desktop) */}
+          {/* Left Column: Habit Ecosystem Showcase (Desktop) */}
           <div className="lg:col-span-6 xl:col-span-7 flex justify-center lg:justify-start">
             <HabitHeroVisual3D />
           </div>
 
-          {/* Right Column: 3D Interactive Tilt Card with Depth Layers */}
+          {/* Right Column: 3D Tilt Card */}
           <div className="lg:col-span-6 xl:col-span-5 w-full max-w-md mx-auto relative">
             
-            {/* 3D Floating Badges hovering in perspective space */}
-            <div className="absolute -top-6 -left-6 z-20 pointer-events-none">
+            {/* Floating Badges */}
+            <div className="hidden xl:block absolute -top-6 -left-6 z-20 pointer-events-none">
               <FloatingStreakBadge />
             </div>
-            <div className="absolute -bottom-6 -right-6 z-20 pointer-events-none">
+            <div className="hidden xl:block absolute -bottom-6 -right-6 z-20 pointer-events-none">
               <FloatingConsistencyBadge />
             </div>
 
-            {/* The 3D Tilt Card */}
+            {/* The Auth Card */}
             <Card3D>
               <div className="p-6 sm:p-9 space-y-6">
                 
                 {/* Header & Status */}
-                <div 
-                  className="space-y-2 text-left"
-                  style={{ transformStyle: 'preserve-3d', transform: 'translateZ(30px)' }}
-                >
+                <div className="space-y-2 text-left">
                   <div className="flex items-center justify-between">
                     <span className={`text-[11px] font-semibold uppercase tracking-wider flex items-center gap-1.5 transition-colors duration-500 ${themeVisual.textAccentClass}`}>
                       <Sparkles className="w-3.5 h-3.5" />
@@ -257,13 +267,12 @@ export default function Login() {
                 </div>
 
                 {/* Quick Demo Fill Helper */}
-                <div 
-                  style={{ transformStyle: 'preserve-3d', transform: 'translateZ(25px)' }}
-                >
+                <div>
                   <button
+                    id="autofill-demo-btn"
                     type="button"
                     onClick={handleDemoFill}
-                    className={`w-full py-2 px-3 rounded-xl text-xs font-medium flex items-center justify-center gap-2 transition-all group cursor-pointer border ${
+                    className={`w-full py-2.5 px-3 rounded-xl text-xs font-medium flex items-center justify-center gap-2 transition-all group cursor-pointer border ${
                       themeVisual.isDark 
                         ? 'bg-white/5 hover:bg-white/10 border-white/10 text-slate-200' 
                         : 'bg-slate-100 hover:bg-slate-200/80 border-slate-200/90 text-slate-700'
@@ -282,7 +291,6 @@ export default function Login() {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: -8, scale: 0.95 }}
                       className="bg-red-500/10 border border-red-500/30 rounded-xl p-3 flex items-center gap-2.5 text-red-500 text-xs shadow-lg"
-                      style={{ transformStyle: 'preserve-3d', transform: 'translateZ(35px)' }}
                     >
                       <AlertCircle className="w-4 h-4 shrink-0 text-red-500" />
                       <span>{errorMessage}</span>
@@ -293,8 +301,8 @@ export default function Login() {
                 {/* Login Form */}
                 <form 
                   onSubmit={handleSubmit} 
-                  className="space-y-4 text-left"
-                  style={{ transformStyle: 'preserve-3d', transform: 'translateZ(30px)' }}
+                  noValidate
+                  className="space-y-4 text-left relative z-20"
                 >
                   {/* Email Input */}
                   <div className="space-y-1.5">
@@ -310,23 +318,19 @@ export default function Login() {
                         <Mail className="w-4 h-4" />
                       </div>
                       <input
+                        id="login-email-input"
+                        ref={emailInputRef}
                         type="email"
                         value={email}
                         onChange={handleEmailChange}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            e.preventDefault();
-                            handleSubmit(e);
-                          }
-                        }}
-                        placeholder="alex@example.com"
+                        placeholder="you@example.com"
                         required
                         className={`w-full pl-10 pr-4 py-2.5 rounded-xl text-sm transition-all shadow-inner focus:outline-none focus:ring-2 ${
                           themeVisual.focusRingClass
                         } ${
                           themeVisual.isDark
-                            ? 'bg-[#0D101B] border border-[#242A3A] text-[#F5F7FC] placeholder-[#70788D]'
-                            : 'bg-white border border-slate-300/80 text-slate-900 placeholder-slate-400 shadow-xs'
+                            ? 'bg-slate-950/80 border border-slate-700/80 text-white placeholder-slate-500'
+                            : 'bg-white border border-slate-300 text-slate-900 placeholder-slate-400 shadow-xs'
                         }`}
                       />
                     </div>
@@ -351,14 +355,13 @@ export default function Login() {
                         <Lock className="w-4 h-4" />
                       </div>
                       <input
+                        id="login-password-input"
+                        ref={passwordInputRef}
                         type={showPassword ? 'text' : 'password'}
                         value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            e.preventDefault();
-                            handleSubmit(e);
-                          }
+                        onChange={(e) => {
+                          setPassword(e.target.value);
+                          if (errorMessage) setErrorMessage('');
                         }}
                         placeholder="••••••••••••"
                         required
@@ -366,8 +369,8 @@ export default function Login() {
                           themeVisual.focusRingClass
                         } ${
                           themeVisual.isDark
-                            ? 'bg-slate-950/70 border border-slate-700/80 text-white placeholder-slate-500'
-                            : 'bg-white border border-slate-300/80 text-slate-900 placeholder-slate-400 shadow-xs'
+                            ? 'bg-slate-950/80 border border-slate-700/80 text-white placeholder-slate-500'
+                            : 'bg-white border border-slate-300 text-slate-900 placeholder-slate-400 shadow-xs'
                         }`}
                       />
                       <button
@@ -383,20 +386,18 @@ export default function Login() {
                     </div>
                   </div>
 
-                  {/* 3D Interactive Submit Button */}
-                  <div className="pt-2">
+                  {/* Interactive Submit Button */}
+                  <div className="pt-2 relative z-30">
                     <motion.button
                       id="signin-btn"
                       type="submit"
-                      disabled={isSubmitting || isSuccess}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-
-                      style={{
-                        transformStyle: 'preserve-3d',
-                        transform: 'translateZ(35px)',
+                      onClick={(e) => {
+                        if (!isSubmitting && !isSuccess) handleSubmit(e);
                       }}
-                      className={`w-full py-3 px-4 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer relative overflow-hidden group shadow-md ${themeVisual.buttonGradientClass}`}
+                      disabled={isSubmitting || isSuccess}
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.99 }}
+                      className={`w-full py-3.5 px-4 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer relative z-30 overflow-hidden group shadow-md ${themeVisual.buttonGradientClass}`}
                     >
                       {/* Button ambient shimmer */}
                       <div className="absolute inset-0 w-1/2 h-full bg-white/15 skew-x-12 -translate-x-full group-hover:translate-x-[300%] transition-transform duration-1000 ease-out pointer-events-none" />
@@ -422,12 +423,9 @@ export default function Login() {
                 </form>
 
                 {/* Footer Switcher */}
-                <div 
-                  className={`pt-4 text-center border-t ${
-                    themeVisual.isDark ? 'border-slate-800/80' : 'border-slate-200/80'
-                  }`}
-                  style={{ transformStyle: 'preserve-3d', transform: 'translateZ(25px)' }}
-                >
+                <div className={`pt-4 text-center border-t ${
+                  themeVisual.isDark ? 'border-slate-800/80' : 'border-slate-200/80'
+                }`}>
                   <p className={`text-xs ${themeVisual.isDark ? 'text-slate-400' : 'text-slate-600'}`}>
                     Don't have an account yet?{' '}
                     <Link 

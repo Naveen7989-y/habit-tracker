@@ -24,7 +24,9 @@ import {
   UtensilsCrossed,
   Bell,
   Shield,
+  Sparkles,
 } from 'lucide-react';
+import FloatingAiCoach from '../components/ai/FloatingAiCoach';
 
 export default function DashboardLayout({ children }) {
   const { user, logout } = useAuth();
@@ -98,6 +100,7 @@ export default function DashboardLayout({ children }) {
     { label: 'Workouts', path: '/workouts', icon: Dumbbell },
     { label: 'All Habits', path: '/habits', icon: ListTodo },
     { label: 'Nutrition', path: '/nutrition', icon: UtensilsCrossed },
+    { label: 'Synapse AI', path: '/synapse', icon: Sparkles },
     { label: 'Calendar', path: '/calendar', icon: Calendar },
     { label: 'Analytics', path: '/statistics', icon: TrendingUp },
   ];
@@ -108,6 +111,9 @@ export default function DashboardLayout({ children }) {
   };
 
   const isRouteActive = (path) => {
+    if (path === '/synapse' || path === '/coach') {
+      return location.pathname === '/synapse' || location.pathname === '/coach' || location.pathname === '/ai-agent';
+    }
     if (path === '/statistics') {
       return location.pathname === '/statistics' || location.pathname === '/analytics';
     }
@@ -454,6 +460,9 @@ export default function DashboardLayout({ children }) {
           fetchUnreadCount();
         }}
       />
+
+      {/* Omnipresent Floating AI Copilot Drawer */}
+      <FloatingAiCoach />
     </div>
   );
 }

@@ -19,7 +19,11 @@ import confetti from 'canvas-confetti';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { nutritionService } from '../services/nutrition.service';
+import { workoutService } from '../services/workout.service';
 import DashboardLayout from '../layouts/DashboardLayout';
+import WaterTrackerCard from '../components/nutrition/WaterTrackerCard';
+import MacroBreakdownCard from '../components/nutrition/MacroBreakdownCard';
+import QuickFoodLogModal from '../components/nutrition/QuickFoodLogModal';
 import {
   UtensilsCrossed,
   Search,
@@ -107,17 +111,8 @@ const THEME_GAUGE_CONFIG = {
 
 export default function Nutrition() {
   const { user } = useAuth();
-  const { theme } = useTheme();
+  const { isDark, theme } = useTheme();
   const gaugeConfig = THEME_GAUGE_CONFIG[theme] || THEME_GAUGE_CONFIG['midnight-sea'];
-
-  const isDark = true;
-
-  // Unified Dark Fitness Color Tokens (matches Dashboard)
-  const themeCardBg = '#111522';
-  const themeCardBorder = '#242A3A';
-  const themeTextPrimary = '#F5F7FC';
-  const themeTextSecondary = '#A4AABC';
-  const themeAccent = '#C8FF00';
 
   // State: Selected date (YYYY-MM-DD)
   const [selectedDate, setSelectedDate] = useState(() => new Date().toISOString().split('T')[0]);
@@ -126,10 +121,13 @@ export default function Nutrition() {
   // Data states
   const [diaryData, setDiaryData] = useState(null);
   const [analyticsData, setAnalyticsData] = useState(null);
+  const [workoutCaloriesBurned, setWorkoutCaloriesBurned] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   // Modals state
+  const [quickLogModalOpen, setQuickLogModalOpen] = useState(false);
+  const [quickLogMeal, setQuickLogMeal] = useState('Breakfast');
   const [searchModalOpen, setSearchModalOpen] = useState(false);
   const [targetMealForSearch, setTargetMealForSearch] = useState('Breakfast');
   const [aiModalOpen, setAiModalOpen] = useState(false);
@@ -243,13 +241,26 @@ export default function Nutrition() {
     }
   }, []);
 
+  // 3. Fetch Workout Burned Calories for the selected date
+  const fetchWorkoutCalories = useCallback(async (date) => {
+    try {
+      const res = await workoutService.getWorkouts({ date });
+      const list = res?.workouts || (Array.isArray(res) ? res : []);
+      const totalBurn = list.reduce((sum, w) => sum + (w.caloriesBurned || 0), 0);
+      setWorkoutCaloriesBurned(Math.round(totalBurn));
+    } catch (err) {
+      console.warn('Could not load workout calories for energy balance:', err);
+    }
+  }, []);
+
   // Initial mount & date change
   useEffect(() => {
     fetchDiary(selectedDate);
+    fetchWorkoutCalories(selectedDate);
     if (viewTab === 'analytics') {
       fetchAnalytics();
     }
-  }, [selectedDate, viewTab, fetchDiary, fetchAnalytics]);
+  }, [selectedDate, viewTab, fetchDiary, fetchAnalytics, fetchWorkoutCalories]);
 
   // Date Navigation handlers
   const handlePrevDay = () => {
@@ -659,12 +670,12 @@ export default function Nutrition() {
                 <UtensilsCrossed className="w-5 h-5" />
               </div>
               <div>
-                <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-[#F5F7FC] flex items-center gap-2">
-                  <span>Indian Nutrition & Calories</span>
-                  <span className="text-xl">🍛</span>
+                <h1 className={`text-2xl sm:text-3xl font-black tracking-tight flex items-center gap-2 ${isDark ? 'text-[#F5F7FC]' : 'text-[#0F172A]'}`}>
+                  <span>Nutrition & Macro Studio</span>
+                  <span className="text-xl">🥗</span>
                 </h1>
-                <p className="text-xs sm:text-sm text-[#A4AABC]">
-                  Accurate portion tracking, ICMR-NIN food catalogue, and smart Indian recipes.
+                <p className={`text-xs sm:text-sm ${isDark ? 'text-[#A4AABC]' : 'text-slate-600'}`}>
+                  Caloric energy balance, macro targets, and smart hydration tracking.
                 </p>
               </div>
             </div>
@@ -673,16 +684,31 @@ export default function Nutrition() {
           {/* Quick Action Buttons */}
           <div className="flex flex-wrap items-center gap-2">
             <button
-              onClick={() => openSearchForMeal('Breakfast')}
-              className="px-3.5 py-2 rounded-xl bg-[#C8FF00] hover:bg-[#B4E600] text-[#080A12] text-xs font-bold shadow-[0_0_12px_rgba(200,255,0,0.25)] flex items-center gap-1.5 transition-all"
+              onClick={() => {
+                setQuickLogMeal('Breakfast');
+                setQuickLogModalOpen(true);
+              }}
+              className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-[#C8FF00] to-[#39E58C] hover:brightness-110 text-[#080A12] text-xs font-black shadow-md shadow-[#C8FF00]/20 flex items-center gap-1.5 transition-all cursor-pointer active:scale-95"
             >
-              <Plus className="w-3.5 h-3.5" />
-              <span>Log Food</span>
+              <Zap className="w-3.5 h-3.5 fill-[#080A12]" />
+              <span>+ Quick Staple</span>
+            </button>
+
+            <button
+              onClick={() => openSearchForMeal('Breakfast')}
+              className={`px-3 py-2 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+                isDark
+                  ? 'bg-[#151A29] border-[#242A3A] text-[#F5F7FC] hover:bg-[#1D2332]'
+                  : 'bg-white border-slate-200 text-slate-800 hover:bg-slate-50 shadow-sm'
+              }`}
+            >
+              <Search className="w-3.5 h-3.5 text-[#C8FF00]" />
+              <span>Food Database</span>
             </button>
 
             <button
               onClick={() => setAiModalOpen(true)}
-              className="px-3 py-2 rounded-xl bg-[#8B5CF6]/15 hover:bg-[#8B5CF6]/25 text-[#8B5CF6] border border-[#8B5CF6]/30 text-xs font-bold flex items-center gap-1.5 transition-all"
+              className="px-3 py-2 rounded-xl bg-[#8B5CF6]/15 hover:bg-[#8B5CF6]/25 text-[#8B5CF6] border border-[#8B5CF6]/30 text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer"
             >
               <Sparkles className="w-3.5 h-3.5 text-[#8B5CF6]" />
               <span>AI Log</span>
@@ -690,7 +716,11 @@ export default function Nutrition() {
 
             <button
               onClick={() => setGoalsModalOpen(true)}
-              className="px-3 py-2 rounded-xl bg-[#151A29] hover:bg-[#1D2332] text-[#F5F7FC] border border-[#242A3A] text-xs font-semibold flex items-center gap-1.5 transition-all"
+              className={`px-3 py-2 rounded-xl border text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+                isDark
+                  ? 'bg-[#151A29] hover:bg-[#1D2332] text-[#F5F7FC] border-[#242A3A]'
+                  : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 shadow-sm'
+              }`}
             >
               <Target className="w-3.5 h-3.5 text-[#FFBF47]" />
               <span>Goals & TDEE</span>
@@ -699,31 +729,47 @@ export default function Nutrition() {
         </div>
 
         {/* Date Selector & View Switcher Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-[20px] bg-[#111522] border border-[#242A3A] shadow-lg">
+        <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-[20px] border shadow-lg transition-all ${
+          isDark ? 'bg-[#111522] border-[#242A3A]' : 'bg-white border-slate-200'
+        }`}>
           {/* Day Navigation */}
           <div className="flex items-center gap-1.5">
             <button
               onClick={handlePrevDay}
-              className="p-1.5 rounded-lg bg-[#0D101B] hover:bg-[#151A29] text-[#A4AABC] hover:text-[#F5F7FC] transition-colors border border-[#242A3A]"
+              className={`p-1.5 rounded-lg transition-colors border cursor-pointer ${
+                isDark
+                  ? 'bg-[#0D101B] hover:bg-[#151A29] text-[#A4AABC] hover:text-[#F5F7FC] border-[#242A3A]'
+                  : 'bg-slate-50 hover:bg-slate-100 text-slate-600 hover:text-slate-900 border-slate-200'
+              }`}
               title="Previous Day"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
 
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#0D101B] border border-[#242A3A]">
+            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border ${
+              isDark ? 'bg-[#0D101B] border-[#242A3A]' : 'bg-slate-50 border-slate-200'
+            }`}>
               <CalendarIcon className="w-3.5 h-3.5 text-[#C8FF00]" />
               <input
                 type="date"
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
-                className="bg-transparent text-xs font-bold text-[#F5F7FC] focus:outline-none cursor-pointer"
+                className={`bg-transparent text-xs font-bold focus:outline-none cursor-pointer ${
+                  isDark ? 'text-[#F5F7FC]' : 'text-slate-900'
+                }`}
               />
-              <span className="text-xs text-[#A4AABC] hidden sm:inline">({formattedDisplayDate})</span>
+              <span className={`text-xs hidden sm:inline ${isDark ? 'text-[#A4AABC]' : 'text-slate-500'}`}>
+                ({formattedDisplayDate})
+              </span>
             </div>
 
             <button
               onClick={handleNextDay}
-              className="p-1.5 rounded-lg bg-[#0D101B] hover:bg-[#151A29] text-[#A4AABC] hover:text-[#F5F7FC] transition-colors border border-[#242A3A]"
+              className={`p-1.5 rounded-lg transition-colors border cursor-pointer ${
+                isDark
+                  ? 'bg-[#0D101B] hover:bg-[#151A29] text-[#A4AABC] hover:text-[#F5F7FC] border-[#242A3A]'
+                  : 'bg-slate-50 hover:bg-slate-100 text-slate-600 hover:text-slate-900 border-slate-200'
+              }`}
               title="Next Day"
             >
               <ChevronRight className="w-4 h-4" />
@@ -731,30 +777,32 @@ export default function Nutrition() {
 
             <button
               onClick={handleToday}
-              className="px-2.5 py-1 rounded-lg text-xs font-semibold text-[#C8FF00] hover:bg-[#C8FF00]/10 transition-colors"
+              className="px-2.5 py-1 rounded-lg text-xs font-semibold text-[#C8FF00] hover:bg-[#C8FF00]/10 transition-colors cursor-pointer"
             >
               Today
             </button>
           </div>
 
           {/* View Tab Toggle */}
-          <div className="flex items-center p-1 rounded-xl bg-[#0D101B] border border-[#242A3A]">
+          <div className={`flex items-center p-1 rounded-xl border ${
+            isDark ? 'bg-[#0D101B] border-[#242A3A]' : 'bg-slate-100 border-slate-200'
+          }`}>
             <button
               onClick={() => setViewTab('diary')}
-              className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
+              className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                 viewTab === 'diary'
                   ? 'bg-[#C8FF00] text-[#080A12] font-bold shadow-sm'
-                  : 'text-[#A4AABC] hover:text-[#F5F7FC]'
+                  : isDark ? 'text-[#A4AABC] hover:text-[#F5F7FC]' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               Daily Diary
             </button>
             <button
               onClick={() => setViewTab('analytics')}
-              className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
+              className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                 viewTab === 'analytics'
                   ? 'bg-[#C8FF00] text-[#080A12] font-bold shadow-sm'
-                  : 'text-[#A4AABC] hover:text-[#F5F7FC]'
+                  : isDark ? 'text-[#A4AABC] hover:text-[#F5F7FC]' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               Trends & Analytics
@@ -784,228 +832,77 @@ export default function Nutrition() {
             {/* ================================================= */}
             {/* TOP METRICS: Calorie Progress & Macronutrients   */}
             {/* ================================================= */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
-              {/* Radial Calorie Progress Card */}
-              <div className="md:col-span-5 bg-[#111522] border border-[#242A3A] rounded-[24px] p-6 shadow-xl relative overflow-hidden flex flex-col justify-between">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2">
-                    <Flame className="w-5 h-5 text-[#FFBF47]" />
-                    <h2 className="text-sm font-bold uppercase tracking-wider text-[#A4AABC]">Daily Calorie Target</h2>
-                  </div>
-                  <span className="text-xs px-2.5 py-1 rounded-full bg-[#C8FF00]/15 text-[#C8FF00] border border-[#C8FF00]/30 font-bold">
-                    {caloriePercentClamped}% Target
-                  </span>
-                </div>
+            <MacroBreakdownCard
+              totals={totals}
+              goals={goals}
+              percentage={percentage}
+              workoutCaloriesBurned={workoutCaloriesBurned}
+            />
 
-                <div className="flex items-center justify-around my-2">
-                  {/* Circular SVG Gauge */}
-                  <div className="relative w-36 h-36 flex items-center justify-center">
-                    <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
-                      {/* Background circle */}
-                      <circle
-                        cx="50"
-                        cy="50"
-                        r="45"
-                        fill="transparent"
-                        stroke={gaugeConfig.track}
-                        strokeWidth="10"
-                      />
-                      {/* Progress circle */}
-                      <circle
-                        cx="50"
-                        cy="50"
-                        r="45"
-                        fill="transparent"
-                        stroke={gaugeConfig.progress}
-                        strokeWidth="10"
-                        strokeDasharray="283"
-                        strokeDashoffset={strokeDashoffset}
-                        strokeLinecap="round"
-                        className="transition-all duration-1000 ease-out"
-                      />
-                    </svg>
-
-                    <div className="absolute flex flex-col items-center justify-center text-center">
-                      <span className="text-2xl font-black text-[#F5F7FC]">{totals.calories}</span>
-                      <span className="text-[10px] uppercase font-bold text-[#A4AABC]">kcal eaten</span>
-                    </div>
-                  </div>
-
-                  {/* Summary Breakdown */}
-                  <div className="space-y-3 text-xs">
-                    <div>
-                      <p className="text-[#A4AABC] font-medium">Daily Goal</p>
-                      <p className="text-base font-extrabold text-[#F5F7FC]">{goals.dailyCalories} kcal</p>
-                    </div>
-                    <div>
-                      <p className="text-[#A4AABC] font-medium">Remaining Budget</p>
-                      <p className="text-base font-extrabold text-[#C8FF00]">{remaining.calories} kcal</p>
-                    </div>
-                  </div>
-                </div>
-
-                <p className="text-[11px] text-[#70788D] mt-2 border-t border-[#242A3A] pt-2 flex items-center gap-1.5">
-                  <Info className="w-3.5 h-3.5 text-[#70788D] shrink-0" />
-                  <span>Remaining calories represent estimated energy balance, not a clinical prescription.</span>
-                </p>
+            {/* Hydration & Body Weight Station */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+              {/* Hydration Station (8 cols) */}
+              <div className="lg:col-span-8">
+                <WaterTrackerCard
+                  waterData={diaryData?.water}
+                  onLogWater={handleLogWater}
+                />
               </div>
 
-              {/* Macronutrient Split Progress Card */}
-              <div className="md:col-span-7 bg-[#111522] border border-[#242A3A] rounded-[24px] p-6 shadow-xl flex flex-col justify-between">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <PieIcon className="w-4 h-4 text-[#39E58C]" />
-                    <h2 className="text-sm font-bold uppercase tracking-wider text-[#A4AABC]">Macronutrients Progress</h2>
-                  </div>
-                  <span className="text-xs text-[#70788D]">Target vs Eaten</span>
-                </div>
-
-                <div className="space-y-4 my-auto">
-                  {/* Protein */}
-                  <div>
-                    <div className="flex justify-between text-xs font-semibold mb-1">
-                      <span className="text-[#39E58C] flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-[#39E58C]"></span>
-                        Protein
-                      </span>
-                      <span className="text-[#A4AABC]">
-                        <strong className="text-[#F5F7FC]">{totals.protein}g</strong> / {goals.proteinGrams}g ({percentage.protein}%)
-                      </span>
+              {/* Body Weight Log (4 cols) */}
+              <div
+                className={`lg:col-span-4 rounded-[26px] p-5 sm:p-6 border transition-all shadow-xl flex flex-col justify-between ${
+                  isDark
+                    ? 'bg-[#111522]/90 backdrop-blur-xl border-[#242A3A]'
+                    : 'bg-white border-[#E2E8F0]'
+                }`}
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                      <div className="w-9 h-9 rounded-xl bg-purple-500/15 text-purple-400 flex items-center justify-center">
+                        <Scale className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <h3 className={`text-xs font-bold uppercase tracking-wider ${isDark ? 'text-[#A4AABC]' : 'text-slate-500'}`}>
+                          Body Weight Log
+                        </h3>
+                        <p className={`text-[10px] ${isDark ? 'text-[#70788D]' : 'text-slate-400'}`}>Daily Weigh-in</p>
+                      </div>
                     </div>
-                    <div className="w-full bg-[#0D101B] border border-[#242A3A] rounded-full h-2.5 overflow-hidden">
-                      <div
-                        className="bg-[#39E58C] h-2.5 rounded-full transition-all duration-700"
-                        style={{ width: `${Math.min(100, percentage.protein)}%` }}
-                      ></div>
-                    </div>
-                  </div>
-
-                  {/* Carbs */}
-                  <div>
-                    <div className="flex justify-between text-xs font-semibold mb-1">
-                      <span className="text-[#FFBF47] flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-[#FFBF47]"></span>
-                        Carbohydrates
-                      </span>
-                      <span className="text-[#A4AABC]">
-                        <strong className="text-[#F5F7FC]">{totals.carbs}g</strong> / {goals.carbsGrams}g ({percentage.carbs}%)
-                      </span>
-                    </div>
-                    <div className="w-full bg-[#0D101B] border border-[#242A3A] rounded-full h-2.5 overflow-hidden">
-                      <div
-                        className="bg-[#FFBF47] h-2.5 rounded-full transition-all duration-700"
-                        style={{ width: `${Math.min(100, percentage.carbs)}%` }}
-                      ></div>
-                    </div>
+                    <span className={`text-[11px] px-2.5 py-0.5 rounded-full font-bold border ${
+                      diaryData?.weight
+                        ? 'bg-purple-500/15 text-purple-400 border-purple-500/30'
+                        : isDark
+                        ? 'bg-[#151A29] text-[#70788D] border-[#242A3A]'
+                        : 'bg-slate-100 text-slate-500 border-slate-200'
+                    }`}>
+                      {diaryData?.weight ? 'Logged Today' : 'Pending'}
+                    </span>
                   </div>
 
-                  {/* Fats */}
-                  <div>
-                    <div className="flex justify-between text-xs font-semibold mb-1">
-                      <span className="text-[#FF5C67] flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-[#FF5C67]"></span>
-                        Healthy Fats
+                  <div className="my-3 space-y-1">
+                    <div className="flex items-baseline gap-2">
+                      <span className={`text-3xl font-black ${isDark ? 'text-[#F5F7FC]' : 'text-slate-900'}`}>
+                        {diaryData?.weight ? `${diaryData.weight}` : '--'}
                       </span>
-                      <span className="text-[#A4AABC]">
-                        <strong className="text-[#F5F7FC]">{totals.fat}g</strong> / {goals.fatGrams}g ({percentage.fat}%)
-                      </span>
+                      <span className={`text-sm font-bold ${isDark ? 'text-[#A4AABC]' : 'text-slate-500'}`}>kg</span>
                     </div>
-                    <div className="w-full bg-[#0D101B] border border-[#242A3A] rounded-full h-2.5 overflow-hidden">
-                      <div
-                        className="bg-[#FF5C67] h-2.5 rounded-full transition-all duration-700"
-                        style={{ width: `${Math.min(100, percentage.fat)}%` }}
-                      ></div>
-                    </div>
-                  </div>
-
-                  {/* Fiber */}
-                  <div>
-                    <div className="flex justify-between text-xs font-semibold mb-1">
-                      <span className="text-[#25D9E6] flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-[#25D9E6]"></span>
-                        Dietary Fiber
-                      </span>
-                      <span className="text-[#A4AABC]">
-                        <strong className="text-[#F5F7FC]">{totals.fiber}g</strong> / {goals.fiberGrams}g ({percentage.fiber}%)
-                      </span>
-                    </div>
-                    <div className="w-full bg-[#0D101B] border border-[#242A3A] rounded-full h-2.5 overflow-hidden">
-                      <div
-                        className="bg-[#25D9E6] h-2.5 rounded-full transition-all duration-700"
-                        style={{ width: `${Math.min(100, percentage.fiber)}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between text-[11px] text-[#70788D] border-t border-[#242A3A] pt-3 mt-2">
-                  <span>P: {Math.round((totals.protein * 4 / (totals.calories || 1)) * 100)}% cal</span>
-                  <span>C: {Math.round((totals.carbs * 4 / (totals.calories || 1)) * 100)}% cal</span>
-                  <span>F: {Math.round((totals.fat * 9 / (totals.calories || 1)) * 100)}% cal</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Hydration & Weight Quick Logs Row */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Hydration Card */}
-              <div className="bg-[#111522] border border-[#242A3A] rounded-[24px] p-4 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-[#25D9E6]/15 text-[#25D9E6] flex items-center justify-center">
-                    <Droplets className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h3 className="text-xs font-bold uppercase text-[#A4AABC]">Hydration Tracking</h3>
-                    <p className="text-sm font-extrabold text-[#F5F7FC]">
-                      {diaryData?.water?.totalMl || 0} / {diaryData?.water?.targetMl || 2500} ml
-                    </p>
-                    <p className="text-[11px] text-[#25D9E6] font-medium">
-                      ~{diaryData?.water?.glassesCount || 0} glasses ({diaryData?.water?.percentage || 0}%)
+                    <p className={`text-xs ${isDark ? 'text-[#70788D]' : 'text-slate-500'}`}>
+                      Goal Target: <strong className={isDark ? 'text-[#F5F7FC]' : 'text-slate-800'}>{goals.targetWeightKg ? `${goals.targetWeightKg} kg` : 'Maintain Current'}</strong>
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-1.5">
+                <div className={`pt-3 border-t mt-4 ${isDark ? 'border-[#242A3A]/60' : 'border-slate-100'}`}>
                   <button
-                    onClick={() => handleLogWater(250)}
-                    className="px-3 py-1.5 rounded-xl bg-[#25D9E6]/15 hover:bg-[#25D9E6]/25 text-[#25D9E6] text-xs font-bold border border-[#25D9E6]/30 transition-all flex items-center gap-1"
+                    onClick={() => setWeightModalOpen(true)}
+                    className="w-full py-2.5 px-4 rounded-xl bg-purple-500/15 hover:bg-purple-500/25 text-purple-400 text-xs font-bold border border-purple-500/30 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98"
                   >
-                    <Plus className="w-3.5 h-3.5" />
-                    <span>250ml</span>
-                  </button>
-                  <button
-                    onClick={() => handleLogWater(500)}
-                    className="px-3 py-1.5 rounded-xl bg-[#25D9E6]/10 hover:bg-[#25D9E6]/20 text-[#25D9E6] text-xs font-bold border border-[#25D9E6]/20 transition-all"
-                  >
-                    +500ml
+                    <Scale className="w-4 h-4" />
+                    <span>{diaryData?.weight ? 'Update Weigh-in' : '+ Record Weight'}</span>
                   </button>
                 </div>
-              </div>
-
-              {/* Weight Card */}
-              <div className="bg-[#111522] border border-[#242A3A] rounded-[24px] p-4 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-[#8B5CF6]/15 text-[#8B5CF6] flex items-center justify-center">
-                    <Scale className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h3 className="text-xs font-bold uppercase text-[#A4AABC]">Body Weight Log</h3>
-                    <p className="text-sm font-extrabold text-[#F5F7FC]">
-                      {diaryData?.weight ? `${diaryData.weight} kg` : 'Not recorded today'}
-                    </p>
-                    <p className="text-[11px] text-[#70788D]">
-                      Goal: {goals.targetWeightKg ? `${goals.targetWeightKg} kg` : 'Maintain current'}
-                    </p>
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => setWeightModalOpen(true)}
-                  className="px-3 py-1.5 rounded-xl bg-[#8B5CF6]/15 hover:bg-[#8B5CF6]/25 text-[#8B5CF6] text-xs font-bold border border-[#8B5CF6]/30 transition-all flex items-center gap-1"
-                >
-                  <Scale className="w-3.5 h-3.5" />
-                  <span>{diaryData?.weight ? 'Update' : 'Log Weight'}</span>
-                </button>
               </div>
             </div>
 
@@ -1014,19 +911,21 @@ export default function Nutrition() {
             {/* ================================================= */}
             <div className="space-y-5">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-extrabold text-[#F5F7FC] flex items-center gap-2">
+                <h2 className={`text-lg font-extrabold flex items-center gap-2 ${isDark ? 'text-[#F5F7FC]' : 'text-slate-900'}`}>
                   <span>Daily Meal Diary</span>
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-[#151A29] text-[#A4AABC] border border-[#242A3A] font-semibold">
+                  <span className={`text-xs px-2.5 py-0.5 rounded-full border font-semibold ${
+                    isDark ? 'bg-[#151A29] text-[#A4AABC] border-[#242A3A]' : 'bg-slate-100 text-slate-600 border-slate-200'
+                  }`}>
                     {diaryData?.meals?.reduce((acc, m) => acc + m.itemCount, 0) || 0} items logged
                   </span>
                 </h2>
 
                 <button
                   onClick={() => openSearchForMeal('Breakfast')}
-                  className="text-xs font-semibold text-[#C8FF00] hover:text-[#B4E600] flex items-center gap-1 transition-colors"
+                  className="text-xs font-bold text-[#C8FF00] hover:underline flex items-center gap-1 transition-colors cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5" />
-                  <span>Add Custom Item</span>
+                  <span>+ Add Custom Item</span>
                 </button>
               </div>
 
@@ -1039,18 +938,24 @@ export default function Nutrition() {
                   return (
                     <div
                       key={meal.mealType}
-                      className="bg-[#111522] border border-[#242A3A] rounded-[24px] p-4 sm:p-5 shadow-lg transition-all hover:border-[#C8FF00]/40"
+                      className={`rounded-[24px] p-4 sm:p-5 shadow-lg border transition-all ${
+                        isDark
+                          ? 'bg-[#111522] border-[#242A3A] hover:border-[#C8FF00]/40'
+                          : 'bg-white border-slate-200 hover:border-emerald-300'
+                      }`}
                     >
                       {/* Meal Card Header */}
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#242A3A] pb-3 mb-3">
+                      <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b pb-3 mb-3 ${
+                        isDark ? 'border-[#242A3A]' : 'border-slate-100'
+                      }`}>
                         <div className="flex items-center gap-2.5">
                           <span className="text-xl">{icon}</span>
                           <div>
-                            <h3 className="text-sm font-bold text-[#F5F7FC]">{meal.mealType}</h3>
-                            <p className="text-xs text-[#A4AABC] font-medium">
-                              Subtotal: <strong className="text-[#F5F7FC]">{meal.subtotal.calories} kcal</strong>
+                            <h3 className={`text-sm font-bold ${isDark ? 'text-[#F5F7FC]' : 'text-slate-900'}`}>{meal.mealType}</h3>
+                            <p className={`text-xs font-medium ${isDark ? 'text-[#A4AABC]' : 'text-slate-500'}`}>
+                              Subtotal: <strong className={isDark ? 'text-[#F5F7FC]' : 'text-slate-800'}>{meal.subtotal.calories} kcal</strong>
                               {hasItems && (
-                                <span className="text-[11px] text-[#70788D] ml-2">
+                                <span className={`text-[11px] ml-2 ${isDark ? 'text-[#70788D]' : 'text-slate-400'}`}>
                                   (P: {meal.subtotal.protein}g · C: {meal.subtotal.carbs}g · F: {meal.subtotal.fat}g)
                                 </span>
                               )}
@@ -1060,18 +965,38 @@ export default function Nutrition() {
 
                         <div className="flex items-center gap-2 self-end sm:self-auto">
                           <button
+                            onClick={() => {
+                              setQuickLogMeal(meal.mealType);
+                              setQuickLogModalOpen(true);
+                            }}
+                            className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer active:scale-95 ${
+                              isDark
+                                ? 'bg-[#C8FF00]/15 hover:bg-[#C8FF00]/25 text-[#C8FF00] border border-[#C8FF00]/30'
+                                : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200'
+                            }`}
+                            title="Quick 1-tap staple logging"
+                          >
+                            <Sparkles className="w-3.5 h-3.5" />
+                            <span>Quick Staple</span>
+                          </button>
+
+                          <button
                             onClick={() => openSearchForMeal(meal.mealType)}
-                            className="px-3 py-1.5 rounded-xl bg-[#0D101B] hover:bg-[#151A29] border border-[#242A3A] text-[#F5F7FC] text-xs font-semibold flex items-center gap-1 transition-all"
+                            className={`px-3 py-1.5 rounded-xl border text-xs font-semibold flex items-center gap-1 transition-all cursor-pointer ${
+                              isDark
+                                ? 'bg-[#0D101B] hover:bg-[#151A29] border-[#242A3A] text-[#F5F7FC]'
+                                : 'bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700'
+                            }`}
                           >
                             <Plus className="w-3.5 h-3.5 text-[#C8FF00]" />
-                            <span>Add Food</span>
+                            <span>Search Food</span>
                           </button>
                         </div>
                       </div>
 
                       {/* Items List */}
                       {hasItems ? (
-                        <div className="divide-y divide-[#242A3A]/60">
+                        <div className={`divide-y ${isDark ? 'divide-[#242A3A]/60' : 'divide-slate-100'}`}>
                           {meal.items.map((item) => (
                             <div
                               key={item.id}
@@ -1079,7 +1004,7 @@ export default function Nutrition() {
                             >
                               <div className="space-y-0.5">
                                 <div className="flex items-center gap-2">
-                                  <h4 className="text-xs sm:text-sm font-bold text-[#F5F7FC]">{item.foodName}</h4>
+                                  <h4 className={`text-xs sm:text-sm font-bold ${isDark ? 'text-[#F5F7FC]' : 'text-slate-800'}`}>{item.foodName}</h4>
                                   {item.foodItem?.dietaryType && (
                                     <span
                                       className={`text-[9px] px-1.5 py-0.5 rounded font-bold uppercase ${
@@ -1087,26 +1012,26 @@ export default function Nutrition() {
                                           ? 'bg-rose-500/20 text-rose-300'
                                           : item.foodItem.dietaryType === 'Egg'
                                           ? 'bg-amber-500/20 text-amber-300'
-                                          : 'bg-emerald-500/20 text-emerald-300'
+                                          : 'bg-emerald-500/20 text-emerald-400'
                                       }`}
                                     >
                                       {item.foodItem.dietaryType}
                                     </span>
                                   )}
                                 </div>
-                                <p className="text-xs text-[#A4AABC]">
+                                <p className={`text-xs ${isDark ? 'text-[#A4AABC]' : 'text-slate-500'}`}>
                                   {item.servingQuantity} × {item.servingUnit} ({item.totalGrams}g)
-                                  {item.notes && <span className="italic text-[#70788D] ml-1.5">"{item.notes}"</span>}
+                                  {item.notes && <span className={`italic ml-1.5 ${isDark ? 'text-[#70788D]' : 'text-slate-400'}`}>"{item.notes}"</span>}
                                 </p>
                               </div>
 
                               <div className="flex items-center justify-between sm:justify-end gap-3">
                                 {/* Macros Pill */}
                                 <div className="text-right">
-                                  <span className="text-xs font-extrabold text-[#F5F7FC] block">
+                                  <span className={`text-xs font-extrabold block ${isDark ? 'text-[#F5F7FC]' : 'text-slate-900'}`}>
                                     {item.calories} kcal
                                   </span>
-                                  <span className="text-[10px] text-[#70788D]">
+                                  <span className={`text-[10px] ${isDark ? 'text-[#70788D]' : 'text-slate-400'}`}>
                                     P: {item.protein}g · C: {item.carbs}g · F: {item.fat}g
                                   </span>
                                 </div>
@@ -1115,14 +1040,16 @@ export default function Nutrition() {
                                 <div className="flex items-center gap-1">
                                   <button
                                     onClick={() => handleDuplicateFoodLog(item.id, meal.mealType)}
-                                    className="p-1.5 rounded-lg text-[#A4AABC] hover:text-[#F5F7FC] hover:bg-[#151A29] transition-colors"
+                                    className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                                      isDark ? 'text-[#A4AABC] hover:text-[#F5F7FC] hover:bg-[#151A29]' : 'text-slate-400 hover:text-slate-700 hover:bg-slate-100'
+                                    }`}
                                     title="Duplicate food item"
                                   >
                                     <Copy className="w-3.5 h-3.5" />
                                   </button>
                                   <button
                                     onClick={() => handleDeleteFoodLog(item.id)}
-                                    className="p-1.5 rounded-lg text-[#A4AABC] hover:text-[#FF5C67] hover:bg-[#FF5C67]/10 transition-colors"
+                                    className="p-1.5 rounded-lg text-rose-400 hover:text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer"
                                     title="Remove food item"
                                   >
                                     <Trash2 className="w-3.5 h-3.5" />
@@ -1133,10 +1060,12 @@ export default function Nutrition() {
                           ))}
                         </div>
                       ) : (
-                        <div className="py-4 text-center border border-dashed border-[#242A3A] rounded-xl bg-[#0D101B]/50">
-                          <p className="text-xs text-[#70788D]">No dishes logged for {meal.mealType} yet.</p>
+                        <div className={`py-4 text-center border border-dashed rounded-xl ${
+                          isDark ? 'border-[#242A3A] bg-[#0D101B]/50' : 'border-slate-200 bg-slate-50/50'
+                        }`}>
+                          <p className={`text-xs ${isDark ? 'text-[#70788D]' : 'text-slate-400'}`}>No dishes logged for {meal.mealType} yet.</p>
                           <div className="mt-2 flex flex-wrap items-center justify-center gap-1.5">
-                            <span className="text-[11px] text-[#70788D]">Quick suggestions:</span>
+                            <span className={`text-[11px] ${isDark ? 'text-[#70788D]' : 'text-slate-400'}`}>Quick suggestions:</span>
                             {['Idli', 'Plain Dosa', 'Phulka', 'Dal Tadka', 'Sprouts'].map((suggestion) => (
                               <button
                                 key={suggestion}
@@ -1145,7 +1074,11 @@ export default function Nutrition() {
                                   setSearchQuery(suggestion);
                                   setSearchModalOpen(true);
                                 }}
-                                className="px-2 py-0.5 rounded-md bg-[#151A29] hover:bg-[#1D2332] text-[11px] font-medium text-[#C8FF00] border border-[#242A3A] transition-colors"
+                                className={`px-2 py-0.5 rounded-md text-[11px] font-medium border transition-colors cursor-pointer ${
+                                  isDark
+                                    ? 'bg-[#151A29] hover:bg-[#1D2332] text-[#C8FF00] border-[#242A3A]'
+                                    : 'bg-white hover:bg-slate-100 text-emerald-700 border-slate-200 shadow-xs'
+                                }`}
                               >
                                 {suggestion}
                               </button>
@@ -2134,30 +2067,39 @@ export default function Nutrition() {
         {/* MODAL 4: WEIGHT LOG MODAL                         */}
         {/* ================================================= */}
         {weightModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-[#080A12]/80 backdrop-blur-md animate-fade-in">
-            <div className="bg-[#0D101B] border border-[#242A3A] w-full max-w-sm rounded-[24px] shadow-2xl p-5 space-y-4 text-xs">
-              <div className="flex items-center justify-between border-b border-[#242A3A] pb-2">
-                <h3 className="font-bold text-[#F5F7FC] flex items-center gap-1.5">
-                  <Scale className="w-4 h-4 text-[#8B5CF6]" />
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-md animate-fade-in">
+            <div className={`border w-full max-w-sm rounded-[24px] shadow-2xl p-5 space-y-4 text-xs ${
+              isDark ? 'bg-[#0D101B] border-[#242A3A] text-[#F5F7FC]' : 'bg-white border-slate-200 text-slate-900'
+            }`}>
+              <div className={`flex items-center justify-between border-b pb-2 ${isDark ? 'border-[#242A3A]' : 'border-slate-100'}`}>
+                <h3 className="font-bold flex items-center gap-1.5">
+                  <Scale className="w-4 h-4 text-purple-500" />
                   <span>Log Body Weight</span>
                 </h3>
-                <button onClick={() => setWeightModalOpen(false)} className="text-[#A4AABC] hover:text-[#F5F7FC] p-1 rounded-lg hover:bg-[#151A29]">
+                <button
+                  onClick={() => setWeightModalOpen(false)}
+                  className={`p-1 rounded-lg transition-colors cursor-pointer ${
+                    isDark ? 'text-[#A4AABC] hover:text-[#F5F7FC] hover:bg-[#151A29]' : 'text-slate-400 hover:text-slate-700 hover:bg-slate-100'
+                  }`}
+                >
                   <X className="w-4 h-4" />
                 </button>
               </div>
 
               <form onSubmit={handleSaveWeight} className="space-y-3">
                 <div>
-                  <label className="text-slate-400 block mb-1 font-medium">Date</label>
+                  <label className={`block mb-1 font-medium ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>Date</label>
                   <input
                     type="date"
                     value={selectedDate}
                     onChange={(e) => setSelectedDate(e.target.value)}
-                    className="w-full bg-[#151A29] border border-[#242A3A] rounded-xl p-2.5 text-[#F5F7FC] focus:outline-none focus:border-[#C8FF00]"
+                    className={`w-full border rounded-xl p-2.5 focus:outline-none focus:border-[#C8FF00] ${
+                      isDark ? 'bg-[#151A29] border-[#242A3A] text-[#F5F7FC]' : 'bg-slate-50 border-slate-200 text-slate-900'
+                    }`}
                   />
                 </div>
                 <div>
-                  <label className="text-slate-400 block mb-1 font-medium">Weight in kilograms (kg) *</label>
+                  <label className={`block mb-1 font-medium ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>Weight in kilograms (kg) *</label>
                   <input
                     type="number"
                     step="0.1"
@@ -2167,23 +2109,27 @@ export default function Nutrition() {
                     placeholder="e.g. 72.5"
                     value={weightFormInput}
                     onChange={(e) => setWeightFormInput(e.target.value)}
-                    className="w-full bg-[#151A29] border border-[#242A3A] rounded-xl p-2.5 text-[#F5F7FC] font-bold text-base focus:outline-none focus:border-[#C8FF00]"
+                    className={`w-full border rounded-xl p-2.5 font-bold text-base focus:outline-none focus:border-[#C8FF00] ${
+                      isDark ? 'bg-[#151A29] border-[#242A3A] text-[#F5F7FC]' : 'bg-slate-50 border-slate-200 text-slate-900'
+                    }`}
                     autoFocus
                   />
                 </div>
                 <div>
-                  <label className="text-slate-400 block mb-1 font-medium">Notes (optional)</label>
+                  <label className={`block mb-1 font-medium ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>Notes (optional)</label>
                   <input
                     type="text"
                     placeholder="e.g. Morning empty stomach"
                     value={weightNoteInput}
                     onChange={(e) => setWeightNoteInput(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white"
+                    className={`w-full border rounded-xl p-2.5 ${
+                      isDark ? 'bg-[#151A29] border-[#242A3A] text-[#F5F7FC]' : 'bg-slate-50 border-slate-200 text-slate-900'
+                    }`}
                   />
                 </div>
                 <button
                   type="submit"
-                  className="w-full py-2.5 rounded-xl bg-[#C8FF00] hover:bg-[#B4E600] text-[#080A12] font-bold shadow-[0_0_12px_rgba(200,255,0,0.25)] transition-all"
+                  className="w-full py-2.5 rounded-xl bg-[#C8FF00] hover:bg-[#B4E600] text-[#080A12] font-bold shadow-[0_0_12px_rgba(200,255,0,0.25)] transition-all cursor-pointer active:scale-98"
                 >
                   Record Weigh-in
                 </button>
@@ -2191,6 +2137,15 @@ export default function Nutrition() {
             </div>
           </div>
         )}
+
+        {/* Quick Food Staple 1-Tap Log Modal */}
+        <QuickFoodLogModal
+          isOpen={quickLogModalOpen}
+          onClose={() => setQuickLogModalOpen(false)}
+          targetMeal={quickLogMeal}
+          selectedDate={selectedDate}
+          onFoodLogged={() => fetchDiary(selectedDate)}
+        />
       </div>
     </DashboardLayout>
   );

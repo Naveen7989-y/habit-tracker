@@ -25,9 +25,9 @@ export default function Card3D({ children, className = '' }) {
   const mouseXSpring = useSpring(x, { stiffness: 180, damping: 22 });
   const mouseYSpring = useSpring(y, { stiffness: 180, damping: 22 });
 
-  // 3D rotation angles
-  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ['9deg', '-9deg']);
-  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ['-9deg', '9deg']);
+  // 3D rotation angles - gentle tilt to preserve click stability
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ['5deg', '-5deg']);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ['-5deg', '5deg']);
 
   // Specular reflection position percentages
   const glareX = useTransform(mouseXSpring, [-0.5, 0.5], ['0%', '100%']);
@@ -69,20 +69,20 @@ export default function Card3D({ children, className = '' }) {
         style={{
           rotateX,
           rotateY,
-          transformStyle: 'preserve-3d',
+          backgroundColor: themeVisual.isDark ? '#111522' : 'rgba(255, 255, 255, 0.95)',
         }}
         animate={{
-          scale: isHovered ? 1.015 : 1,
+          scale: isHovered ? 1.01 : 1,
         }}
         transition={{
           scale: { duration: 0.25, ease: 'easeOut' },
         }}
         className={`relative w-full rounded-3xl backdrop-blur-2xl transition-all duration-500 ${
           themeVisual.isDark
-            ? `bg-[#111522]/90 border border-[#242A3A] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.7)] ${
+            ? `border border-[#242A3A] text-white shadow-[0_20px_60px_-15px_rgba(0,0,0,0.7)] ${
                 isHovered ? 'shadow-[0_25px_70px_-10px_rgba(0,0,0,0.5)]' : ''
               }`
-            : `bg-white/95 border border-slate-200/90 shadow-[0_25px_60px_-15px_rgba(15,23,42,0.1)] ${
+            : `border border-slate-200/90 text-slate-900 shadow-[0_25px_60px_-15px_rgba(15,23,42,0.1)] ${
                 isHovered ? 'shadow-[0_30px_70px_-10px_rgba(15,23,42,0.16)]' : ''
               }`
         } ${className}`}
@@ -116,11 +116,8 @@ export default function Card3D({ children, className = '' }) {
           }}
         />
 
-        {/* Inner Content with Preserve-3D Container */}
-        <div 
-          className="relative z-10 w-full"
-          style={{ transformStyle: 'preserve-3d' }}
-        >
+        {/* Inner Content Container */}
+        <div className="relative z-10 w-full">
           {children}
         </div>
       </motion.div>
