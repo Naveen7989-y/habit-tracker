@@ -1,4 +1,6 @@
 import prisma from '../config/prisma.js';
+import { usdaFoodService } from './usdaFood.service.js';
+import { aiFoodVisionService } from './aiFoodVision.service.js';
 
 /**
  * Advanced Nutrition Service for HAByTAT
@@ -72,7 +74,7 @@ export const nutritionService = {
       where.dietaryType = dietaryType;
     }
 
-    const [foods, totalCount, userFavorites] = await Promise.all([
+    const [foods, totalCount, userFavorites, usdaFoods] = await Promise.all([
       prisma.foodItem.findMany({
         where,
         include: {
@@ -91,6 +93,10 @@ export const nutritionService = {
             select: { foodItemId: true },
           })
         : [],
+      // Search external USDA FoodData Central when query is provided on page 1
+      query && query.trim() !== '' && Number(page) === 1 && (!cuisine || cuisine === 'All' || cuisine === 'International')
+        ? usdaFoodService.searchFoods(query.trim(), 6).catch(() => [])
+        : Promise.resolve([]),
     ]);
 
     const favoriteSet = new Set(userFavorites.map((f) => f.foodItemId));
@@ -100,17 +106,47 @@ export const nutritionService = {
       isFavorite: favoriteSet.has(f.id),
     }));
 
+    // Filter out USDA foods if their name already matches an existing local food
+    const localNames = new Set(formattedFoods.map((f) => f.name.toLowerCase()));
+    const externalFiltered = usdaFoods.filter(
+      (uf) => !localNames.has(uf.name.toLowerCase())
+    );
+
+    const mergedFoods = [...formattedFoods, ...externalFiltered];
+
     return {
-      foods: formattedFoods,
-      totalCount,
+      foods: mergedFoods,
+      totalCount: totalCount + externalFiltered.length,
       page: Number(page),
-      totalPages: Math.ceil(totalCount / take) || 1,
+      totalPages: Math.ceil((totalCount + externalFiltered.length) / take) || 1,
     };
   },
 
   async getFoodById(userId, foodId) {
+    let resolvedId = foodId;
+    if (foodId && typeof foodId === 'string' && foodId.startsWith('usda_')) {
+      const fdcId = foodId.replace('usda_', '');
+      const existing = await prisma.foodItem.findFirst({
+        where: { aliases: { contains: `FDC:${fdcId}` } },
+        include: {
+          servings: {
+            orderBy: [{ isDefault: 'desc' }, { gramWeight: 'asc' }],
+          },
+        },
+      });
+      if (existing) {
+        resolvedId = existing.id;
+      } else {
+        const usdaFoods = await usdaFoodService.searchFoods(fdcId, 1);
+        if (usdaFoods.length > 0) {
+          const persisted = await usdaFoodService.ensureFoodItemInDb(usdaFoods[0]);
+          resolvedId = persisted.id;
+        }
+      }
+    }
+
     const food = await prisma.foodItem.findUnique({
-      where: { id: foodId },
+      where: { id: resolvedId },
       include: {
         servings: {
           orderBy: [{ isDefault: 'desc' }, { gramWeight: 'asc' }],
@@ -441,7 +477,38 @@ export const nutritionService = {
 
     const todayStr = new Date().toISOString().split('T')[0];
     const targetDate = logDate || todayStr;
-    const qty = Number(servingQuantity) || 1;
+    const qty = Number(servingQuantity);
+    if (!Number.isFinite(qty) || qty <= 0 || qty > 10000) {
+      const error = new Error('Serving quantity must be a positive finite number up to 10,000');
+      error.statusCode = 400;
+      throw error;
+    }
+
+    if (servingGramWeight !== undefined && servingGramWeight !== null && servingGramWeight !== '') {
+      const gw = Number(servingGramWeight);
+      if (!Number.isFinite(gw) || gw <= 0 || gw > 100000) {
+        const error = new Error('Serving gram weight must be a positive finite number');
+        error.statusCode = 400;
+        throw error;
+      }
+    }
+
+    let targetFoodItemId = foodItemId;
+    if (foodItemId && typeof foodItemId === 'string' && foodItemId.startsWith('usda_')) {
+      const fdcId = foodItemId.replace('usda_', '');
+      let existingUsda = await prisma.foodItem.findFirst({
+        where: { aliases: { contains: `FDC:${fdcId}` } },
+      });
+      if (existingUsda) {
+        targetFoodItemId = existingUsda.id;
+      } else {
+        const usdaFoods = await usdaFoodService.searchFoods(data.foodName || fdcId, 1);
+        if (usdaFoods.length > 0) {
+          const persisted = await usdaFoodService.ensureFoodItemInDb(usdaFoods[0]);
+          targetFoodItemId = persisted.id;
+        }
+      }
+    }
 
     let computedName = foodName;
     let computedGrams = 100 * qty;
@@ -451,9 +518,9 @@ export const nutritionService = {
     let computedFat = 0;
     let computedFiber = 0;
 
-    if (foodItemId) {
+    if (targetFoodItemId) {
       const food = await prisma.foodItem.findUnique({
-        where: { id: foodItemId },
+        where: { id: targetFoodItemId },
         include: { servings: true },
       });
 
@@ -466,8 +533,8 @@ export const nutritionService = {
       computedName = food.name;
 
       // Find unit weight
-      let singleUnitGrams = food.servingSizeGrams;
-      if (servingGramWeight) {
+      let singleUnitGrams = food.servingSizeGrams || 100;
+      if (servingGramWeight && Number(servingGramWeight) > 0) {
         singleUnitGrams = Number(servingGramWeight);
       } else if (food.servings && food.servings.length > 0) {
         const matchedServing = food.servings.find((s) => s.unitName === servingUnit);
@@ -479,11 +546,12 @@ export const nutritionService = {
       computedGrams = singleUnitGrams * qty;
       const ratio = computedGrams / (food.servingSizeGrams || 100);
 
+      // Server is source of truth: deterministic calculation from verified food
       computedCalories = round(food.calories * ratio);
       computedProtein = round(food.protein * ratio);
       computedCarbs = round(food.carbs * ratio);
       computedFat = round(food.fat * ratio);
-      computedFiber = round(food.fiber * ratio);
+      computedFiber = round((food.fiber || 0) * ratio);
     } else if (recipeId) {
       const recipe = await prisma.recipe.findFirst({
         where: { id: recipeId, userId },
@@ -523,7 +591,7 @@ export const nutritionService = {
     const createdLog = await prisma.foodLog.create({
       data: {
         userId,
-        foodItemId: foodItemId || null,
+        foodItemId: targetFoodItemId || null,
         recipeId: recipeId || null,
         foodName: computedName,
         mealType,
@@ -541,6 +609,29 @@ export const nutritionService = {
     });
 
     return createdLog;
+  },
+
+  async logMultipleFoods(userId, payload) {
+    const items = Array.isArray(payload) ? payload : payload.items;
+    const defaultMealType = payload.mealType || 'Lunch';
+    const defaultLogDate = payload.logDate || new Date().toISOString().split('T')[0];
+
+    if (!Array.isArray(items) || items.length === 0) {
+      const error = new Error('Items array is required for bulk meal logging');
+      error.statusCode = 400;
+      throw error;
+    }
+
+    const createdLogs = [];
+    for (const item of items) {
+      const log = await this.logFood(userId, {
+        ...item,
+        mealType: item.mealType || defaultMealType,
+        logDate: item.logDate || defaultLogDate,
+      });
+      createdLogs.push(log);
+    }
+    return createdLogs;
   },
 
   async updateFoodLog(userId, logId, updateData) {
@@ -572,6 +663,11 @@ export const nutritionService = {
     // Recalculate if quantity or serving changed and foodItemId is present
     if (servingQuantity !== undefined || servingGramWeight !== undefined || servingUnit !== undefined) {
       const qty = servingQuantity !== undefined ? Number(servingQuantity) : existing.servingQuantity;
+      if (!Number.isFinite(qty) || qty <= 0 || qty > 10000) {
+        const error = new Error('Serving quantity must be a positive finite number up to 10,000');
+        error.statusCode = 400;
+        throw error;
+      }
 
       if (existing.foodItemId) {
         const food = await prisma.foodItem.findUnique({
@@ -1533,5 +1629,84 @@ export const nutritionService = {
       items: parsedItems,
       estimatedTotals,
     };
+  },
+
+  calculateTdeeTargets({ age, gender, heightCm, currentWeightKg, activityLevel = 'sedentary', fitnessGoal = 'maintenance' }) {
+    if (!age || !gender || !heightCm || !currentWeightKg) {
+      const err = new Error('Age, gender, height (cm), and current weight (kg) are required for Mifflin-St Jeor calculation');
+      err.statusCode = 400;
+      throw err;
+    }
+
+    const w = Number(currentWeightKg);
+    const h = Number(heightCm);
+    const a = Number(age);
+    const g = String(gender).toLowerCase();
+
+    if (w <= 20 || w > 350 || h <= 50 || h > 260 || a <= 10 || a > 120) {
+      const err = new Error('Provided physiological stats are outside reasonable human ranges');
+      err.statusCode = 400;
+      throw err;
+    }
+
+    // Mifflin-St Jeor Equation:
+    // Men: BMR = (10 × weight in kg) + (6.25 × height in cm) - (5 × age in years) + 5
+    // Women: BMR = (10 × weight in kg) + (6.25 × height in cm) - (5 × age in years) - 161
+    const bmr = round(10 * w + 6.25 * h - 5 * a + (g === 'female' ? -161 : 5));
+
+    const multipliers = {
+      sedentary: 1.2,        // Desk job, little/no exercise
+      light: 1.375,          // Light exercise 1-3 days/week
+      moderate: 1.55,        // Moderate exercise 3-5 days/week
+      very_active: 1.725,    // Hard exercise 6-7 days/week
+      athlete: 1.9,          // Extremely active / intense daily training
+    };
+
+    const multiplier = multipliers[activityLevel] || 1.2;
+    const tdee = Math.round(bmr * multiplier);
+
+    // Goal adjustments (safe, non-extreme clinical ranges)
+    let calorieAdjustment = 0;
+    if (fitnessGoal === 'weight_loss') {
+      calorieAdjustment = -450;
+    } else if (fitnessGoal === 'weight_gain') {
+      calorieAdjustment = 350;
+    }
+
+    // Floor calories at safe minimums (1200 kcal female, 1500 kcal male)
+    const minSafeCalories = g === 'female' ? 1200 : 1500;
+    const targetCalories = Math.max(minSafeCalories, tdee + calorieAdjustment);
+
+    // Macronutrient distribution:
+    // Protein: 1.6 g/kg of body weight (adequate for muscle preservation and satiety)
+    const targetProtein = Math.round(w * 1.6);
+    // Fat: 25% of total calories (9 kcal/g)
+    const targetFat = Math.round((targetCalories * 0.25) / 9);
+    // Carbs: Remainder of energy expenditure (4 kcal/g)
+    const proteinCal = targetProtein * 4;
+    const fatCal = targetFat * 9;
+    const targetCarbs = Math.round(Math.max(100, (targetCalories - (proteinCal + fatCal)) / 4));
+    // Dietary Fiber: 14g per 1000 kcal
+    const targetFiber = Math.round(Math.max(25, (targetCalories / 1000) * 14));
+    // Hydration Target: ~35 ml per kg of body weight
+    const waterTargetMl = Math.round(w * 35);
+
+    return {
+      bmr,
+      tdee,
+      targetCalories,
+      proteinGrams: targetProtein,
+      carbsGrams: targetCarbs,
+      fatGrams: targetFat,
+      fiberGrams: targetFiber,
+      waterTargetMl,
+      formula: 'Mifflin-St Jeor',
+      isEstimate: true,
+      notes: 'Active workout expenditure is tracked separately to avoid double-counting.',
+    };
+  },
+
+  async recognizeFoodPhoto(payload) {
+    return aiFoodVisionService.recognizePhoto(payload);
   },
 };

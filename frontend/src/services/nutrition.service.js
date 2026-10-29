@@ -144,4 +144,16 @@ export const nutritionService = {
     const res = await api.post('/nutrition/ai-parse', { text });
     return res.data;
   },
+
+  // AI Photo Recognition & Portion Estimation
+  async recognizePhoto(payload) {
+    const res = await api.post('/nutrition/ai-photo-recognize', payload);
+    return res.data?.data || res.data;
+  },
+
+  // Transparent Mifflin-St Jeor TDEE Preview Calculator
+  async calculateTdee(biometrics) {
+    const res = await api.post('/nutrition/goals/calculate-tdee', biometrics);
+    return res.data?.data || res.data;
+  },
 };
