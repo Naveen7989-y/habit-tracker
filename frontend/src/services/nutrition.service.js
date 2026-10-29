@@ -151,6 +151,18 @@ export const nutritionService = {
     return res.data?.data || res.data;
   },
 
+  // Indian Thali & Composite Meal Logging (Stage 3)
+  async logThaliMeal(payload) {
+    const res = await api.post("/nutrition/meals/thali", payload);
+    return res.data?.data || res.data;
+  },
+
+  // Accuracy Validation Report (Stage 3)
+  async getValidationReport() {
+    const res = await api.get("/nutrition/validation/report");
+    return res.data?.data || res.data;
+  },
+
   // Transparent Mifflin-St Jeor TDEE Preview Calculator
   async calculateTdee(biometrics) {
     const res = await api.post('/nutrition/goals/calculate-tdee', biometrics);

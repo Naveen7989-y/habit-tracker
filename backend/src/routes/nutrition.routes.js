@@ -15,7 +15,11 @@ router.get('/foods/:id', nutritionController.getFoodById);
 router.post('/foods/custom', nutritionController.createCustomFood);
 router.post('/foods/:foodItemId/favorite', nutritionController.toggleFavorite);
 
+// Data Quality & Validation Report
+router.get('/validation/report', nutritionController.getValidationReport);
+
 // Daily Diary & Food Logs
+router.post('/meals/thali', nutritionController.logThaliMeal);
 router.get('/logs', nutritionController.getDailyLogs);
 router.post('/logs', nutritionController.logFood);
 router.put('/logs/:id', nutritionController.updateFoodLog);

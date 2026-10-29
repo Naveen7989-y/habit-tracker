@@ -1,4 +1,5 @@
 import { nutritionService } from '../services/nutrition.service.js';
+import { nutritionValidationService } from '../services/nutritionValidation.service.js';
 import { successResponse } from '../utils/response.js';
 
 export const nutritionController = {
@@ -75,6 +76,15 @@ export const nutritionController = {
       }
       const log = await nutritionService.logFood(req.user.id, req.body);
       return successResponse(res, 201, 'Food logged successfully', { log });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async logThaliMeal(req, res, next) {
+    try {
+      const result = await nutritionService.logThaliMeal(req.user.id, req.body);
+      return successResponse(res, 201, `Thali '${result.thaliName}' logged successfully (${result.itemCount} items)`, result);
     } catch (error) {
       next(error);
     }
@@ -251,14 +261,24 @@ export const nutritionController = {
   // AI Food Photo Recognition & Portion Estimation
   async recognizeFoodPhoto(req, res, next) {
     try {
-      const { imageBase64, mimeType, optionalHint, mealType } = req.body;
+      const { imageBase64, photoBase64, mimeType, optionalHint, mealHint, mealType } = req.body;
       const result = await nutritionService.recognizeFoodPhoto({
-        imageBase64,
+        imageBase64: imageBase64 || photoBase64,
         mimeType,
-        optionalHint,
+        optionalHint: optionalHint || mealHint,
         mealType,
       });
       return successResponse(res, 200, 'Photo analyzed successfully', result);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  // Accuracy Validation Report (Stage 3)
+  async getValidationReport(req, res, next) {
+    try {
+      const report = await nutritionValidationService.runValidationSuite();
+      return successResponse(res, 200, 'Nutrition validation report generated successfully', report);
     } catch (error) {
       next(error);
     }

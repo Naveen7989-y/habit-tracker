@@ -24,8 +24,13 @@ import DashboardLayout from '../layouts/DashboardLayout';
 import WaterTrackerCard from '../components/nutrition/WaterTrackerCard';
 import MacroBreakdownCard from '../components/nutrition/MacroBreakdownCard';
 import QuickFoodLogModal from '../components/nutrition/QuickFoodLogModal';
+import DataQualityBadge from '../components/nutrition/DataQualityBadge';
+import CalculationBreakdownModal from '../components/nutrition/CalculationBreakdownModal';
+import ValidationDiagnosticModal from '../components/nutrition/ValidationDiagnosticModal';
+import IndianThaliBuilder from '../components/nutrition/IndianThaliBuilder';
 import {
   UtensilsCrossed,
+  ShieldCheck,
   Search,
   Plus,
   Sparkles,
@@ -137,6 +142,10 @@ export default function Nutrition() {
   const [recipesModalOpen, setRecipesModalOpen] = useState(false);
   const [goalsModalOpen, setGoalsModalOpen] = useState(false);
   const [weightModalOpen, setWeightModalOpen] = useState(false);
+  const [breakdownModalOpen, setBreakdownModalOpen] = useState(false);
+  const [breakdownTargetFood, setBreakdownTargetFood] = useState(null);
+  const [breakdownPortionGrams, setBreakdownPortionGrams] = useState(100);
+  const [validationDiagnosticOpen, setValidationDiagnosticOpen] = useState(false);
 
   // Food Search state
   const [searchQuery, setSearchQuery] = useState('');
@@ -923,6 +932,15 @@ export default function Nutrition() {
             </button>
 
             <button
+              onClick={() => setValidationDiagnosticOpen(true)}
+              className="px-3 py-2 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-400 border border-emerald-500/30 text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer"
+              title="Inspect Independent Ground-Truth Nutrition Accuracy Audit"
+            >
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Accuracy Audit</span>
+            </button>
+
+            <button
               onClick={() => openSearchForMeal('Breakfast')}
               className={`px-3 py-2 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
                 isDark
@@ -1026,6 +1044,17 @@ export default function Nutrition() {
               Daily Diary
             </button>
             <button
+              onClick={() => setViewTab('thali')}
+              className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1 ${
+                viewTab === 'thali'
+                  ? 'bg-[#C8FF00] text-[#080A12] font-bold shadow-sm'
+                  : isDark ? 'text-[#A4AABC] hover:text-[#F5F7FC]' : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <span>🍛</span>
+              <span>Indian Thali Builder</span>
+            </button>
+            <button
               onClick={() => setViewTab('analytics')}
               className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                 viewTab === 'analytics'
@@ -1055,6 +1084,19 @@ export default function Nutrition() {
               Retry
             </button>
           </div>
+        ) : viewTab === 'thali' ? (
+          <IndianThaliBuilder
+            selectedDate={selectedDate}
+            onThaliLogged={() => {
+              fetchDiary(selectedDate);
+              setViewTab('diary');
+            }}
+            onOpenCalculationBreakdown={(food, grams) => {
+              setBreakdownTargetFood(food);
+              setBreakdownPortionGrams(grams);
+              setBreakdownModalOpen(true);
+            }}
+          />
         ) : viewTab === 'diary' ? (
           <>
             {/* ================================================= */}
@@ -1233,6 +1275,29 @@ export default function Nutrition() {
                               <div className="space-y-0.5">
                                 <div className="flex items-center gap-2">
                                   <h4 className={`text-xs sm:text-sm font-bold ${isDark ? 'text-[#F5F7FC]' : 'text-slate-800'}`}>{item.foodName}</h4>
+                                  <DataQualityBadge quality={item.dataQuality || 'SOURCE_VERIFIED'} compact />
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setBreakdownTargetFood(item.foodItem || {
+                                        name: item.foodName,
+                                        calories: Math.round(item.calories / (item.totalGrams / 100)),
+                                        protein: Math.round((item.protein / (item.totalGrams / 100)) * 10) / 10,
+                                        carbs: Math.round((item.carbs / (item.totalGrams / 100)) * 10) / 10,
+                                        fat: Math.round((item.fat / (item.totalGrams / 100)) * 10) / 10,
+                                        fiber: Math.round((item.fiber / (item.totalGrams / 100)) * 10) / 10,
+                                        servingSizeGrams: 100,
+                                        dataQuality: item.dataQuality,
+                                        source: item.notes || 'Logged Food Item',
+                                      });
+                                      setBreakdownPortionGrams(item.totalGrams);
+                                      setBreakdownModalOpen(true);
+                                    }}
+                                    className="p-1 rounded-lg text-slate-400 hover:text-[#C8FF00] hover:bg-[#151A29] transition-colors"
+                                    title="View Deterministic Calculation Breakdown"
+                                  >
+                                    <Info className="w-3.5 h-3.5" />
+                                  </button>
                                   {item.foodItem?.dietaryType && (
                                     <span
                                       className={`text-[9px] px-1.5 py-0.5 rounded font-bold uppercase ${
@@ -2204,7 +2269,10 @@ export default function Nutrition() {
                             >
                               <div className="flex items-center justify-between">
                                 <div>
-                                  <span className="font-bold text-white text-xs">{item.foodName}</span>
+                                  <div className="flex items-center gap-1.5">
+                                    <span className="font-bold text-white text-xs">{item.foodName}</span>
+                                    <DataQualityBadge quality={item.dataQuality || 'AI_ESTIMATED'} compact />
+                                  </div>
                                   <div className="flex items-center gap-2 mt-0.5">
                                     <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 font-semibold">
                                       {item.source}
@@ -2224,6 +2292,49 @@ export default function Nutrition() {
                                   <Trash2 className="w-3.5 h-3.5" />
                                 </button>
                               </div>
+
+                              
+                              {/* Stage 3 Dual Confidence & Uncertainty Bars */}
+                              <div className="grid grid-cols-2 gap-2 p-2 rounded-xl bg-[#151A29]/80 border border-slate-800">
+                                <div>
+                                  <div className="flex justify-between text-[10px] text-slate-400 mb-0.5">
+                                    <span>Recognition</span>
+                                    <span className="font-bold text-emerald-400">{Math.round((item.recognitionConfidence || item.confidence || 0.88) * 100)}%</span>
+                                  </div>
+                                  <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                                    <div
+                                      className="h-full bg-emerald-400 rounded-full transition-all"
+                                      style={{ width: `${Math.round((item.recognitionConfidence || item.confidence || 0.88) * 100)}%` }}
+                                    />
+                                  </div>
+                                </div>
+                                <div>
+                                  <div className="flex justify-between text-[10px] text-slate-400 mb-0.5">
+                                    <span>Portion Grams</span>
+                                    <span className="font-bold text-amber-400">{Math.round((item.portionConfidence || 0.65) * 100)}%</span>
+                                  </div>
+                                  <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                                    <div
+                                      className="h-full bg-amber-400 rounded-full transition-all"
+                                      style={{ width: `${Math.round((item.portionConfidence || 0.65) * 100)}%` }}
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Ambiguous Ingredients */}
+                              {item.ambiguousIngredients?.length > 0 && (
+                                <div className="p-2 rounded-lg bg-amber-500/10 border border-amber-500/20 text-[10px] space-y-0.5">
+                                  <span className="font-bold text-amber-300 block">Ambiguous Prep Items (2D Limit):</span>
+                                  <div className="flex flex-wrap gap-1 text-slate-300">
+                                    {item.ambiguousIngredients.map((amb, aIdx) => (
+                                      <span key={aIdx} className="px-1.5 py-0.2 rounded bg-amber-950/40 text-amber-200">
+                                        • {amb}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
 
                               {/* Interactive Portion Stepper */}
                               <div className="flex items-center justify-between gap-2 pt-1 border-t border-slate-800/80">
@@ -2718,6 +2829,20 @@ export default function Nutrition() {
             </div>
           </div>
         )}
+
+        {/* Stage 3 Calculation Breakdown Modal */}
+        <CalculationBreakdownModal
+          isOpen={breakdownModalOpen}
+          onClose={() => setBreakdownModalOpen(false)}
+          foodItem={breakdownTargetFood}
+          portionGrams={breakdownPortionGrams}
+        />
+
+        {/* Stage 3 Accuracy Validation Diagnostic Modal */}
+        <ValidationDiagnosticModal
+          isOpen={validationDiagnosticOpen}
+          onClose={() => setValidationDiagnosticOpen(false)}
+        />
 
         {/* Quick Food Staple 1-Tap Log Modal */}
         <QuickFoodLogModal

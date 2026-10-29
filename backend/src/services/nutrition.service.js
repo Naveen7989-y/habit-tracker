@@ -1,6 +1,7 @@
 import prisma from '../config/prisma.js';
 import { usdaFoodService } from './usdaFood.service.js';
 import { aiFoodVisionService } from './aiFoodVision.service.js';
+import { nutritionValidationService } from './nutritionValidation.service.js';
 
 /**
  * Advanced Nutrition Service for HAByTAT
@@ -104,6 +105,16 @@ export const nutritionService = {
     const formattedFoods = foods.map((f) => ({
       ...f,
       isFavorite: favoriteSet.has(f.id),
+      dataQuality: nutritionValidationService.classifyDataQuality(f),
+      calculationBreakdown: {
+        basis: `${f.servingSizeGrams || 100}g Reference Base`,
+        baseCalories: f.calories,
+        baseProtein: f.protein,
+        baseCarbs: f.carbs,
+        baseFat: f.fat,
+        baseFiber: f.fiber || 0,
+        formula: 'portionWeightGrams / baseWeightGrams × baseNutrient',
+      },
     }));
 
     // Filter out USDA foods if their name already matches an existing local food
@@ -173,7 +184,20 @@ export const nutritionService = {
       isFavorite = !!fav;
     }
 
-    return { ...food, isFavorite };
+    return {
+      ...food,
+      isFavorite,
+      dataQuality: nutritionValidationService.classifyDataQuality(food),
+      calculationBreakdown: {
+        basis: `${food.servingSizeGrams || 100}g Reference Base`,
+        baseCalories: food.calories,
+        baseProtein: food.protein,
+        baseCarbs: food.carbs,
+        baseFat: food.fat,
+        baseFiber: food.fiber || 0,
+        formula: 'portionWeightGrams / baseWeightGrams × baseNutrient',
+      },
+    };
   },
 
   async createCustomFood(userId, data) {
@@ -335,9 +359,20 @@ export const nutritionService = {
           foodItem: {
             select: {
               id: true,
+              name: true,
               category: true,
               cuisine: true,
               dietaryType: true,
+              source: true,
+              aliases: true,
+              isVerified: true,
+              isCustom: true,
+              servingSizeGrams: true,
+              calories: true,
+              protein: true,
+              carbs: true,
+              fat: true,
+              fiber: true,
             },
           },
           recipe: {
@@ -382,7 +417,25 @@ export const nutritionService = {
 
     for (const log of logs) {
       const mealKey = meals[log.mealType] ? log.mealType : 'Custom';
-      meals[mealKey].push(log);
+      const enrichedLog = {
+        ...log,
+        dataQuality: log.foodItem
+          ? nutritionValidationService.classifyDataQuality(log.foodItem)
+          : (log.recipeId ? 'RECIPE_ESTIMATED' : 'USER_PROVIDED'),
+        calculationBreakdown: log.foodItem
+          ? {
+              basis: `${log.foodItem.servingSizeGrams || 100}g Verified Reference`,
+              baseCalories: log.foodItem.calories,
+              baseProtein: log.foodItem.protein,
+              baseCarbs: log.foodItem.carbs,
+              baseFat: log.foodItem.fat,
+              loggedGrams: log.totalGrams,
+              scalingRatio: round(log.totalGrams / (log.foodItem.servingSizeGrams || 100)),
+              formula: `${log.totalGrams}g / ${log.foodItem.servingSizeGrams || 100}g × Base Nutrient`,
+            }
+          : null,
+      };
+      meals[mealKey].push(enrichedLog);
 
       totalCalories += log.calories;
       totalProtein += log.protein;
@@ -609,6 +662,54 @@ export const nutritionService = {
     });
 
     return createdLog;
+  },
+
+
+  // Indian Thali & Combo Meal Logging
+  async logThaliMeal(userId, { thaliName = 'Indian Thali', mealType = 'Lunch', logDate, items = [] }) {
+    if (!Array.isArray(items) || items.length === 0) {
+      const error = new Error('At least one item is required in a Thali meal');
+      error.statusCode = 400;
+      throw error;
+    }
+
+    const createdLogs = [];
+    let totalCalories = 0;
+    let totalProtein = 0;
+    let totalCarbs = 0;
+    let totalFat = 0;
+    let totalFiber = 0;
+    let totalGrams = 0;
+
+    for (const item of items) {
+      const log = await this.logFood(userId, {
+        ...item,
+        mealType,
+        logDate,
+        notes: item.notes ? `${item.notes} (Part of ${thaliName})` : `[Thali: ${thaliName}]`,
+      });
+      createdLogs.push(log);
+      totalCalories += log.calories;
+      totalProtein += log.protein;
+      totalCarbs += log.carbs;
+      totalFat += log.fat;
+      totalFiber += log.fiber;
+      totalGrams += log.totalGrams;
+    }
+
+    return {
+      thaliName,
+      mealType,
+      logDate: logDate || new Date().toISOString().split('T')[0],
+      totalCalories: round(totalCalories),
+      totalProtein: round(totalProtein),
+      totalCarbs: round(totalCarbs),
+      totalFat: round(totalFat),
+      totalFiber: round(totalFiber),
+      totalGrams: round(totalGrams),
+      itemCount: createdLogs.length,
+      logs: createdLogs,
+    };
   },
 
   async logMultipleFoods(userId, payload) {

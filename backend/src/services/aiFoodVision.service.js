@@ -107,7 +107,19 @@ export const aiFoodVisionService = {
           carbs: round(food.carbs * ratio),
           fat: round(food.fat * ratio),
           fiber: round((food.fiber || 0) * ratio),
+          recognitionConfidence: cand.recognitionConfidence || cand.confidence || 0.88,
+          portionConfidence: cand.portionConfidence || 0.65,
           confidence: cand.confidence || 0.85,
+          ambiguousIngredients: [
+            'Added cooking oil, ghee, or butter',
+            'Hidden gravies or sugar glaze',
+            'Stuffing density (potato, paneer, dry fruits)',
+          ],
+          clarifyingQuestions: [
+            'Was extra ghee/butter applied during preparation or serving?',
+            'Is this prepared with oil tadka or plain boiled?',
+          ],
+          dataQuality: 'AI_ESTIMATED',
           uncertaintyNote:
             'Portion and hidden oil estimated from 2D photo geometry. Verify quantity before saving.',
           source: food.source || 'ICMR-NIN IFCT / HAbyTAT Database',

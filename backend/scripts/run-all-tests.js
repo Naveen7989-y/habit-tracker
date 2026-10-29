@@ -18,6 +18,7 @@ const TEST_FILES = [
   'scripts/test-nutrition-engine.js',
   'scripts/test-nutrition.js',
   'scripts/test-nutrition-regression.js',
+  'scripts/test-stage3-intelligence.js',
 ];
 
 async function isServerRunning() {
