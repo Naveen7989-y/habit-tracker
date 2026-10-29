@@ -1,0 +1,181 @@
+[
+  {
+    "barcode": "8901262010053",
+    "name": "Amul Taaza Toned Milk (Tetra Pak)",
+    "brand": "Amul",
+    "category": "Beverages",
+    "cuisine": "Pan-Indian",
+    "dietaryType": "Veg",
+    "servingUnit": "1 glass (200ml)",
+    "servingSizeGrams": 200,
+    "calories": 116.0,
+    "protein": 6.4,
+    "carbs": 9.4,
+    "fat": 6.0,
+    "fiber": 0.0,
+    "sugar": 9.4,
+    "sodium": 100.0,
+    "source": "Open Food Facts India",
+    "servings": [
+      { "unitName": "1 glass (200ml)", "gramWeight": 200, "isDefault": true },
+      { "unitName": "1 cup (150ml)", "gramWeight": 150 },
+      { "unitName": "100ml", "gramWeight": 100 }
+    ]
+  },
+  {
+    "barcode": "8901262010114",
+    "name": "Amul Pasteurised Salted Butter",
+    "brand": "Amul",
+    "category": "Staples & Ingredients",
+    "cuisine": "Pan-Indian",
+    "dietaryType": "Veg",
+    "servingUnit": "1 dollop (10g)",
+    "servingSizeGrams": 10,
+    "calories": 72.0,
+    "protein": 0.06,
+    "carbs": 0.0,
+    "fat": 8.0,
+    "fiber": 0.0,
+    "sugar": 0.0,
+    "sodium": 83.0,
+    "source": "Open Food Facts India",
+    "servings": [
+      { "unitName": "1 dollop (10g)", "gramWeight": 10, "isDefault": true },
+      { "unitName": "1 tsp (5g)", "gramWeight": 5 },
+      { "unitName": "100g block", "gramWeight": 100 }
+    ]
+  },
+  {
+    "barcode": "8901262010206",
+    "name": "Amul Fresh Malai Paneer",
+    "brand": "Amul",
+    "category": "Protein & Meat",
+    "cuisine": "Pan-Indian",
+    "dietaryType": "Veg",
+    "servingUnit": "100g portion",
+    "servingSizeGrams": 100,
+    "calories": 314.0,
+    "protein": 20.0,
+    "carbs": 3.5,
+    "fat": 25.0,
+    "fiber": 0.0,
+    "sugar": 2.0,
+    "sodium": 40.0,
+    "source": "Open Food Facts India",
+    "servings": [
+      { "unitName": "100g portion", "gramWeight": 100, "isDefault": true },
+      { "unitName": "200g pack", "gramWeight": 200 }
+    ]
+  },
+  {
+    "barcode": "8901063142274",
+    "name": "Britannia NutriChoice Digestive High Fibre Biscuits",
+    "brand": "Britannia",
+    "category": "Snacks & Street Food",
+    "cuisine": "Pan-Indian",
+    "dietaryType": "Veg",
+    "servingUnit": "2 biscuits (22g)",
+    "servingSizeGrams": 22,
+    "calories": 106.0,
+    "protein": 2.0,
+    "carbs": 15.0,
+    "fat": 4.2,
+    "fiber": 1.6,
+    "sugar": 4.1,
+    "sodium": 95.0,
+    "source": "Open Food Facts India",
+    "servings": [
+      { "unitName": "2 biscuits (22g)", "gramWeight": 22, "isDefault": true },
+      { "unitName": "1 biscuit (11g)", "gramWeight": 11 },
+      { "unitName": "100g pack", "gramWeight": 100 }
+    ]
+  },
+  {
+    "barcode": "8901058852378",
+    "name": "Maggi 2-Minute Masala Instant Noodles",
+    "brand": "Nestle Maggi",
+    "category": "Snacks & Street Food",
+    "cuisine": "Pan-Indian",
+    "dietaryType": "Veg",
+    "servingUnit": "1 single pack (70g)",
+    "servingSizeGrams": 70,
+    "calories": 310.0,
+    "protein": 6.8,
+    "carbs": 44.5,
+    "fat": 11.5,
+    "fiber": 2.5,
+    "sugar": 1.8,
+    "sodium": 860.0,
+    "source": "Open Food Facts India",
+    "servings": [
+      { "unitName": "1 single pack (70g)", "gramWeight": 70, "isDefault": true },
+      { "unitName": "100g cooked equivalent", "gramWeight": 100 }
+    ]
+  },
+  {
+    "barcode": "8904043901053",
+    "name": "Tata Sampann Unpolished Toor Dal",
+    "brand": "Tata Sampann",
+    "category": "Dal & Curries",
+    "cuisine": "Pan-Indian",
+    "dietaryType": "Vegan",
+    "servingUnit": "100g raw",
+    "servingSizeGrams": 100,
+    "calories": 343.0,
+    "protein": 22.3,
+    "carbs": 60.4,
+    "fat": 1.5,
+    "fiber": 9.1,
+    "sugar": 1.2,
+    "sodium": 12.0,
+    "source": "Open Food Facts India",
+    "servings": [
+      { "unitName": "100g raw", "gramWeight": 100, "isDefault": true },
+      { "unitName": "1 serving (30g dry)", "gramWeight": 30 }
+    ]
+  },
+  {
+    "barcode": "8901030383785",
+    "name": "Aashirvaad Shudh Chakki Whole Wheat Atta",
+    "brand": "Aashirvaad",
+    "category": "Staples & Ingredients",
+    "cuisine": "Pan-Indian",
+    "dietaryType": "Vegan",
+    "servingUnit": "100g",
+    "servingSizeGrams": 100,
+    "calories": 345.0,
+    "protein": 11.5,
+    "carbs": 71.0,
+    "fat": 1.6,
+    "fiber": 10.5,
+    "sugar": 0.5,
+    "sodium": 3.0,
+    "source": "Open Food Facts India",
+    "servings": [
+      { "unitName": "100g standard", "gramWeight": 100, "isDefault": true },
+      { "unitName": "1 roti portion (35g flour)", "gramWeight": 35 }
+    ]
+  },
+  {
+    "barcode": "8906078330012",
+    "name": "Epigamia Natural Greek Yogurt (High Protein)",
+    "brand": "Epigamia",
+    "category": "Protein & Meat",
+    "cuisine": "Pan-Indian",
+    "dietaryType": "Veg",
+    "servingUnit": "1 cup (90g)",
+    "servingSizeGrams": 90,
+    "calories": 85.0,
+    "protein": 6.8,
+    "carbs": 5.4,
+    "fat": 4.0,
+    "fiber": 0.0,
+    "sugar": 5.0,
+    "sodium": 45.0,
+    "source": "Open Food Facts India",
+    "servings": [
+      { "unitName": "1 cup (90g)", "gramWeight": 90, "isDefault": true },
+      { "unitName": "100g", "gramWeight": 100 }
+    ]
+  }
+]
