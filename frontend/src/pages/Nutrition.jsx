@@ -1659,8 +1659,32 @@ export default function Nutrition() {
                                   {s.unitName} ({s.gramWeight}g)
                                 </option>
                               ))}
-                              <option value="custom grams">Custom Grams</option>
+                              <option value="custom grams">Custom Grams (Direct Weight)</option>
                             </select>
+                            <p className="text-[10px] mt-1 text-[#70788D]">
+                              Household units are calibrated averages. Select "Custom Grams" for scale measurements.
+                            </p>
+                            {selectedServingUnit === 'custom grams' && (
+                              <div className="mt-2">
+                                <label className="text-[11px] font-medium block mb-1" style={{ color: themeTextSecondary }}>
+                                  Enter Exact Weight in Grams (g)
+                                </label>
+                                <input
+                                  type="number"
+                                  min="1"
+                                  max="10000"
+                                  value={customServingGrams}
+                                  onChange={(e) => setCustomServingGrams(Math.max(1, parseFloat(e.target.value) || 1))}
+                                  className="w-full rounded-xl px-3 py-1.5 focus:outline-none font-semibold text-sm"
+                                  style={{
+                                    backgroundColor: isDark ? '#111111' : '#FFFFFF',
+                                    border: `1px solid ${isDark ? '#C8FF00' : '#0284c7'}`,
+                                    color: themeTextPrimary,
+                                  }}
+                                  placeholder="e.g. 175"
+                                />
+                              </div>
+                            )}
                           </div>
 
                           {/* Quantity Multiplier */}
