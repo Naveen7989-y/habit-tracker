@@ -13,7 +13,8 @@
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:seed": "node prisma/seed.js",
-    "test": "node --test --test-concurrency=1 scripts/test-*.js"
+    "etl:ingest": "node src/etl/ingest.js",
+    "test": "node scripts/run-all-tests.js"
   },
   "dependencies": {
     "@prisma/client": "^6.4.1",

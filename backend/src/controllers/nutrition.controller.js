@@ -1,4 +1,5 @@
 import { nutritionService } from '../services/nutrition.service.js';
+import { nutritionValidationService } from '../services/nutritionValidation.service.js';
 import { successResponse } from '../utils/response.js';
 
 export const nutritionController = {
@@ -70,19 +71,20 @@ export const nutritionController = {
   async logFood(req, res, next) {
     try {
       if (Array.isArray(req.body.items) && req.body.items.length > 0) {
-        const logs = [];
-        for (const item of req.body.items) {
-          const log = await nutritionService.logFood(req.user.id, {
-            ...item,
-            mealType: item.mealType || req.body.mealType,
-            logDate: item.logDate || req.body.logDate,
-          });
-          logs.push(log);
-        }
+        const logs = await nutritionService.logMultipleFoods(req.user.id, req.body);
         return successResponse(res, 201, `${logs.length} foods logged successfully`, { logs });
       }
       const log = await nutritionService.logFood(req.user.id, req.body);
       return successResponse(res, 201, 'Food logged successfully', { log });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async logThaliMeal(req, res, next) {
+    try {
+      const result = await nutritionService.logThaliMeal(req.user.id, req.body);
+      return successResponse(res, 201, `Thali '${result.thaliName}' logged successfully (${result.itemCount} items)`, result);
     } catch (error) {
       next(error);
     }
@@ -251,6 +253,42 @@ export const nutritionController = {
     try {
       const result = await nutritionService.parseNaturalLanguageFood(req.body.text);
       return successResponse(res, 200, 'Food parsed successfully', result);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  // AI Food Photo Recognition & Portion Estimation
+  async recognizeFoodPhoto(req, res, next) {
+    try {
+      const { imageBase64, photoBase64, mimeType, optionalHint, mealHint, mealType } = req.body;
+      const result = await nutritionService.recognizeFoodPhoto({
+        imageBase64: imageBase64 || photoBase64,
+        mimeType,
+        optionalHint: optionalHint || mealHint,
+        mealType,
+      });
+      return successResponse(res, 200, 'Photo analyzed successfully', result);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  // Accuracy Validation Report (Stage 3)
+  async getValidationReport(req, res, next) {
+    try {
+      const report = await nutritionValidationService.runValidationSuite();
+      return successResponse(res, 200, 'Nutrition validation report generated successfully', report);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  // Transparent Mifflin-St Jeor TDEE Preview Calculator
+  async calculateTdeeTargets(req, res, next) {
+    try {
+      const result = nutritionService.calculateTdeeTargets(req.body);
+      return successResponse(res, 200, 'TDEE targets calculated successfully', result);
     } catch (error) {
       next(error);
     }

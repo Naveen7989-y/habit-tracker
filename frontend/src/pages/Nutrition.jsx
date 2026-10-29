@@ -24,8 +24,13 @@ import DashboardLayout from '../layouts/DashboardLayout';
 import WaterTrackerCard from '../components/nutrition/WaterTrackerCard';
 import MacroBreakdownCard from '../components/nutrition/MacroBreakdownCard';
 import QuickFoodLogModal from '../components/nutrition/QuickFoodLogModal';
+import DataQualityBadge from '../components/nutrition/DataQualityBadge';
+import CalculationBreakdownModal from '../components/nutrition/CalculationBreakdownModal';
+import ValidationDiagnosticModal from '../components/nutrition/ValidationDiagnosticModal';
+import IndianThaliBuilder from '../components/nutrition/IndianThaliBuilder';
 import {
   UtensilsCrossed,
+  ShieldCheck,
   Search,
   Plus,
   Sparkles,
@@ -53,6 +58,9 @@ import {
   TrendingUp,
   Award,
   Zap,
+  Camera,
+  Upload,
+  Image as ImageIcon,
 } from 'lucide-react';
 
 const MEAL_ICONS = {
@@ -134,6 +142,10 @@ export default function Nutrition() {
   const [recipesModalOpen, setRecipesModalOpen] = useState(false);
   const [goalsModalOpen, setGoalsModalOpen] = useState(false);
   const [weightModalOpen, setWeightModalOpen] = useState(false);
+  const [breakdownModalOpen, setBreakdownModalOpen] = useState(false);
+  const [breakdownTargetFood, setBreakdownTargetFood] = useState(null);
+  const [breakdownPortionGrams, setBreakdownPortionGrams] = useState(100);
+  const [validationDiagnosticOpen, setValidationDiagnosticOpen] = useState(false);
 
   // Food Search state
   const [searchQuery, setSearchQuery] = useState('');
@@ -166,11 +178,21 @@ export default function Nutrition() {
     fiber: 2,
   });
 
-  // AI Parser state
+  // AI Parser & Vision state
+  const [aiHubTab, setAiHubTab] = useState('photo'); // 'photo' | 'text'
+  const [photoBase64, setPhotoBase64] = useState(null);
+  const [photoPreview, setPhotoPreview] = useState(null);
+  const [photoHint, setPhotoHint] = useState('');
+  const [photoLoading, setPhotoLoading] = useState(false);
+  const [photoAnalysisResult, setPhotoAnalysisResult] = useState(null);
   const [aiPrompt, setAiPrompt] = useState('');
   const [aiLoading, setAiLoading] = useState(false);
   const [aiParsedResults, setAiParsedResults] = useState(null);
   const [aiMealType, setAiMealType] = useState('Lunch');
+
+  // TDEE Preview calculation state
+  const [tdeePreview, setTdeePreview] = useState(null);
+  const [tdeeCalculating, setTdeeCalculating] = useState(false);
 
   // Recipes state
   const [savedRecipes, setSavedRecipes] = useState([]);
@@ -567,22 +589,237 @@ export default function Nutrition() {
     }
   };
 
-  // Log all AI items to Diary
+  // AI Food Photo Upload & Sample Handlers
+  const handlePhotoFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('Please upload a valid image file');
+      return;
+    }
+
+    if (file.size > 8 * 1024 * 1024) {
+      alert('Photo must be less than 8MB');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const dataUrl = event.target?.result;
+      setPhotoPreview(dataUrl);
+      setPhotoBase64(dataUrl);
+      setPhotoAnalysisResult(null);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleLoadSamplePhoto = (sampleType) => {
+    const samples = {
+      idli: {
+        hint: 'idli and sambar with coconut chutney',
+        preview: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=600&auto=format&fit=crop&q=80',
+      },
+      dosa: {
+        hint: 'plain dosa with chutney and sambar',
+        preview: 'https://images.unsplash.com/photo-1668236543090-82eba5ee5976?w=600&auto=format&fit=crop&q=80',
+      },
+      biryani: {
+        hint: 'chicken biryani with boiled egg',
+        preview: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=600&auto=format&fit=crop&q=80',
+      },
+      thali: {
+        hint: 'roti with dal tadka and curd',
+        preview: 'https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?w=600&auto=format&fit=crop&q=80',
+      },
+    };
+
+    const s = samples[sampleType];
+    if (s) {
+      setPhotoHint(s.hint);
+      setPhotoPreview(s.preview);
+      setPhotoBase64('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAopt/AAAAAElFTkSuQmCC');
+      setPhotoAnalysisResult(null);
+    }
+  };
+
+  const handleAnalyzePhoto = async () => {
+    if (!photoBase64 && !photoHint) {
+      alert('Please upload a food photo or enter a meal description hint');
+      return;
+    }
+
+    setPhotoLoading(true);
+    try {
+      const result = await nutritionService.recognizePhoto({
+        imageBase64: photoBase64 || 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAopt/AAAAAElFTkSuQmCC',
+        optionalHint: photoHint,
+        mealType: aiMealType,
+      });
+      setPhotoAnalysisResult(result);
+    } catch (err) {
+      console.error('Error analyzing photo:', err);
+      alert(err.response?.data?.message || err.message || 'Failed to analyze food photograph');
+    } finally {
+      setPhotoLoading(false);
+    }
+  };
+
+  const handleUpdatePhotoCandidate = (index, updates) => {
+    if (!photoAnalysisResult?.items) return;
+    const items = [...photoAnalysisResult.items];
+    const target = { ...items[index], ...updates };
+
+    const qty = Number(target.quantity) || 1;
+    const singleWeight = Number(target.servingGramWeight) || 100;
+    const totalGrams = Math.round(singleWeight * qty * 10) / 10;
+    const prevGrams = target.totalGrams || 100;
+
+    const calPerGram = target.calories / prevGrams;
+    const pPerGram = target.protein / prevGrams;
+    const cPerGram = target.carbs / prevGrams;
+    const fPerGram = target.fat / prevGrams;
+
+    target.totalGrams = totalGrams;
+    target.calories = Math.round(calPerGram * totalGrams * 10) / 10;
+    target.protein = Math.round(pPerGram * totalGrams * 10) / 10;
+    target.carbs = Math.round(cPerGram * totalGrams * 10) / 10;
+    target.fat = Math.round(fPerGram * totalGrams * 10) / 10;
+
+    items[index] = target;
+
+    const newTotals = items.reduce(
+      (acc, it) => ({
+        calories: Math.round((acc.calories + it.calories) * 10) / 10,
+        protein: Math.round((acc.protein + it.protein) * 10) / 10,
+        carbs: Math.round((acc.carbs + it.carbs) * 10) / 10,
+        fat: Math.round((acc.fat + it.fat) * 10) / 10,
+        fiber: Math.round((acc.fiber + (it.fiber || 0)) * 10) / 10,
+      }),
+      { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 }
+    );
+
+    setPhotoAnalysisResult({
+      ...photoAnalysisResult,
+      items,
+      estimatedTotals: newTotals,
+    });
+  };
+
+  const handleRemovePhotoCandidate = (index) => {
+    if (!photoAnalysisResult?.items) return;
+    const items = photoAnalysisResult.items.filter((_, idx) => idx !== index);
+    const newTotals = items.reduce(
+      (acc, it) => ({
+        calories: Math.round((acc.calories + it.calories) * 10) / 10,
+        protein: Math.round((acc.protein + it.protein) * 10) / 10,
+        carbs: Math.round((acc.carbs + it.carbs) * 10) / 10,
+        fat: Math.round((acc.fat + it.fat) * 10) / 10,
+        fiber: Math.round((acc.fiber + (it.fiber || 0)) * 10) / 10,
+      }),
+      { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 }
+    );
+    setPhotoAnalysisResult({
+      ...photoAnalysisResult,
+      items,
+      estimatedTotals: newTotals,
+    });
+  };
+
+  const handleConfirmPhotoMeal = async () => {
+    if (!photoAnalysisResult?.items?.length) return;
+    setPhotoLoading(true);
+    try {
+      const itemsToLog = photoAnalysisResult.items.map((item) => ({
+        foodItemId: item.foodItemId,
+        foodName: item.foodName,
+        mealType: aiMealType,
+        logDate: selectedDate,
+        servingQuantity: item.quantity,
+        servingUnit: item.servingUnit,
+        servingGramWeight: item.servingGramWeight,
+      }));
+
+      await nutritionService.logMultipleFoods({
+        items: itemsToLog,
+        mealType: aiMealType,
+        logDate: selectedDate,
+      });
+
+      confetti({
+        particleCount: 60,
+        spread: 70,
+        origin: { y: 0.7 },
+      });
+
+      setAiModalOpen(false);
+      setPhotoAnalysisResult(null);
+      setPhotoPreview(null);
+      setPhotoBase64(null);
+      setPhotoHint('');
+      await fetchDiary(selectedDate);
+    } catch (err) {
+      console.error('Error logging photo meal:', err);
+      alert(err.response?.data?.message || err.message || 'Failed to log photo meal');
+    } finally {
+      setPhotoLoading(false);
+    }
+  };
+
+  // TDEE Preview Handlers
+  const handleCalculateTdeePreview = async () => {
+    setTdeeCalculating(true);
+    try {
+      const preview = await nutritionService.calculateTdee({
+        age: goalsForm.age || 28,
+        gender: goalsForm.gender || 'male',
+        heightCm: goalsForm.heightCm || 175,
+        currentWeightKg: goalsForm.currentWeightKg || 72,
+        activityLevel: goalsForm.activityLevel || 'moderate',
+        fitnessGoal: goalsForm.fitnessGoal || 'maintenance',
+      });
+      setTdeePreview(preview);
+    } catch (err) {
+      console.error('Error calculating TDEE preview:', err);
+      alert(err.response?.data?.message || err.message || 'Failed to calculate TDEE preview');
+    } finally {
+      setTdeeCalculating(false);
+    }
+  };
+
+  const handleApplyTdeePreview = () => {
+    if (!tdeePreview) return;
+    setGoalsForm((prev) => ({
+      ...prev,
+      dailyCalories: tdeePreview.targetCalories,
+      proteinGrams: tdeePreview.proteinGrams,
+      carbsGrams: tdeePreview.carbsGrams,
+      fatGrams: tdeePreview.fatGrams,
+      fiberGrams: tdeePreview.fiberGrams,
+      waterTargetMl: tdeePreview.waterTargetMl,
+    }));
+  };
+
+  // Log all AI items to Diary (via atomic bulk endpoint)
   const handleLogAllAiItems = async () => {
     if (!aiParsedResults || !aiParsedResults.items?.length) return;
     setAiLoading(true);
     try {
-      for (const item of aiParsedResults.items) {
-        await nutritionService.logFood({
-          foodItemId: item.foodItemId,
-          foodName: item.foodName,
-          mealType: aiMealType,
-          logDate: selectedDate,
-          servingQuantity: item.quantity,
-          servingUnit: item.servingUnit,
-          servingGramWeight: item.servingGramWeight,
-        });
-      }
+      const itemsToLog = aiParsedResults.items.map((item) => ({
+        foodItemId: item.foodItemId,
+        foodName: item.foodName,
+        mealType: aiMealType,
+        logDate: selectedDate,
+        servingQuantity: item.quantity,
+        servingUnit: item.servingUnit,
+        servingGramWeight: item.servingGramWeight,
+      }));
+
+      await nutritionService.logMultipleFoods({
+        items: itemsToLog,
+        mealType: aiMealType,
+        logDate: selectedDate,
+      });
 
       confetti({
         particleCount: 50,
@@ -596,7 +833,7 @@ export default function Nutrition() {
       await fetchDiary(selectedDate);
     } catch (err) {
       console.error('Error logging parsed items:', err);
-      alert('Failed to log some or all items');
+      alert(err.response?.data?.message || err.message || 'Failed to log some or all items');
     } finally {
       setAiLoading(false);
     }
@@ -692,6 +929,15 @@ export default function Nutrition() {
             >
               <Zap className="w-3.5 h-3.5 fill-[#080A12]" />
               <span>+ Quick Staple</span>
+            </button>
+
+            <button
+              onClick={() => setValidationDiagnosticOpen(true)}
+              className="px-3 py-2 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-400 border border-emerald-500/30 text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer"
+              title="Inspect Independent Ground-Truth Nutrition Accuracy Audit"
+            >
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Accuracy Audit</span>
             </button>
 
             <button
@@ -798,6 +1044,17 @@ export default function Nutrition() {
               Daily Diary
             </button>
             <button
+              onClick={() => setViewTab('thali')}
+              className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1 ${
+                viewTab === 'thali'
+                  ? 'bg-[#C8FF00] text-[#080A12] font-bold shadow-sm'
+                  : isDark ? 'text-[#A4AABC] hover:text-[#F5F7FC]' : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <span>🍛</span>
+              <span>Indian Thali Builder</span>
+            </button>
+            <button
               onClick={() => setViewTab('analytics')}
               className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                 viewTab === 'analytics'
@@ -827,6 +1084,19 @@ export default function Nutrition() {
               Retry
             </button>
           </div>
+        ) : viewTab === 'thali' ? (
+          <IndianThaliBuilder
+            selectedDate={selectedDate}
+            onThaliLogged={() => {
+              fetchDiary(selectedDate);
+              setViewTab('diary');
+            }}
+            onOpenCalculationBreakdown={(food, grams) => {
+              setBreakdownTargetFood(food);
+              setBreakdownPortionGrams(grams);
+              setBreakdownModalOpen(true);
+            }}
+          />
         ) : viewTab === 'diary' ? (
           <>
             {/* ================================================= */}
@@ -1005,6 +1275,29 @@ export default function Nutrition() {
                               <div className="space-y-0.5">
                                 <div className="flex items-center gap-2">
                                   <h4 className={`text-xs sm:text-sm font-bold ${isDark ? 'text-[#F5F7FC]' : 'text-slate-800'}`}>{item.foodName}</h4>
+                                  <DataQualityBadge quality={item.dataQuality || 'SOURCE_VERIFIED'} compact />
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setBreakdownTargetFood(item.foodItem || {
+                                        name: item.foodName,
+                                        calories: Math.round(item.calories / (item.totalGrams / 100)),
+                                        protein: Math.round((item.protein / (item.totalGrams / 100)) * 10) / 10,
+                                        carbs: Math.round((item.carbs / (item.totalGrams / 100)) * 10) / 10,
+                                        fat: Math.round((item.fat / (item.totalGrams / 100)) * 10) / 10,
+                                        fiber: Math.round((item.fiber / (item.totalGrams / 100)) * 10) / 10,
+                                        servingSizeGrams: 100,
+                                        dataQuality: item.dataQuality,
+                                        source: item.notes || 'Logged Food Item',
+                                      });
+                                      setBreakdownPortionGrams(item.totalGrams);
+                                      setBreakdownModalOpen(true);
+                                    }}
+                                    className="p-1 rounded-lg text-slate-400 hover:text-[#C8FF00] hover:bg-[#151A29] transition-colors"
+                                    title="View Deterministic Calculation Breakdown"
+                                  >
+                                    <Info className="w-3.5 h-3.5" />
+                                  </button>
                                   {item.foodItem?.dietaryType && (
                                     <span
                                       className={`text-[9px] px-1.5 py-0.5 rounded font-bold uppercase ${
@@ -1431,8 +1724,32 @@ export default function Nutrition() {
                                   {s.unitName} ({s.gramWeight}g)
                                 </option>
                               ))}
-                              <option value="custom grams">Custom Grams</option>
+                              <option value="custom grams">Custom Grams (Direct Weight)</option>
                             </select>
+                            <p className="text-[10px] mt-1 text-[#70788D]">
+                              Household units are calibrated averages. Select "Custom Grams" for scale measurements.
+                            </p>
+                            {selectedServingUnit === 'custom grams' && (
+                              <div className="mt-2">
+                                <label className="text-[11px] font-medium block mb-1" style={{ color: themeTextSecondary }}>
+                                  Enter Exact Weight in Grams (g)
+                                </label>
+                                <input
+                                  type="number"
+                                  min="1"
+                                  max="10000"
+                                  value={customServingGrams}
+                                  onChange={(e) => setCustomServingGrams(Math.max(1, parseFloat(e.target.value) || 1))}
+                                  className="w-full rounded-xl px-3 py-1.5 focus:outline-none font-semibold text-sm"
+                                  style={{
+                                    backgroundColor: isDark ? '#111111' : '#FFFFFF',
+                                    border: `1px solid ${isDark ? '#C8FF00' : '#0284c7'}`,
+                                    color: themeTextPrimary,
+                                  }}
+                                  placeholder="e.g. 175"
+                                />
+                              </div>
+                            )}
                           </div>
 
                           {/* Quantity Multiplier */}
@@ -1749,27 +2066,351 @@ export default function Nutrition() {
         )}
 
         {/* ================================================= */}
-        {/* MODAL 2: AI NATURAL LANGUAGE FOOD LOGGING         */}
+        {/* MODAL 2: AI FOOD INTELLIGENCE HUB (VISION + TEXT) */}
         {/* ================================================= */}
         {aiModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-[#080A12]/80 backdrop-blur-md animate-fade-in">
-            <div className="bg-[#0D101B] border border-[#242A3A] w-full max-w-xl max-h-[90vh] rounded-[24px] shadow-2xl flex flex-col overflow-hidden">
+            <div className="bg-[#0D101B] border border-[#242A3A] w-full max-w-xl max-h-[92vh] rounded-[24px] shadow-2xl flex flex-col overflow-hidden">
               <div className="p-4 border-b border-[#242A3A] flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Sparkles className="w-4 h-4 text-[#8B5CF6]" />
-                  <h3 className="text-sm font-bold text-[#F5F7FC]">AI Natural Language Food Logger</h3>
+                  <div>
+                    <h3 className="text-sm font-bold text-[#F5F7FC]">AI Food Intelligence Hub</h3>
+                    <p className="text-[10px] text-slate-400">Vision Photo Recognition & Natural Language Diary</p>
+                  </div>
                 </div>
                 <button
-                  onClick={() => setAiModalOpen(false)}
+                  onClick={() => {
+                    setAiModalOpen(false);
+                    setPhotoAnalysisResult(null);
+                    setAiParsedResults(null);
+                  }}
                   className="p-1.5 rounded-xl text-[#A4AABC] hover:text-[#F5F7FC] hover:bg-[#151A29]"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
 
+              {/* Sub-Tabs: Photo vs Natural Language */}
+              <div className="flex border-b border-[#242A3A] bg-[#0A0D16] px-4 pt-2 gap-4 text-xs font-bold">
+                <button
+                  onClick={() => setAiHubTab('photo')}
+                  className={`pb-2.5 px-1 border-b-2 flex items-center gap-1.5 transition-all ${
+                    aiHubTab === 'photo'
+                      ? 'border-[#8B5CF6] text-[#8B5CF6]'
+                      : 'border-transparent text-slate-400 hover:text-white'
+                  }`}
+                >
+                  <Camera className="w-3.5 h-3.5" />
+                  <span>Snap Food Photo</span>
+                </button>
+                <button
+                  onClick={() => setAiHubTab('text')}
+                  className={`pb-2.5 px-1 border-b-2 flex items-center gap-1.5 transition-all ${
+                    aiHubTab === 'text'
+                      ? 'border-[#8B5CF6] text-[#8B5CF6]'
+                      : 'border-transparent text-slate-400 hover:text-white'
+                  }`}
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Natural Language Prompt</span>
+                </button>
+              </div>
+
               <div className="p-4 overflow-y-auto space-y-4 text-xs">
-                <div>
-                  <label className="text-slate-300 font-medium block mb-1">Describe what you ate:</label>
+                {/* Target Meal Selector */}
+                <div className="flex items-center justify-between gap-3 p-2.5 rounded-xl bg-[#151A29] border border-[#242A3A]">
+                  <span className="text-slate-300 font-semibold">Log to Meal Section:</span>
+                  <select
+                    value={aiMealType}
+                    onChange={(e) => setAiMealType(e.target.value)}
+                    className="bg-[#0D101B] border border-[#242A3A] rounded-lg px-2.5 py-1 text-[#F5F7FC] font-bold focus:outline-none focus:border-[#C8FF00]"
+                  >
+                    {['Breakfast', 'Morning Snack', 'Lunch', 'Evening Snack', 'Dinner'].map((m) => (
+                      <option key={m} value={m}>{m}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* TAB 1: PHOTO RECOGNITION */}
+                {aiHubTab === 'photo' && (
+                  <div className="space-y-4">
+                    {/* Photo Upload Box */}
+                    <div className="border-2 border-dashed border-[#242A3A] hover:border-[#8B5CF6]/50 rounded-2xl p-4 text-center space-y-2 bg-[#101422] transition-colors relative">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        capture="environment"
+                        onChange={handlePhotoFileChange}
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                        title="Upload or snap a food photo"
+                      />
+                      <div className="w-10 h-10 mx-auto rounded-full bg-[#8B5CF6]/15 text-[#8B5CF6] flex items-center justify-center">
+                        <Camera className="w-5 h-5" />
+                      </div>
+                      <p className="font-semibold text-slate-200">
+                        Take a photo or tap to browse
+                      </p>
+                      <p className="text-[10px] text-slate-400">
+                        Supports JPG, PNG up to 8MB • Visual portions are estimated with uncertainty disclosure
+                      </p>
+                    </div>
+
+                    {/* Quick Sample Photos for instant testing */}
+                    <div className="space-y-1.5">
+                      <span className="text-[11px] text-slate-400">Or try a sample meal:</span>
+                      <div className="flex flex-wrap gap-1.5">
+                        {[
+                          { id: 'idli', label: 'Idli & Sambar' },
+                          { id: 'dosa', label: 'Plain Dosa Plate' },
+                          { id: 'biryani', label: 'Chicken Biryani' },
+                          { id: 'thali', label: 'Roti & Dal Thali' },
+                        ].map((sample) => (
+                          <button
+                            key={sample.id}
+                            type="button"
+                            onClick={() => handleLoadSamplePhoto(sample.id)}
+                            className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-medium transition-all"
+                          >
+                            🍽️ {sample.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Photo Preview & Context Hint */}
+                    {photoPreview && (
+                      <div className="p-3 rounded-2xl bg-[#151A29] border border-[#242A3A] space-y-3">
+                        <div className="relative rounded-xl overflow-hidden max-h-48 bg-black flex items-center justify-center">
+                          <img
+                            src={photoPreview}
+                            alt="Food preview"
+                            className="object-cover w-full max-h-48"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setPhotoPreview(null);
+                              setPhotoBase64(null);
+                              setPhotoAnalysisResult(null);
+                            }}
+                            className="absolute top-2 right-2 p-1 rounded-lg bg-black/60 text-white hover:bg-black"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+
+                        <div>
+                          <label className="text-[11px] text-slate-400 block mb-1">
+                            Meal hint / description (optional):
+                          </label>
+                          <input
+                            type="text"
+                            value={photoHint}
+                            onChange={(e) => setPhotoHint(e.target.value)}
+                            placeholder="e.g. 2 idlis with sambar and coconut chutney"
+                            className="w-full bg-[#0D101B] border border-[#242A3A] rounded-xl px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-[#8B5CF6]"
+                          />
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={handleAnalyzePhoto}
+                          disabled={photoLoading}
+                          className="w-full py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 disabled:opacity-50 text-white font-bold flex items-center justify-center gap-2 shadow-lg shadow-purple-600/30 transition-all cursor-pointer"
+                        >
+                          {photoLoading ? (
+                            <>
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                              <span>Scanning Photo & Estimating Portions...</span>
+                            </>
+                          ) : (
+                            <>
+                              <Camera className="w-4 h-4" />
+                              <span>Analyze Photo & Estimate Nutrition</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    )}
+
+                    {/* Candidate Detection Review (Mandatory Verification) */}
+                    {photoAnalysisResult && (
+                      <div className="border border-purple-500/40 rounded-2xl p-4 bg-purple-950/20 space-y-3 animate-fade-in">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-1.5">
+                            <Check className="w-4 h-4 text-emerald-400" />
+                            <span className="text-xs font-bold text-purple-300">
+                              Detected {photoAnalysisResult.items?.length || 0} Food Item(s)
+                            </span>
+                          </div>
+                          <span className="text-xs font-extrabold text-white">
+                            Total: ~{photoAnalysisResult.estimatedTotals?.calories} kcal
+                          </span>
+                        </div>
+
+                        {/* Uncertainty Notice */}
+                        <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-300 text-[10px] space-y-1">
+                          <div className="flex items-center gap-1.5 font-bold">
+                            <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                            <span>Mandatory Portion Review</span>
+                          </div>
+                          <p className="text-slate-300 leading-relaxed">
+                            {photoAnalysisResult.disclaimer}
+                          </p>
+                        </div>
+
+                        {/* Editable candidate items */}
+                        <div className="space-y-2">
+                          {photoAnalysisResult.items?.map((item, idx) => (
+                            <div
+                              key={idx}
+                              className="p-3 rounded-xl border border-slate-800 bg-[#0B0E18] space-y-2"
+                            >
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <div className="flex items-center gap-1.5">
+                                    <span className="font-bold text-white text-xs">{item.foodName}</span>
+                                    <DataQualityBadge quality={item.dataQuality || 'AI_ESTIMATED'} compact />
+                                  </div>
+                                  <div className="flex items-center gap-2 mt-0.5">
+                                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 font-semibold">
+                                      {item.source}
+                                    </span>
+                                    <span className="text-[10px] text-slate-400">
+                                      ~{item.totalGrams}g total
+                                    </span>
+                                  </div>
+                                </div>
+
+                                <button
+                                  type="button"
+                                  onClick={() => handleRemovePhotoCandidate(idx)}
+                                  className="p-1 rounded-lg text-rose-400 hover:bg-rose-500/15"
+                                  title="Remove item"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+
+                              
+                              {/* Stage 3 Dual Confidence & Uncertainty Bars */}
+                              <div className="grid grid-cols-2 gap-2 p-2 rounded-xl bg-[#151A29]/80 border border-slate-800">
+                                <div>
+                                  <div className="flex justify-between text-[10px] text-slate-400 mb-0.5">
+                                    <span>Recognition</span>
+                                    <span className="font-bold text-emerald-400">{Math.round((item.recognitionConfidence || item.confidence || 0.88) * 100)}%</span>
+                                  </div>
+                                  <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                                    <div
+                                      className="h-full bg-emerald-400 rounded-full transition-all"
+                                      style={{ width: `${Math.round((item.recognitionConfidence || item.confidence || 0.88) * 100)}%` }}
+                                    />
+                                  </div>
+                                </div>
+                                <div>
+                                  <div className="flex justify-between text-[10px] text-slate-400 mb-0.5">
+                                    <span>Portion Grams</span>
+                                    <span className="font-bold text-amber-400">{Math.round((item.portionConfidence || 0.65) * 100)}%</span>
+                                  </div>
+                                  <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                                    <div
+                                      className="h-full bg-amber-400 rounded-full transition-all"
+                                      style={{ width: `${Math.round((item.portionConfidence || 0.65) * 100)}%` }}
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Ambiguous Ingredients */}
+                              {item.ambiguousIngredients?.length > 0 && (
+                                <div className="p-2 rounded-lg bg-amber-500/10 border border-amber-500/20 text-[10px] space-y-0.5">
+                                  <span className="font-bold text-amber-300 block">Ambiguous Prep Items (2D Limit):</span>
+                                  <div className="flex flex-wrap gap-1 text-slate-300">
+                                    {item.ambiguousIngredients.map((amb, aIdx) => (
+                                      <span key={aIdx} className="px-1.5 py-0.2 rounded bg-amber-950/40 text-amber-200">
+                                        • {amb}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Interactive Portion Stepper */}
+                              <div className="flex items-center justify-between gap-2 pt-1 border-t border-slate-800/80">
+                                <div className="flex items-center gap-1.5">
+                                  <span className="text-[10px] text-slate-400">Qty:</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleUpdatePhotoCandidate(idx, { quantity: Math.max(0.25, item.quantity - 0.5) })}
+                                    className="w-6 h-6 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-bold flex items-center justify-center"
+                                  >
+                                    -
+                                  </button>
+                                  <span className="w-8 text-center font-bold text-white text-xs">{item.quantity}</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleUpdatePhotoCandidate(idx, { quantity: item.quantity + 0.5 })}
+                                    className="w-6 h-6 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-bold flex items-center justify-center"
+                                  >
+                                    +
+                                  </button>
+                                </div>
+
+                                {/* Serving unit selector */}
+                                {item.availableServings?.length > 0 && (
+                                  <select
+                                    value={item.servingUnit}
+                                    onChange={(e) => {
+                                      const matched = item.availableServings.find((s) => s.unitName === e.target.value);
+                                      handleUpdatePhotoCandidate(idx, {
+                                        servingUnit: e.target.value,
+                                        servingGramWeight: matched ? matched.gramWeight : item.servingGramWeight,
+                                      });
+                                    }}
+                                    className="bg-slate-900 border border-slate-700 rounded-lg px-2 py-0.5 text-[10px] text-white"
+                                  >
+                                    {item.availableServings.map((s, sIdx) => (
+                                      <option key={sIdx} value={s.unitName}>
+                                        {s.unitName}
+                                      </option>
+                                    ))}
+                                  </select>
+                                )}
+
+                                <div className="text-right">
+                                  <span className="font-extrabold text-[#C8FF00] block text-xs">
+                                    {item.calories} kcal
+                                  </span>
+                                  <span className="text-[9px] text-slate-400">
+                                    P: {item.protein}g · C: {item.carbs}g · F: {item.fat}g
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* Confirmation Button */}
+                        <button
+                          type="button"
+                          onClick={handleConfirmPhotoMeal}
+                          disabled={photoLoading || !photoAnalysisResult.items?.length}
+                          className="w-full py-2.5 rounded-xl bg-[#C8FF00] hover:bg-[#B4E600] text-[#080A12] font-bold flex items-center justify-center gap-1.5 transition-all shadow-[0_0_12px_rgba(200,255,0,0.25)] cursor-pointer"
+                        >
+                          <Check className="w-4 h-4" />
+                          <span>Confirm & Log All to {aiMealType} Diary</span>
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* TAB 2: NATURAL LANGUAGE PROMPT */}
+                {aiHubTab === 'text' && (
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-slate-300 font-medium block mb-1">Describe what you ate:</label>
                   <textarea
                     rows={3}
                     value={aiPrompt}
@@ -1874,6 +2515,8 @@ export default function Nutrition() {
                       <Check className="w-4 h-4" />
                       <span>Confirm & Add All to {aiMealType} Diary</span>
                     </button>
+                  </div>
+                )}
                   </div>
                 )}
               </div>
@@ -1983,12 +2626,61 @@ export default function Nutrition() {
                     </div>
                   </div>
 
-                  <button
-                    onClick={() => handleSaveGoals(true)}
-                    className="w-full py-2 rounded-xl bg-amber-600/30 hover:bg-amber-600/50 text-amber-300 font-bold border border-amber-500/30 transition-all"
-                  >
-                    ⚡ Calculate & Apply Scientific Targets
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={handleCalculateTdeePreview}
+                      disabled={tdeeCalculating}
+                      className="flex-1 py-2 rounded-xl bg-amber-600/25 hover:bg-amber-600/40 text-amber-300 font-bold border border-amber-500/30 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                    >
+                      {tdeeCalculating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <span>⚡ Preview Mifflin-St Jeor</span>}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleSaveGoals(true)}
+                      className="flex-1 py-2 rounded-xl bg-[#C8FF00] hover:bg-[#B4E600] text-[#080A12] font-bold transition-all shadow-[0_0_12px_rgba(200,255,0,0.25)] cursor-pointer"
+                    >
+                      Calculate & Apply Now
+                    </button>
+                  </div>
+
+                  {/* Live Calculation Preview Card */}
+                  {tdeePreview && (
+                    <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 space-y-2 animate-fade-in">
+                      <div className="flex items-center justify-between text-[11px] font-bold text-amber-300">
+                        <span>Clinical TDEE Assessment</span>
+                        <span>{tdeePreview.targetCalories} kcal/day target</span>
+                      </div>
+                      <div className="grid grid-cols-3 gap-1.5 text-center text-[10px]">
+                        <div className="p-1.5 rounded-lg bg-black/40">
+                          <span className="text-slate-400 block text-[9px]">Basal BMR</span>
+                          <span className="font-extrabold text-white">{tdeePreview.bmr} kcal</span>
+                        </div>
+                        <div className="p-1.5 rounded-lg bg-black/40">
+                          <span className="text-slate-400 block text-[9px]">Total TDEE</span>
+                          <span className="font-extrabold text-white">{tdeePreview.tdee} kcal</span>
+                        </div>
+                        <div className="p-1.5 rounded-lg bg-black/40">
+                          <span className="text-slate-400 block text-[9px]">Hydration</span>
+                          <span className="font-extrabold text-cyan-300">{tdeePreview.waterTargetMl} ml</span>
+                        </div>
+                      </div>
+                      <div className="flex justify-between text-[10px] text-slate-300 pt-1 border-t border-amber-500/20">
+                        <span>Macros:</span>
+                        <span>P: {tdeePreview.proteinGrams}g • C: {tdeePreview.carbsGrams}g • F: {tdeePreview.fatGrams}g • Fiber: {tdeePreview.fiberGrams}g</span>
+                      </div>
+                      <p className="text-[9px] text-slate-400 leading-tight">
+                        {tdeePreview.notes}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={handleApplyTdeePreview}
+                        className="w-full py-1.5 rounded-lg bg-amber-500 text-slate-950 font-bold text-[10px] hover:bg-amber-400 transition-all cursor-pointer"
+                      >
+                        ✓ Copy Values to Manual Target Inputs Below
+                      </button>
+                    </div>
+                  )}
                 </div>
 
                 {/* Target Inputs */}
@@ -2137,6 +2829,20 @@ export default function Nutrition() {
             </div>
           </div>
         )}
+
+        {/* Stage 3 Calculation Breakdown Modal */}
+        <CalculationBreakdownModal
+          isOpen={breakdownModalOpen}
+          onClose={() => setBreakdownModalOpen(false)}
+          foodItem={breakdownTargetFood}
+          portionGrams={breakdownPortionGrams}
+        />
+
+        {/* Stage 3 Accuracy Validation Diagnostic Modal */}
+        <ValidationDiagnosticModal
+          isOpen={validationDiagnosticOpen}
+          onClose={() => setValidationDiagnosticOpen(false)}
+        />
 
         {/* Quick Food Staple 1-Tap Log Modal */}
         <QuickFoodLogModal

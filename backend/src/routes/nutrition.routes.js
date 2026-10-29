@@ -15,7 +15,11 @@ router.get('/foods/:id', nutritionController.getFoodById);
 router.post('/foods/custom', nutritionController.createCustomFood);
 router.post('/foods/:foodItemId/favorite', nutritionController.toggleFavorite);
 
+// Data Quality & Validation Report
+router.get('/validation/report', nutritionController.getValidationReport);
+
 // Daily Diary & Food Logs
+router.post('/meals/thali', nutritionController.logThaliMeal);
 router.get('/logs', nutritionController.getDailyLogs);
 router.post('/logs', nutritionController.logFood);
 router.put('/logs/:id', nutritionController.updateFoodLog);
@@ -33,6 +37,7 @@ router.delete('/recipes/:id', nutritionController.deleteRecipe);
 // Nutrition Goals (TDEE / Mifflin-St Jeor)
 router.get('/goals', nutritionController.getGoals);
 router.put('/goals', nutritionController.updateGoals);
+router.post('/goals/calculate-tdee', nutritionController.calculateTdeeTargets);
 
 // Hydration (Water Tracker)
 router.get('/water', nutritionController.getWaterLogs);
@@ -46,7 +51,8 @@ router.post('/weight', nutritionController.logWeight);
 // Nutrition Analytics
 router.get('/analytics', nutritionController.getAnalytics);
 
-// AI Natural Language Parser
+// AI Food Parsing & Photo Recognition
 router.post('/ai-parse', nutritionController.parseNaturalLanguage);
+router.post('/ai-photo-recognize', nutritionController.recognizeFoodPhoto);
 
 export default router;
