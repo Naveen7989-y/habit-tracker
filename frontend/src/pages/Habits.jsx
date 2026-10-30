@@ -7,6 +7,7 @@ import { habitService } from '../services/habit.service';
 import { completionService } from '../services/completion.service';
 import { statisticsService } from '../services/statistics.service';
 import DashboardLayout from '../layouts/DashboardLayout';
+import MobileModuleToggle from '../components/fitness/MobileModuleToggle';
 import {
   Flame,
   Plus,
@@ -334,6 +335,8 @@ export default function Habits() {
           </div>
         </div>
 
+        <MobileModuleToggle active="habit" />
+
         {/* High-Impact Streak Summary Cards */}
         {streakSummary && (
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
@@ -399,7 +402,8 @@ export default function Habits() {
               <p className="text-[10px] sm:text-[11px] text-[#70788D] mt-0.5 sm:mt-1 truncate">Logged check-ins</p>
             </div>
           </div>
-        )}
+
+          )}
 
         {/* Search, Filter & Sort Controls */}
         <div className="bg-[#111522] border border-[#242A3A] rounded-[22px] p-4 space-y-3.5">
