@@ -23,6 +23,7 @@ import { workoutService } from '../services/workout.service';
 import DashboardLayout from '../layouts/DashboardLayout';
 import WaterTrackerCard from '../components/nutrition/WaterTrackerCard';
 import MacroBreakdownCard from '../components/nutrition/MacroBreakdownCard';
+import MobileModuleToggle from '../components/fitness/MobileModuleToggle';
 import QuickFoodLogModal from '../components/nutrition/QuickFoodLogModal';
 import DataQualityBadge from '../components/nutrition/DataQualityBadge';
 import CalculationBreakdownModal from '../components/nutrition/CalculationBreakdownModal';
@@ -917,6 +918,10 @@ export default function Nutrition() {
               </div>
             </div>
           </div>
+
+
+
+          <MobileModuleToggle active="nutrition" className="my-2" />
 
           {/* Quick Action Buttons */}
           <div className="flex flex-wrap items-center gap-2">

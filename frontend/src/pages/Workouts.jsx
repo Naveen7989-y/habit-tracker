@@ -8,6 +8,7 @@ import RestTimerHUD from '../components/fitness/RestTimerHUD';
 import ManualWorkoutModal from '../components/fitness/ManualWorkoutModal';
 import ExerciseSetLogger from '../components/fitness/ExerciseSetLogger';
 import WorkoutStatsBanner from '../components/fitness/WorkoutStatsBanner';
+import MobileModuleToggle from '../components/fitness/MobileModuleToggle';
 import { workoutService } from '../services/workout.service';
 import {
   ChevronLeft,
@@ -15,6 +16,8 @@ import {
   Footprints,
   Bike,
   Dumbbell,
+  UtensilsCrossed,
+  ListTodo,
   Sparkles,
   Play,
   Pause,
@@ -886,6 +889,8 @@ export default function Workouts() {
               </p>
             </div>
           </div>
+
+          <MobileModuleToggle active="workout" />
 
           <div className="flex items-center gap-2 self-end sm:self-center">
             <button
